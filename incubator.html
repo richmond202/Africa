@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Incubator Hub — AfricaLaunch</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .incubator-tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--border); margin-bottom: 40px; flex-wrap: wrap; }
+    .inc-tab { padding: 12px 22px; font-size: 14px; font-weight: 600; color: var(--text-muted); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: var(--transition); }
+    .inc-tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+    .inc-tab:hover { color: var(--text); }
+    .mentor-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 24px; transition: var(--transition); }
+    .mentor-card:hover { border-color: rgba(14,165,233,0.4); box-shadow: 0 8px 40px rgba(14,165,233,0.1); transform: translateY(-4px); }
+    .mentor-top { display: flex; gap: 16px; margin-bottom: 16px; }
+    .mentor-avatar { width: 72px; height: 72px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(14,165,233,0.4); flex-shrink: 0; }
+    .mentor-expertise { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+    .mentor-stats { display: flex; gap: 16px; margin-bottom: 16px; }
+    .mentor-stat { text-align: center; }
+    .mentor-stat .val { font-size: 1.2rem; font-weight: 700; color: var(--primary); }
+    .mentor-stat .lbl { font-size: 11px; color: var(--text-dim); }
+    .accel-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 28px; transition: var(--transition); }
+    .accel-card:hover { border-color: rgba(245,158,11,0.4); transform: translateY(-4px); }
+    .accel-header { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 16px; }
+    .accel-logo { width: 56px; height: 56px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; }
+    .course-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; transition: var(--transition); cursor: pointer; }
+    .course-card:hover { border-color: rgba(124,58,237,0.4); transform: translateY(-4px); }
+    .course-img { height: 160px; overflow: hidden; background: linear-gradient(135deg, rgba(124,58,237,0.2), rgba(236,72,153,0.1)); display: flex; align-items: center; justify-content: center; font-size: 48px; }
+    .course-body { padding: 20px; }
+    .course-level { display: inline-block; border-radius: 50px; padding: 3px 10px; font-size: 11px; font-weight: 600; margin-bottom: 10px; }
+    .course-level.beginner { background: rgba(22,163,74,0.15); color: #4ade80; }
+    .course-level.intermediate { background: rgba(245,158,11,0.15); color: #fbbf24; }
+    .course-level.advanced { background: rgba(239,68,68,0.15); color: #f87171; }
+    .resource-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; }
+    .resource-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 24px; cursor: pointer; transition: var(--transition); }
+    .resource-card:hover { border-color: rgba(124,58,237,0.4); transform: translateY(-3px); }
+    .resource-icon { font-size: 32px; margin-bottom: 12px; }
+    .inc-content { display: none; }
+    .inc-content.active { display: block; animation: fadeInUp 0.3s ease; }
+  </style>
+</head>
+<body>
+<nav class="navbar scrolled" id="navbar">
+  <div class="nav-container">
+    <a href="index.html" class="nav-logo"><span class="logo-icon">🚀</span><span class="logo-text">AfricaLaunch</span></a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="index.html" class="nav-link">Home</a></li>
+      <li><a href="startups.html" class="nav-link">Startups</a></li>
+      <li><a href="investors.html" class="nav-link">Investors</a></li>
+      <li><a href="events.html" class="nav-link">Events</a></li>
+      <li><a href="marketplace.html" class="nav-link">Marketplace</a></li>
+      <li class="nav-dropdown">
+        <a href="#" class="nav-link dropdown-toggle">More <i class="fas fa-chevron-down"></i></a>
+        <ul class="dropdown-menu">
+          <li><a href="incubator.html"><i class="fas fa-building"></i> Incubator Hub</a></li>
+          <li><a href="ecosystem.html"><i class="fas fa-globe-africa"></i> Ecosystem</a></li>
+          <li><a href="analytics.html"><i class="fas fa-chart-bar"></i> Analytics</a></li>
+          <li><a href="leaderboard.html"><i class="fas fa-trophy"></i> Leaderboard</a></li>
+          <li><a href="awards.html"><i class="fas fa-medal"></i> Awards</a></li>
+        </ul>
+      </li>
+    </ul>
+    <div class="nav-actions"><a href="submit.html" class="btn btn-primary"><i class="fas fa-plus"></i> Submit Startup</a></div>
+    <button class="nav-toggle" onclick="toggleNav()"><i class="fas fa-bars"></i></button>
+  </div>
+</nav>
+
+<div class="page-hero">
+  <div class="container">
+    <div class="section-label">🏢 Incubator Hub</div>
+    <h1>Africa's Startup <span class="gradient-text">Growth Engine</span></h1>
+    <p>Mentorship programs, accelerator listings, learning courses, business resources, and startup guides — all in one place.</p>
+  </div>
+</div>
+
+<section class="section" style="padding-top:40px">
+  <div class="container">
+    <div class="incubator-tabs" id="incTabs">
+      <button class="inc-tab active" onclick="switchIncTab('mentors')">👨‍💼 Mentors (180+)</button>
+      <button class="inc-tab" onclick="switchIncTab('accelerators')">🏢 Accelerators (65+)</button>
+      <button class="inc-tab" onclick="switchIncTab('courses')">🎓 Courses</button>
+      <button class="inc-tab" onclick="switchIncTab('resources')">📚 Resources</button>
+      <button class="inc-tab" onclick="switchIncTab('guides')">📖 Guides</button>
+    </div>
+
+    <!-- MENTORS -->
+    <div id="inc-mentors" class="inc-content active">
+      <div class="filter-bar" style="margin-bottom:28px">
+        <div class="search-bar" style="max-width:300px"><i class="fas fa-search"></i><input type="text" id="mentorSearch" placeholder="Search mentors..." oninput="filterMentors()"></div>
+        <button class="filter-btn active" data-mexp="all" onclick="setMentorExp(this,'all')">All</button>
+        <button class="filter-btn" data-mexp="FinTech" onclick="setMentorExp(this,'FinTech')">FinTech</button>
+        <button class="filter-btn" data-mexp="AgriTech" onclick="setMentorExp(this,'AgriTech')">AgriTech</button>
+        <button class="filter-btn" data-mexp="Growth Marketing" onclick="setMentorExp(this,'Growth Marketing')">Marketing</button>
+        <button class="filter-btn" data-mexp="AI/ML" onclick="setMentorExp(this,'AI/ML')">AI/ML</button>
+      </div>
+      <div class="startup-grid" id="mentorGrid" style="grid-template-columns:repeat(auto-fill,minmax(320px,1fr))"></div>
+    </div>
+
+    <!-- ACCELERATORS -->
+    <div id="inc-accelerators" class="inc-content">
+      <div class="startup-grid" id="accelGrid" style="grid-template-columns:repeat(auto-fill,minmax(300px,1fr))">
+        <!-- static data -->
+      </div>
+    </div>
+
+    <!-- COURSES -->
+    <div id="inc-courses" class="inc-content">
+      <div class="startup-grid" id="coursesGrid" style="grid-template-columns:repeat(auto-fill,minmax(280px,1fr))"></div>
+    </div>
+
+    <!-- RESOURCES -->
+    <div id="inc-resources" class="inc-content">
+      <div class="resource-grid" id="resourceGrid"></div>
+    </div>
+
+    <!-- GUIDES -->
+    <div id="inc-guides" class="inc-content">
+      <div class="resource-grid" id="guidesGrid"></div>
+    </div>
+  </div>
+</section>
+
+<!-- Mentor Request Modal -->
+<div class="modal-overlay" id="mentorModal" onclick="closeMentorModal(event)">
+  <div class="modal-box">
+    <div class="modal-header"><h3><i class="fas fa-user-tie"></i> Request Mentorship</h3><button class="modal-close" onclick="closeMentorModal()"><i class="fas fa-times"></i></button></div>
+    <div id="mentorModalContent"></div>
+  </div>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+<script src="js/main.js"></script>
+<script>
+  let allMentors = [];
+  let activeMentorExp = 'all';
+
+  const accelerators = [
+    { name: 'Y Combinator Africa', logo: '🇺🇸', focus: ['All Sectors'], location: 'San Francisco (Remote)', equity: '7%', funding: '$500K', duration: '3 months', deadline: 'Rolling', url: 'https://ycombinator.com' },
+    { name: 'Techstars Africa', logo: '🌍', focus: ['Tech', 'FinTech', 'SaaS'], location: 'Multiple Cities', equity: '6%', funding: '$100K', duration: '3 months', deadline: 'Quarterly', url: '#' },
+    { name: 'Flat6Labs', logo: '🇪🇬', focus: ['FinTech', 'EdTech', 'HealthTech'], location: 'Cairo, Tunis, Beirut', equity: '10%', funding: '$40K', duration: '4 months', deadline: 'Bi-annual', url: '#' },
+    { name: 'MEST Africa', logo: '🇬🇭', focus: ['Tech', 'E-Commerce'], location: 'Accra, Lagos, Nairobi', equity: '8%', funding: '$60K', duration: '1 year', deadline: 'Annual', url: '#' },
+    { name: 'CcHUB', logo: '🇳🇬', focus: ['Civic Tech', 'Social Impact', 'HealthTech'], location: 'Lagos, Nairobi', equity: '0-5%', funding: 'Up to $50K', duration: '6 months', deadline: 'Rolling', url: '#' },
+    { name: 'GreenFuture Accelerator', logo: '🌿', focus: ['CleanTech', 'AgriTech', 'Water'], location: 'Virtual + Casablanca', equity: '5%', funding: '$80K', duration: '4 months', deadline: 'Q3 2025', url: '#' },
+  ];
+
+  const courses = [
+    { emoji: '🚀', title: 'Zero to Funded: Africa Edition', level: 'beginner', modules: 10, duration: '8 weeks', price: 149, instructor: 'Aisha Diallo', students: 2400 },
+    { emoji: '💰', title: 'Mastering VC Fundraising in Africa', level: 'intermediate', modules: 8, duration: '6 weeks', price: 199, instructor: 'Dr. James Kariuki', students: 1200 },
+    { emoji: '📊', title: 'Financial Modeling for Startups', level: 'intermediate', modules: 7, duration: '5 weeks', price: 129, instructor: 'Prof. Samuel Boateng', students: 890 },
+    { emoji: '🎯', title: 'Growth Marketing for African Markets', level: 'beginner', modules: 12, duration: '10 weeks', price: 99, instructor: 'Aisha Diallo', students: 3100 },
+    { emoji: '⚖️', title: 'Legal Essentials for Startups', level: 'beginner', modules: 6, duration: '4 weeks', price: 79, instructor: 'Legal Africa Team', students: 560 },
+    { emoji: '🤖', title: 'AI Product Development', level: 'advanced', modules: 15, duration: '12 weeks', price: 299, instructor: 'Prof. Samuel Boateng', students: 340 },
+  ];
+
+  const resources = [
+    { icon: '📋', title: 'Business Plan Template', desc: 'Comprehensive African market-ready business plan template with financial projections.', type: 'Template', free: true },
+    { icon: '💼', title: 'Pitch Deck Framework', desc: '12-slide pitch deck template used by 500+ funded African startups.', type: 'Template', free: true },
+    { icon: '📊', title: 'Financial Model Spreadsheet', desc: 'Revenue projections, burn rate, and unit economics model for startups.', type: 'Spreadsheet', free: false },
+    { icon: '✅', title: 'Startup Launch Checklist', desc: '50-point checklist covering legal, product, marketing, and fundraising steps.', type: 'Checklist', free: true },
+    { icon: '⚖️', title: 'Founder Agreement Template', desc: 'Co-founder agreement covering equity splits, vesting, and IP ownership.', type: 'Legal', free: false },
+    { icon: '📧', title: 'Investor Outreach Email Templates', desc: '20 battle-tested cold email templates for reaching angel investors and VCs.', type: 'Template', free: true },
+  ];
+
+  const guides = [
+    { icon: '🚀', title: 'How to Launch Your Startup in Africa', desc: 'Step-by-step guide from idea validation to first paying customers in 90 days.', readTime: '15 min' },
+    { icon: '💰', title: 'Complete Guide to African Startup Funding', desc: 'From bootstrapping to Series A — every funding stage explained for African founders.', readTime: '22 min' },
+    { icon: '📱', title: 'Building for Mobile-First Africa', desc: 'Technical and design principles for building products for 600M+ mobile users.', readTime: '12 min' },
+    { icon: '🌍', title: 'Expanding Across African Markets', desc: 'How to navigate regulatory, cultural, and operational challenges when scaling.', readTime: '18 min' },
+    { icon: '🤝', title: 'Finding Your Co-Founder', desc: 'Framework for finding, evaluating, and formalizing co-founder relationships.', readTime: '10 min' },
+    { icon: '📈', title: 'Growth Hacking for African Startups', desc: 'Low-budget, high-impact growth strategies proven in the African context.', readTime: '16 min' },
+  ];
+
+  async function loadMentors() {
+    try {
+      const res = await fetch('tables/mentors?limit=50');
+      const data = await res.json();
+      allMentors = data.data || [];
+      filterMentors();
+    } catch { document.getElementById('mentorGrid').innerHTML = '<p style="color:var(--text-muted)">Failed to load mentors.</p>'; }
+  }
+
+  function setMentorExp(btn, exp) {
+    document.querySelectorAll('[data-mexp]').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    activeMentorExp = exp;
+    filterMentors();
+  }
+
+  function filterMentors() {
+    const q = document.getElementById('mentorSearch')?.value.toLowerCase() || '';
+    const filtered = allMentors.filter(m => {
+      if (activeMentorExp !== 'all' && !(m.expertise||[]).includes(activeMentorExp)) return false;
+      if (q && !m.name?.toLowerCase().includes(q) && !m.title?.toLowerCase().includes(q)) return false;
+      return true;
+    });
+    document.getElementById('mentorGrid').innerHTML = filtered.length ? filtered.map(renderMentorCard).join('') : '<p style="color:var(--text-muted);grid-column:1/-1;text-align:center;padding:40px">No mentors found.</p>';
+  }
+
+  function renderMentorCard(m) {
+    const stars = '★'.repeat(Math.round(m.rating||0)) + '☆'.repeat(5 - Math.round(m.rating||0));
+    return `
+      <div class="mentor-card">
+        <div class="mentor-top">
+          <img src="${m.avatar_url}" alt="${m.name}" class="mentor-avatar">
+          <div>
+            <div style="font-weight:700;font-size:16px">${m.name}</div>
+            <div style="font-size:13px;color:var(--text-muted)">${m.title}</div>
+            <div style="font-size:13px;color:var(--text-muted)">${m.company} · ${m.country}</div>
+            <div style="color:#f59e0b;font-size:13px;margin-top:4px">${stars} ${m.rating}</div>
+          </div>
+        </div>
+        <div class="mentor-expertise">${(m.expertise||[]).map(e=>`<span class="tag" style="background:rgba(14,165,233,0.08);border-color:rgba(14,165,233,0.2);color:#38bdf8">${e}</span>`).join('')}</div>
+        <div class="mentor-stats">
+          <div class="mentor-stat"><div class="val">${m.sessions_count||0}</div><div class="lbl">Sessions</div></div>
+          <div class="mentor-stat"><div class="val">${m.rating||'—'}</div><div class="lbl">Rating</div></div>
+          <div class="mentor-stat" style="flex:1"><div class="val" style="font-size:14px">${m.mentorship_type}</div><div class="lbl">Format</div></div>
+        </div>
+        <div style="font-size:12px;color:var(--text-muted);margin-bottom:16px"><i class="fas fa-clock" style="color:var(--primary)"></i> ${m.availability}</div>
+        <button class="btn btn-primary" style="width:100%" onclick="openMentorRequest('${m.id}','${m.name}')"><i class="fas fa-calendar-check"></i> Request Session</button>
+      </div>`;
+  }
+
+  function renderAccelerators() {
+    document.getElementById('accelGrid').innerHTML = accelerators.map(a => `
+      <div class="accel-card">
+        <div class="accel-header">
+          <div class="accel-logo" style="background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.25);font-size:28px">${a.logo}</div>
+          <div>
+            <div style="font-weight:700;font-size:16px">${a.name}</div>
+            <div style="font-size:13px;color:var(--text-muted)">${a.location}</div>
+          </div>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px">${a.focus.map(f=>`<span class="tag">${f}</span>`).join('')}</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
+          <div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:10px"><div style="font-size:11px;color:var(--text-dim)">Equity</div><strong>${a.equity}</strong></div>
+          <div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:10px"><div style="font-size:11px;color:var(--text-dim)">Funding</div><strong>${a.funding}</strong></div>
+          <div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:10px"><div style="font-size:11px;color:var(--text-dim)">Duration</div><strong>${a.duration}</strong></div>
+          <div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:10px"><div style="font-size:11px;color:var(--text-dim)">Deadline</div><strong>${a.deadline}</strong></div>
+        </div>
+        <a href="${a.url}" target="_blank" class="btn btn-gold" style="width:100%;justify-content:center"><i class="fas fa-external-link-alt"></i> Apply Now</a>
+      </div>`).join('');
+  }
+
+  function renderCourses() {
+    document.getElementById('coursesGrid').innerHTML = courses.map(c => `
+      <div class="course-card" onclick="showToast('Enrolling in ${c.title}...','info')">
+        <div class="course-img">${c.emoji}</div>
+        <div class="course-body">
+          <span class="course-level ${c.level}">${c.level.charAt(0).toUpperCase() + c.level.slice(1)}</span>
+          <h3 style="font-weight:700;font-size:15px;margin-bottom:6px;line-height:1.4">${c.title}</h3>
+          <div style="font-size:13px;color:var(--text-muted);margin-bottom:12px">By ${c.instructor}</div>
+          <div style="display:flex;gap:12px;font-size:12px;color:var(--text-dim);margin-bottom:16px">
+            <span><i class="fas fa-book" style="color:var(--primary)"></i> ${c.modules} modules</span>
+            <span><i class="fas fa-clock" style="color:var(--primary)"></i> ${c.duration}</span>
+            <span><i class="fas fa-users" style="color:var(--primary)"></i> ${c.students.toLocaleString()}</span>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <span style="font-size:1.4rem;font-weight:800;color:var(--primary)">$${c.price}</span>
+            <button class="btn btn-sm btn-primary" onclick="event.stopPropagation();showToast('Added to cart! 🛒','success')">Enroll</button>
+          </div>
+        </div>
+      </div>`).join('');
+  }
+
+  function renderResources() {
+    document.getElementById('resourceGrid').innerHTML = resources.map(r => `
+      <div class="resource-card" onclick="showToast('${r.free ? 'Downloading' : 'Redirecting to'} ${r.title}...','info')">
+        <div class="resource-icon">${r.icon}</div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+          <h4 style="font-weight:700;font-size:15px">${r.title}</h4>
+          ${r.free ? '<span style="background:rgba(22,163,74,0.15);border:1px solid rgba(22,163,74,0.3);border-radius:50px;padding:2px 8px;font-size:10px;color:#4ade80">FREE</span>' : '<span style="background:rgba(124,58,237,0.15);border:1px solid rgba(124,58,237,0.3);border-radius:50px;padding:2px 8px;font-size:10px;color:#a78bfa">Premium</span>'}
+        </div>
+        <p style="font-size:13px;color:var(--text-muted);margin-bottom:14px;line-height:1.5">${r.desc}</p>
+        <span style="font-size:11px;color:var(--text-dim)">${r.type}</span>
+      </div>`).join('');
+  }
+
+  function renderGuides() {
+    document.getElementById('guidesGrid').innerHTML = guides.map(g => `
+      <div class="resource-card" onclick="showToast('Opening guide: ${g.title}','info')">
+        <div class="resource-icon">${g.icon}</div>
+        <h4 style="font-weight:700;font-size:15px;margin-bottom:8px">${g.title}</h4>
+        <p style="font-size:13px;color:var(--text-muted);margin-bottom:14px;line-height:1.5">${g.desc}</p>
+        <span style="font-size:12px;color:var(--text-dim)"><i class="fas fa-clock" style="color:var(--primary)"></i> ${g.readTime} read</span>
+      </div>`).join('');
+  }
+
+  function switchIncTab(tab) {
+    document.querySelectorAll('.inc-tab').forEach((b,i) => b.classList.toggle('active', b.getAttribute('onclick').includes(tab)));
+    document.querySelectorAll('.inc-content').forEach(c => c.classList.toggle('active', c.id === 'inc-'+tab));
+  }
+
+  function openMentorRequest(id, name) {
+    document.getElementById('mentorModalContent').innerHTML = `
+      <p style="color:var(--text-muted);margin-bottom:20px">Request a mentorship session with <strong>${name}</strong>.</p>
+      <div class="form-group" style="margin-bottom:14px"><label class="form-label">Your Name</label><input type="text" class="form-input" id="mr_name" placeholder="Your full name"></div>
+      <div class="form-group" style="margin-bottom:14px"><label class="form-label">Startup / Topic</label><input type="text" class="form-input" id="mr_startup" placeholder="Your startup or topic you need help with"></div>
+      <div class="form-group" style="margin-bottom:20px"><label class="form-label">Message</label><textarea class="form-textarea" id="mr_msg" rows="3" placeholder="What do you need help with?"></textarea></div>
+      <button class="btn btn-primary" style="width:100%" onclick="submitMentorRequest('${id}','${name}')"><i class="fas fa-calendar-check"></i> Send Request</button>`;
+    document.getElementById('mentorModal').classList.add('open');
+  }
+
+  function closeMentorModal(e) { if (!e || e.target === document.getElementById('mentorModal')) document.getElementById('mentorModal')?.classList.remove('open'); }
+
+  async function submitMentorRequest(id, name) {
+    const mrName = document.getElementById('mr_name')?.value.trim();
+    const mrMsg = document.getElementById('mr_msg')?.value.trim();
+    if (!mrName || !mrMsg) { showToast('Please fill all fields', 'error'); return; }
+    try {
+      await fetch('tables/messages', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ type: 'mentor_request', user_name: mrName, message: mrMsg, status: 'pending' }) });
+      showToast(`Session request sent to ${name}! They'll reply within 24 hours.`, 'success');
+      closeMentorModal();
+    } catch { showToast('Failed to send request', 'error'); }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    loadMentors();
+    renderAccelerators();
+    renderCourses();
+    renderResources();
+    renderGuides();
+    // Handle URL tab param
+    const params = new URLSearchParams(window.location.search);
+    const tab = params.get('tab');
+    if (tab) { switchIncTab(tab); document.querySelectorAll('.inc-tab').forEach(b => { if (b.getAttribute('onclick')?.includes(tab)) b.classList.add('active'); }); }
+  });
+</script>
+</body>
+</html>

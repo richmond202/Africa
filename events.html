@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Events — AfricaLaunch</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .events-hero-stats { display: flex; gap: 32px; flex-wrap: wrap; margin-top: 28px; }
+    .evt-stat { text-align: center; }
+    .evt-stat strong { display: block; font-size: 2rem; font-weight: 800; background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .evt-stat span { font-size: 13px; color: var(--text-muted); }
+    .event-detail-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 3000; display: none; align-items: flex-start; justify-content: center; padding: 80px 20px 20px; overflow-y: auto; backdrop-filter: blur(8px); }
+    .event-detail-overlay.open { display: flex; }
+    .event-detail-modal { background: var(--bg-card); border: 1px solid var(--border-light); border-radius: var(--radius-xl); width: 100%; max-width: 760px; overflow: hidden; animation: fadeInUp 0.3s ease; }
+    .evt-detail-img { height: 280px; overflow: hidden; }
+    .evt-detail-img img { width: 100%; height: 100%; object-fit: cover; }
+    .evt-detail-body { padding: 36px; }
+    .countdown-wrap { display: flex; gap: 16px; margin: 24px 0; }
+    .countdown-item { background: rgba(124,58,237,0.1); border: 1px solid rgba(124,58,237,0.25); border-radius: 12px; padding: 16px 20px; text-align: center; }
+    .countdown-item .count { font-size: 2rem; font-weight: 800; color: var(--primary); }
+    .countdown-item .label { font-size: 11px; color: var(--text-dim); text-transform: uppercase; }
+    .register-bar { background: var(--bg-surface); border-top: 1px solid var(--border); padding: 20px 36px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+    .attendee-progress { flex: 1; }
+    .attendee-label { font-size: 12px; color: var(--text-muted); margin-bottom: 6px; }
+    .type-tabs { display: flex; gap: 8px; flex-wrap: wrap; }
+    .type-tab { padding: 8px 18px; border-radius: 50px; border: 1px solid var(--border); background: rgba(255,255,255,0.04); color: var(--text-muted); font-size: 13px; font-weight: 500; cursor: pointer; transition: var(--transition); }
+    .type-tab:hover, .type-tab.active { background: rgba(124,58,237,0.15); border-color: var(--primary); color: #a78bfa; }
+    .create-event-card { background: linear-gradient(135deg, rgba(124,58,237,0.1), rgba(236,72,153,0.05)); border: 1px solid rgba(124,58,237,0.25); border-radius: var(--radius-lg); padding: 36px; text-align: center; }
+  </style>
+</head>
+<body>
+<nav class="navbar scrolled" id="navbar">
+  <div class="nav-container">
+    <a href="index.html" class="nav-logo"><span class="logo-icon">🚀</span><span class="logo-text">AfricaLaunch</span></a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="index.html" class="nav-link">Home</a></li>
+      <li><a href="startups.html" class="nav-link">Startups</a></li>
+      <li><a href="investors.html" class="nav-link">Investors</a></li>
+      <li><a href="events.html" class="nav-link active">Events</a></li>
+      <li><a href="marketplace.html" class="nav-link">Marketplace</a></li>
+      <li class="nav-dropdown">
+        <a href="#" class="nav-link dropdown-toggle">More <i class="fas fa-chevron-down"></i></a>
+        <ul class="dropdown-menu">
+          <li><a href="incubator.html"><i class="fas fa-building"></i> Incubator Hub</a></li>
+          <li><a href="ecosystem.html"><i class="fas fa-globe-africa"></i> Ecosystem</a></li>
+          <li><a href="analytics.html"><i class="fas fa-chart-bar"></i> Analytics</a></li>
+          <li><a href="leaderboard.html"><i class="fas fa-trophy"></i> Leaderboard</a></li>
+          <li><a href="awards.html"><i class="fas fa-medal"></i> Awards</a></li>
+        </ul>
+      </li>
+    </ul>
+    <div class="nav-actions">
+      <a href="submit.html" class="btn btn-primary"><i class="fas fa-plus"></i> Submit Startup</a>
+    </div>
+    <button class="nav-toggle" onclick="toggleNav()"><i class="fas fa-bars"></i></button>
+  </div>
+</nav>
+
+<div class="page-hero">
+  <div class="container">
+    <div class="section-label">📅 Events & Competitions</div>
+    <h1>Africa's Startup <span class="gradient-text">Events</span></h1>
+    <p>Pitch competitions, hackathons, webinars, networking events, and demo days across the continent.</p>
+    <div class="events-hero-stats">
+      <div class="evt-stat"><strong>80+</strong><span>Events per year</span></div>
+      <div class="evt-stat"><strong>$2M+</strong><span>Prize pools</span></div>
+      <div class="evt-stat"><strong>54</strong><span>Countries covered</span></div>
+      <div class="evt-stat"><strong>12K+</strong><span>Total attendees</span></div>
+    </div>
+  </div>
+</div>
+
+<section class="section" style="padding-top:40px">
+  <div class="container">
+    <div class="filter-bar">
+      <div class="search-bar" style="max-width:320px">
+        <i class="fas fa-search"></i>
+        <input type="text" id="eventSearch" placeholder="Search events..." oninput="filterEvents()">
+      </div>
+      <div class="type-tabs" id="typeTabs">
+        <button class="type-tab active" data-type="all" onclick="setTypeFilter(this,'all')">All Events</button>
+        <button class="type-tab" data-type="Pitch Competition" onclick="setTypeFilter(this,'Pitch Competition')">🎤 Pitching</button>
+        <button class="type-tab" data-type="Hackathon" onclick="setTypeFilter(this,'Hackathon')">💻 Hackathons</button>
+        <button class="type-tab" data-type="Webinar" onclick="setTypeFilter(this,'Webinar')">🌐 Webinars</button>
+        <button class="type-tab" data-type="Networking" onclick="setTypeFilter(this,'Networking')">🤝 Networking</button>
+        <button class="type-tab" data-type="Demo Day" onclick="setTypeFilter(this,'Demo Day')">🚀 Demo Days</button>
+        <button class="type-tab" data-type="Workshop" onclick="setTypeFilter(this,'Workshop')">🛠️ Workshops</button>
+      </div>
+      <label style="display:flex;align-items:center;gap:8px;font-size:14px;color:var(--text-muted);margin-left:auto;cursor:pointer">
+        <input type="checkbox" id="onlineOnly" onchange="filterEvents()" style="accent-color:var(--primary)"> Online only
+      </label>
+    </div>
+
+    <p class="results-count" id="evtCount">Loading events...</p>
+    <div class="events-grid" id="allEventsGrid">
+      <div class="skeleton-card" style="height:360px"></div>
+      <div class="skeleton-card" style="height:360px"></div>
+      <div class="skeleton-card" style="height:360px"></div>
+    </div>
+  </div>
+</section>
+
+<!-- Submit Event CTA -->
+<section class="section section-tint" style="padding:60px 0">
+  <div class="container">
+    <div class="create-event-card">
+      <div class="section-label">🗓️ Host an Event</div>
+      <h2 style="font-family:var(--font-display);font-size:2rem;font-weight:800;margin:16px 0 12px">Want to <span class="gradient-text">Host an Event?</span></h2>
+      <p style="color:var(--text-muted);max-width:520px;margin:0 auto 28px">Reach thousands of African startup founders, investors, and ecosystem builders. Submit your event for listing on AfricaLaunch.</p>
+      <button class="btn btn-primary btn-lg" onclick="openCreateEventModal()"><i class="fas fa-calendar-plus"></i> Submit Your Event</button>
+    </div>
+  </div>
+</section>
+
+<!-- Event Detail Modal -->
+<div class="event-detail-overlay" id="eventDetailOverlay" onclick="closeEventDetail(event)">
+  <button style="position:fixed;top:90px;right:calc(50% - 380px + 20px);background:var(--bg-card);border:1px solid var(--border);color:var(--text-muted);border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer" onclick="closeEventDetail()"><i class="fas fa-times"></i></button>
+  <div class="event-detail-modal" id="eventDetailModal"></div>
+</div>
+
+<!-- Create Event Modal -->
+<div class="modal-overlay" id="createEventModal" onclick="closeCreateEvent(event)">
+  <div class="modal-box" style="max-width:560px">
+    <div class="modal-header">
+      <h3><i class="fas fa-calendar-plus"></i> Submit an Event</h3>
+      <button class="modal-close" onclick="closeCreateEvent()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="form-grid">
+      <div class="form-group full"><label class="form-label">Event Title *</label><input type="text" class="form-input" id="ce_title" placeholder="e.g. Lagos Startup Summit 2025"></div>
+      <div class="form-group"><label class="form-label">Type *</label>
+        <select class="form-select" id="ce_type">
+          <option>Pitch Competition</option><option>Hackathon</option><option>Webinar</option>
+          <option>Networking</option><option>Demo Day</option><option>Workshop</option><option>Conference</option>
+        </select>
+      </div>
+      <div class="form-group"><label class="form-label">Date *</label><input type="date" class="form-input" id="ce_date"></div>
+      <div class="form-group"><label class="form-label">Location</label><input type="text" class="form-input" id="ce_loc" placeholder="City, Country or Online"></div>
+      <div class="form-group"><label class="form-label">Organizer</label><input type="text" class="form-input" id="ce_org" placeholder="Your org name"></div>
+      <div class="form-group full"><label class="form-label">Description</label><textarea class="form-textarea" id="ce_desc" placeholder="Describe your event..." rows="3"></textarea></div>
+    </div>
+    <div style="margin-top:20px;text-align:right"><button class="btn btn-primary" onclick="submitEvent()"><i class="fas fa-paper-plane"></i> Submit Event</button></div>
+  </div>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+<script src="js/main.js"></script>
+<script>
+  let allEvents = [];
+  let activeType = 'all';
+
+  async function loadEvents() {
+    try {
+      const res = await fetch('tables/events?limit=50');
+      const data = await res.json();
+      allEvents = data.data || [];
+      filterEvents();
+    } catch { document.getElementById('allEventsGrid').innerHTML = '<p style="color:var(--text-muted)">Failed to load events.</p>'; }
+  }
+
+  function setTypeFilter(btn, type) {
+    document.querySelectorAll('.type-tab').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    activeType = type;
+    filterEvents();
+  }
+
+  function filterEvents() {
+    const q = document.getElementById('eventSearch')?.value.toLowerCase() || '';
+    const onlineOnly = document.getElementById('onlineOnly')?.checked;
+    let filtered = allEvents.filter(e => {
+      if (activeType !== 'all' && e.type !== activeType) return false;
+      if (onlineOnly && !e.is_online) return false;
+      if (q && !e.title?.toLowerCase().includes(q) && !e.organizer?.toLowerCase().includes(q)) return false;
+      return true;
+    });
+    document.getElementById('evtCount').textContent = `${filtered.length} event${filtered.length !== 1 ? 's' : ''} found`;
+    const grid = document.getElementById('allEventsGrid');
+    grid.innerHTML = filtered.length ? filtered.map(e => renderEventCardFull(e)).join('') : '<p style="color:var(--text-muted);text-align:center;padding:40px 0;grid-column:1/-1">No events match your criteria.</p>';
+  }
+
+  function renderEventCardFull(e) {
+    const d = new Date(e.date);
+    const dateStr = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    const pctFull = Math.min(100, Math.round(((e.attendees||0) / (e.max_attendees||100)) * 100));
+    const statusColor = e.status === 'upcoming' ? '#4ade80' : e.status === 'ongoing' ? '#f59e0b' : '#6b7280';
+    return `
+      <article class="event-card" onclick="openEventDetail('${e.id}')" role="button" tabindex="0">
+        <div class="event-img-wrap">
+          <img src="${e.image_url || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&h=300&fit=crop'}" alt="${e.title}">
+          <span class="event-type-badge">${e.type}</span>
+          ${e.is_online ? '<span class="event-online-badge">🌐 Online</span>' : ''}
+        </div>
+        <div class="event-body">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+            <span style="width:8px;height:8px;border-radius:50%;background:${statusColor};display:inline-block"></span>
+            <span style="font-size:11px;color:${statusColor};font-weight:600;text-transform:capitalize">${e.status}</span>
+          </div>
+          <div class="event-date"><i class="fas fa-calendar-alt"></i>${dateStr}</div>
+          <h3 class="event-title">${e.title}</h3>
+          <p class="event-organizer"><i class="fas fa-building"></i> ${e.organizer}</p>
+          <div style="margin-bottom:12px">
+            <div style="font-size:11px;color:var(--text-dim);margin-bottom:4px">${e.attendees||0} / ${e.max_attendees||100} registered (${pctFull}%)</div>
+            <div class="funding-bar"><div class="funding-fill" style="width:${pctFull}%"></div></div>
+          </div>
+          <div class="event-footer">
+            <span class="event-stat"><i class="fas fa-map-marker-alt"></i>${e.is_online ? 'Online' : e.location}</span>
+            ${e.prize_pool > 0 ? `<span class="event-prize">🏆 $${(e.prize_pool).toLocaleString()} prize</span>` : ''}
+          </div>
+        </div>
+      </article>
+    `;
+  }
+
+  function openEventDetail(id) {
+    const e = allEvents.find(x => x.id === id);
+    if (!e) return;
+    const d = new Date(e.date);
+    const now = new Date();
+    const diff = d - now;
+    const days = Math.max(0, Math.floor(diff / 86400000));
+    const hours = Math.max(0, Math.floor((diff % 86400000) / 3600000));
+    const mins = Math.max(0, Math.floor((diff % 3600000) / 60000));
+    const pct = Math.min(100, Math.round(((e.attendees||0)/(e.max_attendees||100))*100));
+    document.getElementById('eventDetailModal').innerHTML = `
+      <div class="evt-detail-img"><img src="${e.image_url}" alt="${e.title}"></div>
+      <div class="evt-detail-body">
+        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px">
+          <span class="badge badge-stage">${e.type}</span>
+          ${e.is_online ? '<span class="badge badge-featured">🌐 Online</span>' : ''}
+          ${e.prize_pool > 0 ? `<span class="badge badge-award">🏆 $${e.prize_pool.toLocaleString()} Prize</span>` : ''}
+        </div>
+        <h2 style="font-family:var(--font-display);font-size:1.8rem;font-weight:800;margin-bottom:12px">${e.title}</h2>
+        <div style="display:flex;flex-wrap:wrap;gap:16px;margin-bottom:20px">
+          <span style="color:var(--text-muted);font-size:14px"><i class="fas fa-calendar" style="color:var(--primary)"></i> ${d.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'})}</span>
+          <span style="color:var(--text-muted);font-size:14px"><i class="fas fa-map-marker-alt" style="color:var(--primary)"></i> ${e.is_online ? 'Online (Zoom/Virtual)' : e.location}</span>
+          <span style="color:var(--text-muted);font-size:14px"><i class="fas fa-building" style="color:var(--primary)"></i> ${e.organizer}</span>
+        </div>
+        ${diff > 0 ? `
+        <div style="margin-bottom:20px">
+          <div style="font-size:12px;color:var(--text-dim);margin-bottom:10px;text-transform:uppercase;letter-spacing:0.5px">Event starts in</div>
+          <div class="countdown-wrap">
+            <div class="countdown-item"><div class="count">${days}</div><div class="label">Days</div></div>
+            <div class="countdown-item"><div class="count">${hours}</div><div class="label">Hours</div></div>
+            <div class="countdown-item"><div class="count">${mins}</div><div class="label">Minutes</div></div>
+          </div>
+        </div>` : ''}
+        <div style="margin-bottom:20px">
+          <h4 style="font-weight:700;margin-bottom:8px">About This Event</h4>
+          <p style="color:var(--text-muted);line-height:1.7;font-size:15px">${e.description}</p>
+        </div>
+        <div style="margin-bottom:20px">
+          <div style="font-size:12px;color:var(--text-dim);margin-bottom:6px">${e.attendees||0} registered of ${e.max_attendees||100} spots (${pct}% full)</div>
+          <div class="funding-bar" style="height:8px"><div class="funding-fill" style="width:${pct}%"></div></div>
+        </div>
+      </div>
+      <div class="register-bar">
+        <div class="attendee-progress">
+          <span style="font-size:14px;color:var(--text-muted)"><strong style="color:var(--text)">${(e.max_attendees||100) - (e.attendees||0)}</strong> spots remaining</span>
+        </div>
+        <button class="btn btn-primary btn-lg" onclick="registerForEvent('${e.id}','${e.title.replace(/'/g,'')}')"><i class="fas fa-ticket-alt"></i> Register Now</button>
+      </div>
+    `;
+    document.getElementById('eventDetailOverlay').classList.add('open');
+  }
+
+  function closeEventDetail(e) {
+    if (!e || e.target === document.getElementById('eventDetailOverlay')) {
+      document.getElementById('eventDetailOverlay')?.classList.remove('open');
+    }
+  }
+
+  async function registerForEvent(id, title) {
+    try {
+      const res = await fetch(`tables/events/${id}`);
+      const ev = await res.json();
+      if ((ev.attendees||0) >= (ev.max_attendees||100)) { showToast('Sorry, this event is fully booked!', 'error'); return; }
+      await fetch(`tables/events/${id}`, { method: 'PATCH', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ attendees: (ev.attendees||0) + 1 }) });
+      showToast(`🎉 You're registered for "${title}"! Check your email for details.`, 'success');
+      loadEvents();
+    } catch { showToast('Registration failed. Please try again.', 'error'); }
+  }
+
+  function openCreateEventModal() { document.getElementById('createEventModal').classList.add('open'); }
+  function closeCreateEvent(e) { if (!e || e.target === document.getElementById('createEventModal')) document.getElementById('createEventModal')?.classList.remove('open'); }
+
+  async function submitEvent() {
+    const title = document.getElementById('ce_title')?.value.trim();
+    if (!title) { showToast('Please enter an event title', 'error'); return; }
+    const payload = {
+      title, type: document.getElementById('ce_type')?.value,
+      date: document.getElementById('ce_date')?.value,
+      location: document.getElementById('ce_loc')?.value,
+      organizer: document.getElementById('ce_org')?.value,
+      description: document.getElementById('ce_desc')?.value,
+      status: 'upcoming', attendees: 0, is_online: false
+    };
+    try {
+      await fetch('tables/events', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+      showToast('Event submitted for review! 🎉', 'success');
+      closeCreateEvent();
+    } catch { showToast('Failed to submit event', 'error'); }
+  }
+
+  document.addEventListener('DOMContentLoaded', loadEvents);
+</script>
+</body>
+</html>

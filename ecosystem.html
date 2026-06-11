@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ecosystem Directory — AfricaLaunch</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .eco-hero-map { background: linear-gradient(135deg, rgba(124,58,237,0.1), rgba(22,163,74,0.05)); border: 1px solid var(--border); border-radius: var(--radius-xl); padding: 48px; text-align: center; margin-bottom: 48px; position: relative; overflow: hidden; }
+    .africa-bg-text { position: absolute; font-size: 280px; font-weight: 900; color: rgba(255,255,255,0.02); top: 50%; left: 50%; transform: translate(-50%,-50%); pointer-events: none; user-select: none; }
+    .eco-stats-row { display: grid; grid-template-columns: repeat(6, 1fr); gap: 16px; margin-bottom: 48px; }
+    .eco-stat-pill { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; text-align: center; cursor: pointer; transition: var(--transition); }
+    .eco-stat-pill:hover, .eco-stat-pill.active { border-color: rgba(124,58,237,0.5); background: rgba(124,58,237,0.08); }
+    .eco-stat-pill .big-num { font-size: 2rem; font-weight: 900; background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .eco-stat-pill .lbl { font-size: 12px; color: var(--text-muted); }
+    .directory-layout { display: grid; grid-template-columns: 260px 1fr; gap: 32px; }
+    .dir-sidebar { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-xl); padding: 24px; position: sticky; top: 100px; height: fit-content; }
+    .dir-sidebar h4 { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-dim); margin-bottom: 14px; }
+    .dir-type-btn { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 10px; color: var(--text-muted); font-size: 14px; cursor: pointer; transition: var(--transition); width: 100%; margin-bottom: 4px; text-align: left; }
+    .dir-type-btn:hover, .dir-type-btn.active { background: rgba(124,58,237,0.12); color: var(--text); }
+    .dir-type-btn i { width: 20px; color: var(--primary); }
+    .dir-type-btn .count { margin-left: auto; font-size: 12px; background: rgba(255,255,255,0.06); border-radius: 50px; padding: 2px 8px; }
+    .entity-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 24px; transition: var(--transition); cursor: pointer; }
+    .entity-card:hover { border-color: rgba(124,58,237,0.4); transform: translateY(-3px); }
+    .entity-logo { width: 52px; height: 52px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; margin-bottom: 12px; }
+    .country-map { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
+    .country-pill { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 14px; text-align: center; cursor: pointer; transition: var(--transition); }
+    .country-pill:hover { border-color: rgba(124,58,237,0.4); background: rgba(124,58,237,0.06); }
+    .country-flag { font-size: 24px; margin-bottom: 6px; }
+    .country-name { font-size: 13px; font-weight: 600; }
+    .country-count { font-size: 11px; color: var(--text-dim); }
+    @media (max-width: 900px) { .eco-stats-row { grid-template-columns: repeat(3,1fr); } .directory-layout { grid-template-columns: 1fr; } .dir-sidebar { position: static; } }
+    @media (max-width: 480px) { .eco-stats-row { grid-template-columns: repeat(2,1fr); } }
+  </style>
+</head>
+<body>
+<nav class="navbar scrolled" id="navbar">
+  <div class="nav-container">
+    <a href="index.html" class="nav-logo"><span class="logo-icon">🚀</span><span class="logo-text">AfricaLaunch</span></a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="index.html" class="nav-link">Home</a></li>
+      <li><a href="startups.html" class="nav-link">Startups</a></li>
+      <li><a href="investors.html" class="nav-link">Investors</a></li>
+      <li><a href="events.html" class="nav-link">Events</a></li>
+      <li><a href="marketplace.html" class="nav-link">Marketplace</a></li>
+      <li class="nav-dropdown">
+        <a href="#" class="nav-link dropdown-toggle">More <i class="fas fa-chevron-down"></i></a>
+        <ul class="dropdown-menu">
+          <li><a href="incubator.html"><i class="fas fa-building"></i> Incubator Hub</a></li>
+          <li><a href="ecosystem.html"><i class="fas fa-globe-africa"></i> Ecosystem</a></li>
+          <li><a href="analytics.html"><i class="fas fa-chart-bar"></i> Analytics</a></li>
+          <li><a href="leaderboard.html"><i class="fas fa-trophy"></i> Leaderboard</a></li>
+          <li><a href="awards.html"><i class="fas fa-medal"></i> Awards</a></li>
+        </ul>
+      </li>
+    </ul>
+    <div class="nav-actions"><a href="submit.html" class="btn btn-primary"><i class="fas fa-plus"></i> Submit Startup</a></div>
+    <button class="nav-toggle" onclick="toggleNav()"><i class="fas fa-bars"></i></button>
+  </div>
+</nav>
+
+<div class="page-hero">
+  <div class="container">
+    <div class="section-label">🌍 Ecosystem</div>
+    <h1>Africa's Complete <span class="gradient-text">Startup Ecosystem</span></h1>
+    <p>A comprehensive directory of every player in Africa's innovation landscape — from founders to funders, mentors to universities.</p>
+  </div>
+</div>
+
+<section class="section" style="padding-top:40px">
+  <div class="container">
+
+    <!-- Hero map card -->
+    <div class="eco-hero-map">
+      <div class="africa-bg-text">🌍</div>
+      <h2 style="font-family:var(--font-display);font-size:2.2rem;font-weight:900;margin-bottom:12px;position:relative">54 African Countries. <span class="gradient-text">One Ecosystem.</span></h2>
+      <p style="color:var(--text-muted);font-size:16px;max-width:540px;margin:0 auto 28px;position:relative">AfricaLaunch tracks the entire innovation ecosystem — every startup, investor, mentor, accelerator, university, and service provider building Africa's future.</p>
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;position:relative">
+        <a href="startups.html" class="btn btn-primary"><i class="fas fa-rocket"></i> Browse Startups</a>
+        <a href="investors.html" class="btn btn-ghost"><i class="fas fa-coins"></i> Find Investors</a>
+        <a href="incubator.html" class="btn btn-ghost"><i class="fas fa-user-tie"></i> Meet Mentors</a>
+      </div>
+    </div>
+
+    <!-- Ecosystem stats -->
+    <div class="eco-stats-row" id="ecoStatsRow">
+      <div class="eco-stat-pill active" onclick="showEcoType('startups',this)"><div style="font-size:28px;margin-bottom:8px">🚀</div><div class="big-num" id="ecoCntStartups">—</div><div class="lbl">Startups</div></div>
+      <div class="eco-stat-pill" onclick="showEcoType('investors',this)"><div style="font-size:28px;margin-bottom:8px">💰</div><div class="big-num">340+</div><div class="lbl">Investors</div></div>
+      <div class="eco-stat-pill" onclick="showEcoType('mentors',this)"><div style="font-size:28px;margin-bottom:8px">👨‍💼</div><div class="big-num" id="ecoCntMentors">—</div><div class="lbl">Mentors</div></div>
+      <div class="eco-stat-pill" onclick="showEcoType('accelerators',this)"><div style="font-size:28px;margin-bottom:8px">🏢</div><div class="big-num">65+</div><div class="lbl">Accelerators</div></div>
+      <div class="eco-stat-pill" onclick="showEcoType('universities',this)"><div style="font-size:28px;margin-bottom:8px">🎓</div><div class="big-num">120+</div><div class="lbl">Universities</div></div>
+      <div class="eco-stat-pill" onclick="showEcoType('services',this)"><div style="font-size:28px;margin-bottom:8px">🛠️</div><div class="big-num">200+</div><div class="lbl">Service Providers</div></div>
+    </div>
+
+    <!-- Directory layout -->
+    <div class="directory-layout">
+      <aside class="dir-sidebar">
+        <h4>Entity Type</h4>
+        <button class="dir-type-btn active" onclick="showEcoType('startups',this)"><i class="fas fa-rocket"></i>Startups<span class="count" id="sdCntS">—</span></button>
+        <button class="dir-type-btn" onclick="showEcoType('investors',this)"><i class="fas fa-coins"></i>Investors<span class="count">340+</span></button>
+        <button class="dir-type-btn" onclick="showEcoType('mentors',this)"><i class="fas fa-user-tie"></i>Mentors<span class="count" id="sdCntM">—</span></button>
+        <button class="dir-type-btn" onclick="showEcoType('accelerators',this)"><i class="fas fa-building"></i>Accelerators<span class="count">65+</span></button>
+        <button class="dir-type-btn" onclick="showEcoType('universities',this)"><i class="fas fa-university"></i>Universities<span class="count">120+</span></button>
+        <button class="dir-type-btn" onclick="showEcoType('services',this)"><i class="fas fa-briefcase"></i>Service Providers<span class="count">200+</span></button>
+        <div style="margin-top:24px;border-top:1px solid var(--border);padding-top:20px">
+          <h4>Filter by Country</h4>
+          <div class="filter-check-list" id="dirCountryFilters" style="max-height:200px;overflow-y:auto"></div>
+        </div>
+      </aside>
+
+      <div>
+        <div class="filter-bar" style="margin-bottom:20px">
+          <div class="search-bar" style="flex:1;max-width:400px">
+            <i class="fas fa-search"></i>
+            <input type="text" id="ecoSearch" placeholder="Search ecosystem..." oninput="renderEcoContent()">
+          </div>
+        </div>
+        <p class="results-count" id="ecoResultsCount"></p>
+        <div class="startup-grid" id="ecoContentGrid" style="grid-template-columns:repeat(auto-fill,minmax(280px,1fr))"></div>
+      </div>
+    </div>
+
+    <!-- Countries Section -->
+    <div style="margin-top:64px">
+      <div class="section-header" style="margin-bottom:32px">
+        <h2 class="section-title">Ecosystem by <span class="gradient-text">Country</span></h2>
+        <p class="section-desc">Explore startup ecosystems across Africa's 54 countries.</p>
+      </div>
+      <div class="country-map" id="countryMapGrid"></div>
+    </div>
+  </div>
+</section>
+
+<div class="toast-container" id="toastContainer"></div>
+<script src="js/main.js"></script>
+<script>
+  let ecoStartups = [], ecoInvestors = [], ecoMentors = [];
+  let currentEcoType = 'startups';
+
+  const countries = [
+    {name:'Nigeria',flag:'🇳🇬',count:320},
+    {name:'Kenya',flag:'🇰🇪',count:285},
+    {name:'South Africa',flag:'🇿🇦',count:210},
+    {name:'Ghana',flag:'🇬🇭',count:145},
+    {name:'Egypt',flag:'🇪🇬',count:130},
+    {name:'Ethiopia',flag:'🇪🇹',count:89},
+    {name:'Tanzania',flag:'🇹🇿',count:72},
+    {name:'Rwanda',flag:'🇷🇼',count:68},
+    {name:'Senegal',flag:'🇸🇳',count:55},
+    {name:'Morocco',flag:'🇲🇦',count:98},
+    {name:'Ivory Coast',flag:'🇨🇮',count:61},
+    {name:'Uganda',flag:'🇺🇬',count:48},
+  ];
+
+  const universities = [
+    {name:'University of Cape Town', country:'South Africa', focus:['Engineering','Business','CS'], logo:'🎓', bg:'rgba(14,165,233,0.12)'},
+    {name:'University of Lagos', country:'Nigeria', focus:['Engineering','AI','FinTech'], logo:'🎓', bg:'rgba(22,163,74,0.12)'},
+    {name:'University of Nairobi', country:'Kenya', focus:['AgriTech','ICT','Innovation'], logo:'🎓', bg:'rgba(124,58,237,0.12)'},
+    {name:'Carnegie Mellon University Africa', country:'Rwanda', focus:['AI','CS','Data Science'], logo:'🎓', bg:'rgba(245,158,11,0.12)'},
+    {name:'University of Ghana', country:'Ghana', focus:['Business','Tech','Social Impact'], logo:'🎓', bg:'rgba(239,68,68,0.12)'},
+    {name:'AIM (American University Cairo)', country:'Egypt', focus:['Business','Entrepreneurship'], logo:'🎓', bg:'rgba(236,72,153,0.12)'},
+  ];
+
+  const serviceProviders = [
+    {name:'Andela', type:'Talent', country:'Multiple', focus:['Tech Talent','Remote Work'], logo:'💻', bg:'rgba(124,58,237,0.12)'},
+    {name:'Paystack', type:'FinTech Infrastructure', country:'Nigeria', focus:['Payments','APIs'], logo:'💳', bg:'rgba(22,163,74,0.12)'},
+    {name:'Flutterwave', type:'Payment Gateway', country:'Nigeria', focus:['Payments','Banking'], logo:'💸', bg:'rgba(14,165,233,0.12)'},
+    {name:'Africa Legal Network', type:'Legal', country:'Pan-Africa', focus:['Startup Law','IP'], logo:'⚖️', bg:'rgba(245,158,11,0.12)'},
+    {name:'Digital Doorway', type:'Web Dev', country:'South Africa', focus:['Web','Mobile','Cloud'], logo:'🌐', bg:'rgba(239,68,68,0.12)'},
+    {name:'ApexHQ', type:'Accounting', country:'Kenya', focus:['Finance','Tax','Audit'], logo:'📊', bg:'rgba(167,139,250,0.12)'},
+  ];
+
+  async function loadEcosystemData() {
+    try {
+      const [r1, r2, r3] = await Promise.all([
+        fetch('tables/startups?limit=100'),
+        fetch('tables/investors?limit=50'),
+        fetch('tables/mentors?limit=50')
+      ]);
+      ecoStartups = (await r1.json()).data || [];
+      ecoInvestors = (await r2.json()).data || [];
+      ecoMentors = (await r3.json()).data || [];
+
+      document.getElementById('ecoCntStartups').textContent = ecoStartups.length + '+';
+      document.getElementById('ecoCntMentors').textContent = ecoMentors.length + '+';
+      document.getElementById('sdCntS').textContent = ecoStartups.length;
+      document.getElementById('sdCntM').textContent = ecoMentors.length;
+
+      // Country filters
+      const cntrs = [...new Set(ecoStartups.map(s => s.country).filter(Boolean))];
+      document.getElementById('dirCountryFilters').innerHTML = cntrs.map(c =>
+        `<label class="filter-check"><input type="checkbox" value="${c}" onchange="renderEcoContent()"> ${c}</label>`
+      ).join('');
+
+      renderEcoContent();
+    } catch(e) { console.error(e); }
+
+    // Country map
+    document.getElementById('countryMapGrid').innerHTML = countries.map(c => `
+      <div class="country-pill" onclick="filterByCountry('${c.name}')">
+        <div class="country-flag">${c.flag}</div>
+        <div class="country-name">${c.name}</div>
+        <div class="country-count">${c.count} entities</div>
+      </div>`).join('');
+  }
+
+  function showEcoType(type, clickedEl) {
+    currentEcoType = type;
+    document.querySelectorAll('.dir-type-btn, .eco-stat-pill').forEach(b => b.classList.remove('active'));
+    if (clickedEl) clickedEl.classList.add('active');
+    renderEcoContent();
+  }
+
+  function filterByCountry(country) {
+    currentEcoType = 'startups';
+    document.querySelectorAll('.dir-type-btn').forEach((b,i) => b.classList.toggle('active', i===0));
+    document.querySelectorAll('.eco-stat-pill').forEach((b,i) => b.classList.toggle('active', i===0));
+    document.getElementById('ecoSearch').value = '';
+    const checkboxes = document.querySelectorAll('#dirCountryFilters input[type=checkbox]');
+    checkboxes.forEach(cb => { cb.checked = cb.value === country; });
+    renderEcoContent();
+    document.getElementById('ecoContentGrid').scrollIntoView({ behavior: 'smooth' });
+  }
+
+  function renderEcoContent() {
+    const q = document.getElementById('ecoSearch')?.value.toLowerCase() || '';
+    const selectedCountries = [...document.querySelectorAll('#dirCountryFilters input:checked')].map(i => i.value);
+    let html = '';
+    let count = 0;
+
+    if (currentEcoType === 'startups') {
+      const filtered = ecoStartups.filter(s => {
+        if (q && !s.name?.toLowerCase().includes(q)) return false;
+        if (selectedCountries.length && !selectedCountries.includes(s.country)) return false;
+        return true;
+      });
+      count = filtered.length;
+      html = filtered.map(s => renderStartupCard(s)).join('');
+    } else if (currentEcoType === 'investors') {
+      const filtered = ecoInvestors.filter(i => !q || i.name?.toLowerCase().includes(q));
+      count = filtered.length;
+      html = filtered.map(renderInvestorCard).join('');
+    } else if (currentEcoType === 'mentors') {
+      const filtered = ecoMentors.filter(m => !q || m.name?.toLowerCase().includes(q));
+      count = filtered.length;
+      html = filtered.map(m => `
+        <div class="entity-card">
+          <div style="display:flex;gap:12px;align-items:center;margin-bottom:12px">
+            <img src="${m.avatar_url}" style="width:52px;height:52px;border-radius:50%;object-fit:cover">
+            <div><div style="font-weight:700">${m.name}</div><div style="font-size:12px;color:var(--text-muted)">${m.title}</div></div>
+          </div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px">${(m.expertise||[]).map(e=>`<span class="tag">${e}</span>`).join('')}</div>
+        </div>`).join('');
+    } else if (currentEcoType === 'universities') {
+      const filtered = universities.filter(u => !q || u.name?.toLowerCase().includes(q));
+      count = filtered.length;
+      html = filtered.map(u => `
+        <div class="entity-card">
+          <div class="entity-logo" style="background:${u.bg}">${u.logo}</div>
+          <h4 style="font-weight:700;margin-bottom:6px">${u.name}</h4>
+          <p style="font-size:13px;color:var(--text-muted);margin-bottom:12px">${u.country}</p>
+          <div style="display:flex;flex-wrap:wrap;gap:6px">${u.focus.map(f=>`<span class="tag">${f}</span>`).join('')}</div>
+        </div>`).join('');
+    } else if (currentEcoType === 'services') {
+      const filtered = serviceProviders.filter(s => !q || s.name?.toLowerCase().includes(q));
+      count = filtered.length;
+      html = filtered.map(s => `
+        <div class="entity-card">
+          <div class="entity-logo" style="background:${s.bg}">${s.logo}</div>
+          <h4 style="font-weight:700;margin-bottom:4px">${s.name}</h4>
+          <p style="font-size:13px;color:var(--text-muted);margin-bottom:4px">${s.type} · ${s.country}</p>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px">${s.focus.map(f=>`<span class="tag">${f}</span>`).join('')}</div>
+        </div>`).join('');
+    } else if (currentEcoType === 'accelerators') {
+      count = 65;
+      html = `<div style="grid-column:1/-1;text-align:center;padding:40px 0"><p style="color:var(--text-muted);font-size:16px">65+ accelerator programs tracked. <a href="incubator.html?tab=accelerators" style="color:var(--primary);font-weight:600">View full list in Incubator Hub →</a></p></div>`;
+    }
+
+    document.getElementById('ecoResultsCount').textContent = `${count} ${currentEcoType} found`;
+    document.getElementById('ecoContentGrid').innerHTML = html || '<p style="color:var(--text-muted);grid-column:1/-1;text-align:center;padding:40px 0">No results found.</p>';
+  }
+
+  function renderInvestorCard(inv) {
+    return `
+      <article class="investor-card" onclick="window.location.href='investors.html?id=${inv.id}'" role="button" tabindex="0">
+        <div class="investor-top">
+          <img src="${inv.avatar_url}" alt="${inv.name}" class="investor-avatar">
+          <div><div class="investor-name">${inv.name}</div><div class="investor-company">${inv.company}</div></div>
+        </div>
+        <div class="investor-type-tag">${inv.type}</div>
+        <div class="investor-focus">${(inv.investment_focus||[]).map(f=>`<span class="tag" style="background:rgba(22,163,74,0.08);border-color:rgba(22,163,74,0.2);color:#4ade80">${f}</span>`).join('')}</div>
+        <div class="investor-range">Invests: <strong>$${(inv.min_investment||0).toLocaleString()} – $${(inv.max_investment||0).toLocaleString()}</strong></div>
+      </article>`;
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    loadEcosystemData();
+    const params = new URLSearchParams(window.location.search);
+    const type = params.get('type');
+    if (type) {
+      currentEcoType = type;
+      document.querySelectorAll('.dir-type-btn').forEach(b => b.classList.toggle('active', b.getAttribute('onclick')?.includes(type)));
+    }
+  });
+</script>
+</body>
+</html>

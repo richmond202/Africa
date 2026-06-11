@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Marketplace — AfricaLaunch</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .promo-banner { background: linear-gradient(135deg, rgba(124,58,237,0.15), rgba(236,72,153,0.1)); border: 1px solid rgba(124,58,237,0.3); border-radius: var(--radius-xl); padding: 32px 40px; display: flex; align-items: center; gap: 32px; margin-bottom: 40px; }
+    .promo-banner-text h3 { font-size: 1.5rem; font-weight: 800; margin-bottom: 8px; }
+    .promo-banner-text p { color: var(--text-muted); font-size: 15px; }
+    .promo-badge { font-size: 48px; flex-shrink: 0; }
+    .cat-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 28px; }
+    .product-detail-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 3000; display: none; align-items: flex-start; justify-content: center; padding: 80px 20px 20px; overflow-y: auto; backdrop-filter: blur(8px); }
+    .product-detail-overlay.open { display: flex; }
+    .product-modal { background: var(--bg-card); border: 1px solid var(--border-light); border-radius: var(--radius-xl); width: 100%; max-width: 700px; overflow: hidden; animation: fadeInUp 0.3s ease; }
+    .product-modal-img { height: 260px; overflow: hidden; }
+    .product-modal-img img { width: 100%; height: 100%; object-fit: cover; }
+    .product-modal-body { padding: 36px; }
+    .star-rating { display: flex; gap: 2px; }
+    .star-rating i { color: #f59e0b; font-size: 16px; }
+    .features-list { display: flex; flex-direction: column; gap: 10px; margin: 20px 0; }
+    .features-list li { display: flex; gap: 10px; font-size: 14px; color: var(--text-muted); }
+    .features-list li::before { content: '✓'; color: #4ade80; font-weight: 700; flex-shrink: 0; }
+    .sell-card { background: linear-gradient(135deg, rgba(22,163,74,0.1), rgba(16,185,129,0.05)); border: 1px solid rgba(22,163,74,0.25); border-radius: var(--radius-xl); padding: 40px; text-align: center; margin-top: 60px; }
+    @media (max-width: 640px) { .promo-banner { flex-direction: column; text-align: center; } }
+  </style>
+</head>
+<body>
+<nav class="navbar scrolled" id="navbar">
+  <div class="nav-container">
+    <a href="index.html" class="nav-logo"><span class="logo-icon">🚀</span><span class="logo-text">AfricaLaunch</span></a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="index.html" class="nav-link">Home</a></li>
+      <li><a href="startups.html" class="nav-link">Startups</a></li>
+      <li><a href="investors.html" class="nav-link">Investors</a></li>
+      <li><a href="events.html" class="nav-link">Events</a></li>
+      <li><a href="marketplace.html" class="nav-link active">Marketplace</a></li>
+      <li class="nav-dropdown">
+        <a href="#" class="nav-link dropdown-toggle">More <i class="fas fa-chevron-down"></i></a>
+        <ul class="dropdown-menu">
+          <li><a href="incubator.html"><i class="fas fa-building"></i> Incubator Hub</a></li>
+          <li><a href="ecosystem.html"><i class="fas fa-globe-africa"></i> Ecosystem</a></li>
+          <li><a href="analytics.html"><i class="fas fa-chart-bar"></i> Analytics</a></li>
+          <li><a href="leaderboard.html"><i class="fas fa-trophy"></i> Leaderboard</a></li>
+          <li><a href="awards.html"><i class="fas fa-medal"></i> Awards</a></li>
+        </ul>
+      </li>
+    </ul>
+    <div class="nav-actions"><a href="submit.html" class="btn btn-primary"><i class="fas fa-plus"></i> Submit Startup</a></div>
+    <button class="nav-toggle" onclick="toggleNav()"><i class="fas fa-bars"></i></button>
+  </div>
+</nav>
+
+<div class="page-hero">
+  <div class="container">
+    <div class="section-label">🛒 Marketplace</div>
+    <h1>Africa Startup <span class="gradient-text">Marketplace</span></h1>
+    <p>Buy templates, SaaS tools, courses, and services from Africa's top startups and creators.</p>
+  </div>
+</div>
+
+<section class="section" style="padding-top:40px">
+  <div class="container">
+    <div class="promo-banner">
+      <div class="promo-badge">🔥</div>
+      <div class="promo-banner-text">
+        <h3>Weekly Deal: Up to <span class="gradient-text">40% Off</span> Business Templates</h3>
+        <p>Professional business plan templates, pitch decks, and financial models — built for the African market.</p>
+      </div>
+      <a href="#" class="btn btn-primary btn-lg" style="flex-shrink:0"><i class="fas fa-bolt"></i> Shop Deals</a>
+    </div>
+
+    <div class="filter-bar">
+      <div class="search-bar" style="max-width:300px">
+        <i class="fas fa-search"></i>
+        <input type="text" id="mpSearch" placeholder="Search products..." oninput="filterMarketplace()">
+      </div>
+      <select class="sort-select" id="mpSort" onchange="filterMarketplace()">
+        <option value="rating">Top Rated</option>
+        <option value="price_low">Price: Low to High</option>
+        <option value="price_high">Price: High to Low</option>
+        <option value="discount">Best Discount</option>
+      </select>
+    </div>
+
+    <div class="cat-tabs">
+      <button class="filter-btn active" data-mpcat="all" onclick="setMpCat(this,'all')">All Products</button>
+      <button class="filter-btn" data-mpcat="Template" onclick="setMpCat(this,'Template')">📄 Templates</button>
+      <button class="filter-btn" data-mpcat="SaaS" onclick="setMpCat(this,'SaaS')">⚙️ SaaS</button>
+      <button class="filter-btn" data-mpcat="Course" onclick="setMpCat(this,'Course')">🎓 Courses</button>
+      <button class="filter-btn" data-mpcat="Service" onclick="setMpCat(this,'Service')">🛠️ Services</button>
+      <button class="filter-btn" data-mpcat="Product" onclick="setMpCat(this,'Product')">📦 Products</button>
+    </div>
+
+    <p class="results-count" id="mpCount">Loading products...</p>
+    <div class="marketplace-grid" id="mpGrid">
+      <div class="skeleton-card" style="height:340px"></div>
+      <div class="skeleton-card" style="height:340px"></div>
+      <div class="skeleton-card" style="height:340px"></div>
+    </div>
+
+    <div class="sell-card">
+      <div class="section-label">🌟 Sell on AfricaLaunch</div>
+      <h2 style="font-family:var(--font-display);font-size:1.8rem;font-weight:800;margin:12px 0">List Your Product or Service</h2>
+      <p style="color:var(--text-muted);max-width:480px;margin:0 auto 24px">Reach 50,000+ ecosystem members. Sell templates, courses, SaaS tools, or services — 0% commission for first 3 months.</p>
+      <button class="btn btn-green btn-lg" onclick="openListModal()"><i class="fas fa-store"></i> Start Selling</button>
+    </div>
+  </div>
+</section>
+
+<!-- Product Detail Modal -->
+<div class="product-detail-overlay" id="prodDetailOverlay" onclick="closeProdDetail(event)">
+  <button style="position:fixed;top:90px;right:calc(50% - 350px + 16px);background:var(--bg-card);border:1px solid var(--border);color:var(--text-muted);border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer" onclick="closeProdDetail()"><i class="fas fa-times"></i></button>
+  <div class="product-modal" id="prodDetailModal"></div>
+</div>
+
+<!-- List Product Modal -->
+<div class="modal-overlay" id="listModal" onclick="closeListModal(event)">
+  <div class="modal-box">
+    <div class="modal-header"><h3><i class="fas fa-store"></i> List Your Product</h3><button class="modal-close" onclick="closeListModal()"><i class="fas fa-times"></i></button></div>
+    <div class="form-grid">
+      <div class="form-group full"><label class="form-label">Product/Service Name *</label><input type="text" class="form-input" id="lp_name" placeholder="e.g. Startup Legal Toolkit"></div>
+      <div class="form-group"><label class="form-label">Type</label><select class="form-select" id="lp_type"><option>Template</option><option>SaaS</option><option>Course</option><option>Service</option><option>Product</option></select></div>
+      <div class="form-group"><label class="form-label">Price (USD)</label><input type="number" class="form-input" id="lp_price" placeholder="e.g. 49" min="0"></div>
+      <div class="form-group full"><label class="form-label">Description</label><textarea class="form-textarea" id="lp_desc" rows="3" placeholder="What does your product offer?"></textarea></div>
+      <div class="form-group full"><label class="form-label">Your Startup Name</label><input type="text" class="form-input" id="lp_startup" placeholder="Which startup is selling this?"></div>
+    </div>
+    <div style="margin-top:20px;text-align:right"><button class="btn btn-green" onclick="submitListing()"><i class="fas fa-rocket"></i> Submit for Review</button></div>
+  </div>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+<script src="js/main.js"></script>
+<script>
+  let allProducts = [];
+  let activeMpCat = 'all';
+
+  async function loadMarketplace() {
+    try {
+      const res = await fetch('tables/marketplace?limit=50');
+      const data = await res.json();
+      allProducts = data.data || [];
+      filterMarketplace();
+    } catch { document.getElementById('mpGrid').innerHTML = '<p style="color:var(--text-muted)">Failed to load.</p>'; }
+  }
+
+  function setMpCat(btn, cat) {
+    document.querySelectorAll('[data-mpcat]').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    activeMpCat = cat;
+    filterMarketplace();
+  }
+
+  function filterMarketplace() {
+    const q = document.getElementById('mpSearch')?.value.toLowerCase() || '';
+    const sort = document.getElementById('mpSort')?.value || 'rating';
+    let filtered = allProducts.filter(p => {
+      if (activeMpCat !== 'all' && p.type !== activeMpCat) return false;
+      if (q && !p.product_name?.toLowerCase().includes(q) && !p.startup_name?.toLowerCase().includes(q)) return false;
+      return true;
+    });
+    filtered.sort((a, b) => {
+      if (sort === 'rating') return (b.rating||0) - (a.rating||0);
+      if (sort === 'price_low') return (a.price||0) - (b.price||0);
+      if (sort === 'price_high') return (b.price||0) - (a.price||0);
+      if (sort === 'discount') return (b.discount||0) - (a.discount||0);
+      return 0;
+    });
+    document.getElementById('mpCount').textContent = `${filtered.length} product${filtered.length !== 1 ? 's' : ''} found`;
+    const grid = document.getElementById('mpGrid');
+    grid.innerHTML = filtered.length ? filtered.map(renderProdCard).join('') : '<p style="color:var(--text-muted);grid-column:1/-1;text-align:center;padding:40px 0">No products match your search.</p>';
+  }
+
+  function renderProdCard(item) {
+    const discounted = item.discount > 0 ? (item.price * (1 - item.discount / 100)).toFixed(0) : null;
+    const stars = '★'.repeat(Math.round(item.rating||0)) + '☆'.repeat(5 - Math.round(item.rating||0));
+    return `
+      <article class="market-card" onclick="openProdDetail('${item.id}')" role="button" tabindex="0">
+        ${item.discount > 0 ? `<div class="discount-tag">-${item.discount}%</div>` : ''}
+        ${item.featured ? '<div style="position:absolute;top:12px;left:12px;background:rgba(245,158,11,0.9);color:#fff;border-radius:50px;padding:3px 10px;font-size:11px;font-weight:700">⭐ Featured</div>' : ''}
+        <div class="market-img"><img src="${item.image_url}" alt="${item.product_name}"></div>
+        <div class="market-body">
+          <div class="market-startup"><i class="fas fa-rocket"></i> ${item.startup_name}</div>
+          <h3 class="market-name">${item.product_name}</h3>
+          <span class="market-type">${item.type} · ${item.category}</span>
+          <div style="color:#f59e0b;font-size:14px;margin:8px 0">${stars} <span style="color:var(--text-muted);font-size:12px">(${item.reviews_count})</span></div>
+          <div class="market-footer">
+            <div class="market-price-wrap">
+              <span class="market-price">$${discounted || item.price}</span>
+              ${discounted ? `<span class="market-original">$${item.price}</span>` : ''}
+            </div>
+            <button class="btn btn-sm btn-primary" onclick="event.stopPropagation();purchaseItem('${item.id}','${item.product_name.replace(/'/g,'')}')">Buy Now</button>
+          </div>
+        </div>
+      </article>
+    `;
+  }
+
+  function openProdDetail(id) {
+    const item = allProducts.find(p => p.id === id);
+    if (!item) return;
+    const discounted = item.discount > 0 ? (item.price * (1 - item.discount / 100)).toFixed(0) : null;
+    document.getElementById('prodDetailModal').innerHTML = `
+      <div class="product-modal-img"><img src="${item.image_url}" alt="${item.product_name}"></div>
+      <div class="product-modal-body">
+        <div style="display:flex;gap:8px;margin-bottom:12px">
+          <span class="badge badge-stage">${item.type}</span>
+          <span class="badge badge-category">${item.category}</span>
+          ${item.featured ? '<span class="badge badge-featured">⭐ Featured</span>' : ''}
+        </div>
+        <h2 style="font-family:var(--font-display);font-size:1.6rem;font-weight:800;margin-bottom:8px">${item.product_name}</h2>
+        <p style="font-size:13px;color:var(--text-muted);margin-bottom:12px">By <strong>${item.startup_name}</strong></p>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px">
+          <div class="star-rating">${[1,2,3,4,5].map(i=>`<i class="fas fa-star" style="color:${i<=Math.round(item.rating||0)?'#f59e0b':'#374151'}"></i>`).join('')}</div>
+          <span style="font-size:13px;color:var(--text-muted)">${item.rating} (${item.reviews_count} reviews)</span>
+        </div>
+        <p style="color:var(--text-muted);line-height:1.7;margin-bottom:20px">${item.description}</p>
+        <ul class="features-list">
+          <li>Instant digital delivery</li>
+          <li>Lifetime access and updates</li>
+          <li>Built for African market conditions</li>
+          <li>Used by 200+ African startups</li>
+        </ul>
+        <div style="display:flex;align-items:center;gap:20px;padding:20px 0;border-top:1px solid var(--border)">
+          <div>
+            <div style="font-size:2.2rem;font-weight:800;color:var(--primary)">$${discounted || item.price}</div>
+            ${discounted ? `<div style="text-decoration:line-through;color:var(--text-dim);font-size:15px">$${item.price}</div>` : ''}
+            ${item.discount > 0 ? `<div style="color:#4ade80;font-size:13px;font-weight:600">You save $${(item.price - parseInt(discounted)).toFixed(0)} (${item.discount}% off)</div>` : ''}
+          </div>
+          <button class="btn btn-primary btn-lg" onclick="purchaseItem('${item.id}','${item.product_name.replace(/'/g,'')}')"><i class="fas fa-shopping-cart"></i> Purchase Now</button>
+        </div>
+      </div>
+    `;
+    document.getElementById('prodDetailOverlay').classList.add('open');
+  }
+
+  function closeProdDetail(e) { if (!e || e.target === document.getElementById('prodDetailOverlay')) document.getElementById('prodDetailOverlay')?.classList.remove('open'); }
+
+  function purchaseItem(id, name) {
+    showToast(`🛒 Redirecting to checkout for "${name}"...`, 'info');
+    setTimeout(() => showToast('✅ Purchase complete! Check your email for download link.', 'success'), 2000);
+  }
+
+  function openListModal() { document.getElementById('listModal').classList.add('open'); }
+  function closeListModal(e) { if (!e || e.target === document.getElementById('listModal')) document.getElementById('listModal')?.classList.remove('open'); }
+
+  async function submitListing() {
+    const name = document.getElementById('lp_name')?.value.trim();
+    if (!name) { showToast('Please enter a product name', 'error'); return; }
+    const payload = { product_name: name, type: document.getElementById('lp_type')?.value, price: parseFloat(document.getElementById('lp_price')?.value||0), description: document.getElementById('lp_desc')?.value, startup_name: document.getElementById('lp_startup')?.value, discount: 0, featured: false, rating: 0, reviews_count: 0 };
+    try {
+      await fetch('tables/marketplace', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+      showToast('Product submitted for review! 🎉', 'success');
+      closeListModal();
+    } catch { showToast('Failed to submit listing', 'error'); }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    loadMarketplace();
+    const params = new URLSearchParams(window.location.search);
+    const cat = params.get('cat');
+    if (cat) { const btn = document.querySelector(`[data-mpcat="${cat}"]`); if (btn) setMpCat(btn, cat); }
+  });
+</script>
+</body>
+</html>

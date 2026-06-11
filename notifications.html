@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notifications — AfricaLaunch</title>
+  <meta name="description" content="Stay up to date with your AfricaLaunch notifications — investments, events, challenges, forum replies, and platform updates.">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .notif-hero {
+      padding: 120px 0 50px;
+      background: radial-gradient(ellipse at 70% 0%, rgba(14,165,233,0.15) 0%, transparent 60%);
+    }
+    .notif-hero-row { display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 16px; }
+    .notif-hero h1 { font-family: var(--font-display); font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 800; }
+    .notif-hero p { color: var(--text-muted); font-size: 0.95rem; margin-top: 6px; }
+    .notif-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+    /* Main Layout */
+    .notif-layout { display: grid; grid-template-columns: 240px 1fr; gap: 28px; padding: 32px 0 80px; }
+
+    /* Sidebar */
+    .notif-sidebar {}
+    .notif-sidebar-nav {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 20px;
+    }
+    .notif-nav-header { padding: 14px 18px; background: var(--bg-surface); border-bottom: 1px solid var(--border); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-dim); font-weight: 600; }
+    .notif-nav-item {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 18px; border-bottom: 1px solid var(--border);
+      cursor: pointer; transition: var(--transition); font-size: 0.88rem;
+    }
+    .notif-nav-item:last-child { border-bottom: none; }
+    .notif-nav-item:hover, .notif-nav-item.active { background: rgba(124,58,237,0.1); color: var(--primary); }
+    .notif-nav-left { display: flex; align-items: center; gap: 10px; }
+    .notif-nav-icon { width: 30px; height: 30px; border-radius: var(--radius); display: flex; align-items: center; justify-content: center; font-size: 13px; }
+    .notif-count-pill { background: var(--primary); color: #fff; padding: 2px 7px; border-radius: 10px; font-size: 0.72rem; font-weight: 800; }
+    .notif-count-pill.zero { background: var(--border); color: var(--text-dim); }
+
+    /* Settings widget */
+    .notif-settings-widget { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 18px; }
+    .notif-settings-widget h4 { font-size: 0.82rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 14px; display: flex; align-items: center; gap: 6px; }
+    .notif-setting-row { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 0.85rem; }
+    .notif-setting-row:last-child { border-bottom: none; }
+    .toggle-switch-sm { position: relative; width: 36px; height: 20px; background: var(--border); border-radius: 10px; cursor: pointer; transition: var(--transition); flex-shrink: 0; }
+    .toggle-switch-sm.on { background: var(--primary); }
+    .toggle-knob { position: absolute; top: 3px; left: 3px; width: 14px; height: 14px; border-radius: 50%; background: #fff; transition: var(--transition); }
+    .toggle-switch-sm.on .toggle-knob { left: 19px; }
+
+    /* Notification Feed */
+    .notif-main {}
+    .notif-top-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+    .notif-search { display: flex; align-items: center; gap: 8px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 50px; padding: 10px 16px; flex: 1; min-width: 180px; }
+    .notif-search input { background: none; border: none; outline: none; color: var(--text); font-size: 0.88rem; width: 100%; }
+    .notif-sort { background: var(--bg-card); border: 1px solid var(--border); color: var(--text); padding: 10px 14px; border-radius: 50px; font-size: 0.85rem; cursor: pointer; outline: none; }
+
+    /* Notification Cards */
+    .notif-date-group { margin-bottom: 28px; }
+    .notif-date-label { font-size: 0.78rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+    .notif-date-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+    .notif-feed { display: flex; flex-direction: column; gap: 8px; }
+    .notif-item {
+      display: flex; align-items: flex-start; gap: 14px; padding: 16px 18px;
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); cursor: pointer; transition: var(--transition);
+      position: relative;
+    }
+    .notif-item:hover { border-color: var(--primary); background: rgba(124,58,237,0.04); }
+    .notif-item.unread { border-left: 3px solid var(--primary); }
+    .notif-item.unread-cyan { border-left: 3px solid var(--cyan); }
+    .notif-item.unread-green { border-left: 3px solid var(--accent); }
+    .notif-item.unread-gold { border-left: 3px solid var(--secondary); }
+    .notif-item.unread-red { border-left: 3px solid #ef4444; }
+    .unread-dot {
+      position: absolute; top: 50%; right: 14px; transform: translateY(-50%);
+      width: 8px; height: 8px; border-radius: 50%; background: var(--primary); flex-shrink: 0;
+    }
+    .notif-icon-wrap {
+      width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center;
+      justify-content: center; font-size: 18px; flex-shrink: 0;
+    }
+    .notif-icon-investor { background: rgba(245,158,11,0.15); }
+    .notif-icon-event { background: rgba(59,130,246,0.15); }
+    .notif-icon-challenge { background: rgba(124,58,237,0.15); }
+    .notif-icon-forum { background: rgba(236,72,153,0.15); }
+    .notif-icon-system { background: rgba(14,165,233,0.15); }
+    .notif-icon-award { background: rgba(245,158,11,0.15); }
+    .notif-icon-mention { background: rgba(16,163,74,0.15); }
+    .notif-icon-funding { background: rgba(16,163,74,0.15); }
+    .notif-body { flex: 1; min-width: 0; }
+    .notif-title { font-size: 0.9rem; font-weight: 600; line-height: 1.4; margin-bottom: 4px; }
+    .notif-title strong { color: var(--primary); }
+    .notif-text { font-size: 0.83rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 6px; }
+    .notif-meta { display: flex; align-items: center; gap: 12px; font-size: 0.75rem; color: var(--text-dim); }
+    .notif-tag { padding: 2px 8px; border-radius: 10px; font-size: 0.72rem; font-weight: 700; }
+    .notif-action-row { display: flex; gap: 8px; margin-top: 10px; }
+    .notif-action-btn {
+      padding: 5px 12px; border-radius: var(--radius); border: 1px solid var(--border);
+      background: transparent; color: var(--text-muted); font-size: 0.78rem; font-weight: 600;
+      cursor: pointer; transition: var(--transition); display: flex; align-items: center; gap: 5px;
+    }
+    .notif-action-btn.primary { background: var(--primary); color: #fff; border-color: var(--primary); }
+    .notif-action-btn:hover:not(.primary) { border-color: var(--primary); color: var(--primary); }
+
+    /* Empty State */
+    .notif-empty { text-align: center; padding: 60px 20px; color: var(--text-muted); }
+    .notif-empty-icon { font-size: 4rem; margin-bottom: 16px; opacity: 0.4; }
+    .notif-empty h3 { font-size: 1.2rem; font-weight: 700; margin-bottom: 8px; }
+
+    /* Summary Boxes */
+    .notif-summary-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 28px; }
+    .notif-summary-card { padding: 16px 18px; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); text-align: center; cursor: pointer; transition: var(--transition); }
+    .notif-summary-card:hover { border-color: var(--primary); }
+    .notif-summary-card strong { display: block; font-size: 1.8rem; font-weight: 800; color: var(--primary); }
+    .notif-summary-card span { font-size: 0.75rem; color: var(--text-muted); }
+
+    @media (max-width: 900px) { .notif-layout { grid-template-columns: 1fr; } .notif-sidebar { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; } }
+    @media (max-width: 560px) { .notif-summary-row { grid-template-columns: repeat(2,1fr); } .notif-sidebar { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+
+<div id="toastContainer" class="toast-container"></div>
+
+<!-- ===== NAVIGATION ===== -->
+<nav class="navbar" id="navbar">
+  <div class="nav-container">
+    <a href="index.html" class="nav-logo"><span class="logo-icon">🚀</span><span class="logo-text">AfricaLaunch</span></a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="index.html" class="nav-link">Home</a></li>
+      <li><a href="startups.html" class="nav-link">Startups</a></li>
+      <li><a href="investors.html" class="nav-link">Investors</a></li>
+      <li><a href="events.html" class="nav-link">Events</a></li>
+      <li><a href="marketplace.html" class="nav-link">Marketplace</a></li>
+      <li class="nav-dropdown">
+        <a href="#" class="nav-link dropdown-toggle">More <i class="fas fa-chevron-down"></i></a>
+        <ul class="dropdown-menu">
+          <li><a href="media.html"><i class="fas fa-play-circle"></i> Media Center</a></li>
+          <li><a href="forum.html"><i class="fas fa-comments"></i> Community Forum</a></li>
+          <li><a href="challenges.html"><i class="fas fa-bolt"></i> Challenges</a></li>
+          <li><a href="compare.html"><i class="fas fa-balance-scale"></i> Compare Startups</a></li>
+          <li><a href="growth.html"><i class="fas fa-chart-line"></i> Growth Tracker</a></li>
+          <li><a href="notifications.html"><i class="fas fa-bell"></i> Notifications</a></li>
+          <li><a href="incubator.html"><i class="fas fa-building"></i> Incubator Hub</a></li>
+          <li><a href="ecosystem.html"><i class="fas fa-globe-africa"></i> Ecosystem</a></li>
+          <li><a href="analytics.html"><i class="fas fa-chart-bar"></i> Analytics</a></li>
+          <li><a href="leaderboard.html"><i class="fas fa-trophy"></i> Leaderboard</a></li>
+          <li><a href="awards.html"><i class="fas fa-medal"></i> Awards</a></li>
+          <li><a href="pricing.html"><i class="fas fa-crown"></i> Pricing</a></li>
+        </ul>
+      </li>
+    </ul>
+    <div class="nav-actions">
+      <a href="notifications.html" class="btn btn-ghost" style="position:relative;">
+        <i class="fas fa-bell"></i>
+        <span style="position:absolute; top:6px; right:6px; width:8px; height:8px; border-radius:50%; background: var(--primary); border: 2px solid var(--bg);"></span>
+      </a>
+      <a href="submit.html" class="btn btn-primary"><i class="fas fa-plus"></i> Submit Startup</a>
+    </div>
+    <button class="nav-toggle" id="navToggle" onclick="toggleNav()"><i class="fas fa-bars"></i></button>
+  </div>
+</nav>
+
+<!-- ===== HERO ===== -->
+<section class="notif-hero">
+  <div class="container">
+    <div class="notif-hero-row">
+      <div>
+        <div class="section-label"><i class="fas fa-bell"></i> Notifications</div>
+        <h1>Stay in the Loop</h1>
+        <p><span id="unreadCount" style="color: var(--primary); font-weight: 700;">12 unread</span> notifications across all categories</p>
+      </div>
+      <div class="notif-actions">
+        <button class="btn btn-outline" onclick="markAllRead()"><i class="fas fa-check-double"></i> Mark All Read</button>
+        <button class="btn btn-ghost" onclick="clearAll()"><i class="fas fa-trash"></i> Clear All</button>
+        <button class="btn btn-primary" onclick="openNotifSettings()"><i class="fas fa-cog"></i> Settings</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="container">
+  <div class="notif-layout">
+
+    <!-- Sidebar -->
+    <aside class="notif-sidebar">
+      <div class="notif-sidebar-nav">
+        <div class="notif-nav-header"><i class="fas fa-filter"></i> Filter By</div>
+        <div class="notif-nav-item active" onclick="filterNotifs(this,'all')">
+          <div class="notif-nav-left"><div class="notif-nav-icon" style="background:rgba(124,58,237,0.15);">🔔</div><span>All</span></div>
+          <span class="notif-count-pill" id="navAll">18</span>
+        </div>
+        <div class="notif-nav-item" onclick="filterNotifs(this,'investor')">
+          <div class="notif-nav-left"><div class="notif-nav-icon notif-icon-investor">💰</div><span>Investor Activity</span></div>
+          <span class="notif-count-pill" id="navInvestor">4</span>
+        </div>
+        <div class="notif-nav-item" onclick="filterNotifs(this,'event')">
+          <div class="notif-nav-left"><div class="notif-nav-icon notif-icon-event">📅</div><span>Events</span></div>
+          <span class="notif-count-pill" id="navEvent">3</span>
+        </div>
+        <div class="notif-nav-item" onclick="filterNotifs(this,'challenge')">
+          <div class="notif-nav-left"><div class="notif-nav-icon notif-icon-challenge">⚡</div><span>Challenges</span></div>
+          <span class="notif-count-pill" id="navChallenge">2</span>
+        </div>
+        <div class="notif-nav-item" onclick="filterNotifs(this,'forum')">
+          <div class="notif-nav-left"><div class="notif-nav-icon notif-icon-forum">💬</div><span>Forum</span></div>
+          <span class="notif-count-pill" id="navForum">5</span>
+        </div>
+        <div class="notif-nav-item" onclick="filterNotifs(this,'award')">
+          <div class="notif-nav-left"><div class="notif-nav-icon notif-icon-award">🏆</div><span>Awards</span></div>
+          <span class="notif-count-pill" id="navAward">1</span>
+        </div>
+        <div class="notif-nav-item" onclick="filterNotifs(this,'mention')">
+          <div class="notif-nav-left"><div class="notif-nav-icon notif-icon-mention">@️</div><span>Mentions</span></div>
+          <span class="notif-count-pill" id="navMention">2</span>
+        </div>
+        <div class="notif-nav-item" onclick="filterNotifs(this,'system')">
+          <div class="notif-nav-left"><div class="notif-nav-icon notif-icon-system">⚙️</div><span>System</span></div>
+          <span class="notif-count-pill zero" id="navSystem">1</span>
+        </div>
+      </div>
+
+      <!-- Notification Settings -->
+      <div class="notif-settings-widget">
+        <h4><i class="fas fa-sliders-h"></i> Preferences</h4>
+        <div class="notif-setting-row"><span>Investor views</span><div class="toggle-switch-sm on" onclick="toggleSetting(this)"><div class="toggle-knob"></div></div></div>
+        <div class="notif-setting-row"><span>Event reminders</span><div class="toggle-switch-sm on" onclick="toggleSetting(this)"><div class="toggle-knob"></div></div></div>
+        <div class="notif-setting-row"><span>Challenge updates</span><div class="toggle-switch-sm on" onclick="toggleSetting(this)"><div class="toggle-knob"></div></div></div>
+        <div class="notif-setting-row"><span>Forum replies</span><div class="toggle-switch-sm on" onclick="toggleSetting(this)"><div class="toggle-knob"></div></div></div>
+        <div class="notif-setting-row"><span>New followers</span><div class="toggle-switch-sm" onclick="toggleSetting(this)"><div class="toggle-knob"></div></div></div>
+        <div class="notif-setting-row"><span>Weekly digest</span><div class="toggle-switch-sm on" onclick="toggleSetting(this)"><div class="toggle-knob"></div></div></div>
+        <div class="notif-setting-row"><span>Email notifications</span><div class="toggle-switch-sm on" onclick="toggleSetting(this)"><div class="toggle-knob"></div></div></div>
+      </div>
+    </aside>
+
+    <!-- Main Feed -->
+    <main class="notif-main">
+      <!-- Summary Cards -->
+      <div class="notif-summary-row">
+        <div class="notif-summary-card" onclick="filterNotifs(document.querySelector('[onclick*=\"investor\"]'),'investor')">
+          <strong id="sumInvestor">4</strong><span>Investor Activity</span>
+        </div>
+        <div class="notif-summary-card" onclick="filterNotifs(document.querySelector('[onclick*=\"challenge\"]'),'challenge')">
+          <strong id="sumChallenge">2</strong><span>Challenge Updates</span>
+        </div>
+        <div class="notif-summary-card" onclick="filterNotifs(document.querySelector('[onclick*=\"forum\"]'),'forum')">
+          <strong id="sumForum">5</strong><span>Forum Replies</span>
+        </div>
+        <div class="notif-summary-card" onclick="filterNotifs(document.querySelector('[onclick*=\"event\"]'),'event')">
+          <strong id="sumEvent">3</strong><span>Event Reminders</span>
+        </div>
+      </div>
+
+      <!-- Top Bar -->
+      <div class="notif-top-bar">
+        <div class="notif-search">
+          <i class="fas fa-search" style="color: var(--text-muted);"></i>
+          <input type="text" id="notifSearch" placeholder="Search notifications..." oninput="searchNotifs(this.value)">
+        </div>
+        <select class="notif-sort" onchange="sortNotifs(this.value)">
+          <option value="newest">Newest First</option>
+          <option value="oldest">Oldest First</option>
+          <option value="unread">Unread First</option>
+        </select>
+      </div>
+
+      <!-- Feed -->
+      <div id="notifFeed">
+        <!-- Rendered dynamically -->
+      </div>
+    </main>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand"><div class="footer-logo">🚀 AfricaLaunch</div><p class="footer-desc">Africa's premier startup ecosystem platform.</p></div>
+      <div class="footer-links"><h4>Platform</h4><ul><li><a href="startups.html">Startups</a></li><li><a href="investors.html">Investors</a></li><li><a href="media.html">Media</a></li></ul></div>
+      <div class="footer-links"><h4>Community</h4><ul><li><a href="challenges.html">Challenges</a></li><li><a href="forum.html">Forum</a></li><li><a href="leaderboard.html">Leaderboard</a></li></ul></div>
+      <div class="footer-links"><h4>Resources</h4><ul><li><a href="analytics.html">Analytics</a></li><li><a href="growth.html">Growth Tracker</a></li><li><a href="pricing.html">Pricing</a></li></ul></div>
+    </div>
+    <div class="footer-bottom"><p>© 2025 AfricaLaunch. All rights reserved.</p></div>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+<script>
+// ===== NOTIFICATIONS DATA =====
+let allNotifications = [
+  {
+    id: 'n1', type: 'investor', unread: true, borderClass: 'unread-gold',
+    icon: '💰', iconClass: 'notif-icon-investor',
+    title: '<strong>Partech Africa</strong> viewed your startup profile',
+    text: 'Partech Africa, a Tier-1 VC with $400M AUM, spent 8 minutes on your PayLink NG profile and downloaded your pitch deck.',
+    time: '2 minutes ago', tag: '🔥 High Interest',
+    tagStyle: 'background:rgba(239,68,68,0.15); color:#ef4444;',
+    actions: [
+      { label: 'View Investor', class: 'primary', link: 'investors.html' },
+      { label: 'Send Pitch', class: '', onclick: 'sendPitch()' }
+    ]
+  },
+  {
+    id: 'n2', type: 'forum', unread: true, borderClass: 'unread',
+    icon: '💬', iconClass: 'notif-icon-forum',
+    title: '<strong>Nkechi Eze</strong> replied to your forum post',
+    text: '"I went through something similar. The building in public approach is underrated for African founders. I\'d add Twitter Spaces..."',
+    time: '18 minutes ago', tag: 'Forum Reply',
+    tagStyle: 'background:rgba(236,72,153,0.15); color:#ec4899;',
+    actions: [{ label: 'View Reply', class: 'primary', link: 'forum.html' }]
+  },
+  {
+    id: 'n3', type: 'challenge', unread: true, borderClass: 'unread',
+    icon: '⚡', iconClass: 'notif-icon-challenge',
+    title: 'Challenge Reminder: <strong>Grand Innovation Challenge 2025</strong>',
+    text: 'Application deadline is in 29 days — Jun 30, 2025. You started an application on May 12. Complete it to be considered for $100,000 in prizes.',
+    time: '1 hour ago', tag: '29 days left',
+    tagStyle: 'background:rgba(124,58,237,0.15); color:var(--primary);',
+    actions: [
+      { label: 'Complete Application', class: 'primary', link: 'challenges.html' },
+      { label: 'Dismiss', class: '', onclick: 'dismissNotif("n3")' }
+    ]
+  },
+  {
+    id: 'n4', type: 'investor', unread: true, borderClass: 'unread-gold',
+    icon: '🤝', iconClass: 'notif-icon-investor',
+    title: '<strong>TLcom Capital</strong> sent you a connection request',
+    text: 'TLcom Capital ($154M fund, 23 African portfolio companies) wants to connect with you. They typically invest $500K–$5M at Seed and Series A.',
+    time: '3 hours ago', tag: 'Connection Request',
+    tagStyle: 'background:rgba(245,158,11,0.15); color:var(--secondary);',
+    actions: [
+      { label: 'Accept', class: 'primary', onclick: 'acceptConnection("n4")' },
+      { label: 'View Profile', class: '', link: 'investors.html' }
+    ]
+  },
+  {
+    id: 'n5', type: 'event', unread: true, borderClass: 'unread-cyan',
+    icon: '📅', iconClass: 'notif-icon-event',
+    title: 'Event Tomorrow: <strong>Lagos Startup Pitch Night</strong>',
+    text: 'You\'re registered for tomorrow\'s Lagos Startup Pitch Night at Victoria Island. Doors open at 6:00 PM. 48 startups pitching, 80+ investors attending.',
+    time: '5 hours ago', tag: '🗓️ Tomorrow',
+    tagStyle: 'background:rgba(14,165,233,0.15); color:var(--cyan);',
+    actions: [
+      { label: 'View Details', class: 'primary', link: 'events.html' },
+      { label: 'Add to Calendar', class: '', onclick: 'addToCalendar()' }
+    ]
+  },
+  {
+    id: 'n6', type: 'forum', unread: true, borderClass: 'unread',
+    icon: '👍', iconClass: 'notif-icon-forum',
+    title: 'Your post reached <strong>200 upvotes</strong>',
+    text: '"How I raised my Seed Round in Nigeria without a warm intro" is trending in the #Funding category with 284 votes and 47 replies.',
+    time: '6 hours ago', tag: '🔥 Trending',
+    tagStyle: 'background:rgba(239,68,68,0.15); color:#ef4444;',
+    actions: [{ label: 'View Post', class: 'primary', link: 'forum.html' }]
+  },
+  {
+    id: 'n7', type: 'investor', unread: false, borderClass: '',
+    icon: '👁️', iconClass: 'notif-icon-investor',
+    title: '<strong>Acumen Capital</strong> bookmarked your profile',
+    text: 'Acumen Capital added PayLink NG to their watchlist. This often precedes initial outreach. Ensure your profile is up to date.',
+    time: '8 hours ago', tag: 'Bookmarked',
+    tagStyle: 'background:rgba(124,58,237,0.1); color:var(--primary);',
+    actions: [{ label: 'Update Profile', class: 'primary', link: 'startups.html' }]
+  },
+  {
+    id: 'n8', type: 'award', unread: true, borderClass: 'unread-gold',
+    icon: '🏆', iconClass: 'notif-icon-award',
+    title: 'Nomination: <strong>Best FinTech Startup Q2 2025</strong>',
+    text: 'PayLink NG has been nominated for the Best FinTech Startup award for Q2 2025. Community voting is now open — share to get more votes!',
+    time: '12 hours ago', tag: '🏆 Nominated',
+    tagStyle: 'background:rgba(245,158,11,0.15); color:var(--secondary);',
+    actions: [
+      { label: 'Vote Now', class: 'primary', link: 'awards.html' },
+      { label: 'Share', class: '', onclick: 'shareNomination()' }
+    ]
+  },
+  {
+    id: 'n9', type: 'mention', unread: true, borderClass: 'unread-green',
+    icon: '@', iconClass: 'notif-icon-mention',
+    title: '<strong>Sarah Chen</strong> mentioned you in a post',
+    text: '"...companies like @PayLink_NG are proving that B2B FinTech in Nigeria can achieve product-market fit faster than most Valley startups..."',
+    time: '1 day ago', tag: '@Mention',
+    tagStyle: 'background:rgba(16,163,74,0.15); color:var(--accent);',
+    actions: [{ label: 'View Post', class: 'primary', link: 'forum.html' }]
+  },
+  {
+    id: 'n10', type: 'event', unread: false, borderClass: '',
+    icon: '📅', iconClass: 'notif-icon-event',
+    title: 'New Event: <strong>AfricaLaunch Investor Summit 2025</strong>',
+    text: 'Applications are now open for AfricaLaunch Investor Summit 2025. 300+ investors, 500+ startups, 3-day event in Nairobi, Kenya. August 14-16.',
+    time: '1 day ago', tag: 'New Event',
+    tagStyle: 'background:rgba(59,130,246,0.15); color:#3b82f6;',
+    actions: [
+      { label: 'Register Interest', class: 'primary', link: 'events.html' },
+      { label: 'Learn More', class: '', link: 'events.html' }
+    ]
+  },
+  {
+    id: 'n11', type: 'forum', unread: false, borderClass: '',
+    icon: '💬', iconClass: 'notif-icon-forum',
+    title: '<strong>Kwame Asare</strong> replied to your comment',
+    text: '"Thanks for the detailed breakdown! I\'ve been looking for exactly this kind of insight on Delaware flipping. Do you work with non-Nigerian startups too?"',
+    time: '1 day ago', tag: 'Forum Reply',
+    tagStyle: 'background:rgba(236,72,153,0.15); color:#ec4899;',
+    actions: [{ label: 'Reply', class: 'primary', link: 'forum.html' }]
+  },
+  {
+    id: 'n12', type: 'investor', unread: false, borderClass: '',
+    icon: '📋', iconClass: 'notif-icon-investor',
+    title: 'Pitch viewed: <strong>Lagos Ventures</strong>',
+    text: 'Lagos Ventures opened your pitch deck 3 times over the last 2 days and spent an average of 4 minutes on the financial projections slide.',
+    time: '2 days ago', tag: 'Pitch Viewed',
+    tagStyle: 'background:rgba(245,158,11,0.12); color:var(--secondary);',
+    actions: [
+      { label: 'Follow Up', class: 'primary', onclick: 'sendFollowUp()' }
+    ]
+  },
+  {
+    id: 'n13', type: 'challenge', unread: false, borderClass: '',
+    icon: '⚡', iconClass: 'notif-icon-challenge',
+    title: 'Congratulations! <strong>Top 50 in FinTech Sprint</strong>',
+    text: 'PayLink NG has been shortlisted in the top 50 for the Africa FinTech Innovation Sprint. The final round will be on July 20, 2025.',
+    time: '2 days ago', tag: '🎉 Shortlisted',
+    tagStyle: 'background:rgba(124,58,237,0.15); color:var(--primary);',
+    actions: [{ label: 'View Challenge', class: 'primary', link: 'challenges.html' }]
+  },
+  {
+    id: 'n14', type: 'mention', unread: false, borderClass: '',
+    icon: '@', iconClass: 'notif-icon-mention',
+    title: 'AfricaLaunch Weekly Digest: <strong>You were featured!</strong>',
+    text: 'Your startup PayLink NG was featured in this week\'s AfricaLaunch Weekly — sent to 28,000 subscribers. Your profile had 340 new views this week.',
+    time: '3 days ago', tag: '📰 Featured',
+    tagStyle: 'background:rgba(16,163,74,0.15); color:var(--accent);',
+    actions: [{ label: 'View Profile', class: 'primary', link: 'startups.html' }]
+  },
+  {
+    id: 'n15', type: 'event', unread: false, borderClass: '',
+    icon: '✅', iconClass: 'notif-icon-event',
+    title: 'You\'re registered: <strong>Nairobi Demo Day</strong>',
+    text: 'Your registration for Nairobi Demo Day (Jun 28) was confirmed. You\'re scheduled to pitch at 3:30 PM slot in Hall B.',
+    time: '3 days ago', tag: 'Confirmed',
+    tagStyle: 'background:rgba(16,163,74,0.15); color:var(--accent);',
+    actions: [{ label: 'View Event', class: 'primary', link: 'events.html' }]
+  },
+  {
+    id: 'n16', type: 'forum', unread: false, borderClass: '',
+    icon: '🔖', iconClass: 'notif-icon-forum',
+    title: '47 people bookmarked <strong>your forum post</strong>',
+    text: 'Your post "How I raised my Seed Round in Nigeria without a warm intro" has been saved by 47 community members and shared 23 times.',
+    time: '4 days ago', tag: '🔥 Popular',
+    tagStyle: 'background:rgba(239,68,68,0.12); color:#ef4444;',
+    actions: [{ label: 'View Post', class: 'primary', link: 'forum.html' }]
+  },
+  {
+    id: 'n17', type: 'forum', unread: false, borderClass: '',
+    icon: '💬', iconClass: 'notif-icon-forum',
+    title: '<strong>Temi Soyinka</strong> replied to your comment',
+    text: '"SAFE is definitely easier but be aware of MFN clauses if you\'re doing multiple SAFEs. Happy to do a quick call if helpful."',
+    time: '4 days ago', tag: 'Forum Reply',
+    tagStyle: 'background:rgba(236,72,153,0.15); color:#ec4899;',
+    actions: [{ label: 'Reply', class: 'primary', link: 'forum.html' }]
+  },
+  {
+    id: 'n18', type: 'system', unread: false, borderClass: '',
+    icon: '⚙️', iconClass: 'notif-icon-system',
+    title: 'Platform Update: <strong>New Features Available</strong>',
+    text: 'AfricaLaunch has launched 7 new features: Media Center, Community Forum, Growth Tracker, Challenges, Comparison Tool, Notifications Center, and Premium Listings.',
+    time: '5 days ago', tag: '🆕 Update',
+    tagStyle: 'background:rgba(14,165,233,0.15); color:var(--cyan);',
+    actions: [
+      { label: 'Explore Features', class: 'primary', link: 'index.html' }
+    ]
+  }
+];
+
+let currentFilter = 'all';
+let displayedNotifications = [...allNotifications];
+
+const GROUPS = {
+  today: { label: 'Today', items: [] },
+  yesterday: { label: 'Yesterday', items: [] },
+  week: { label: 'This Week', items: [] },
+  older: { label: 'Older', items: [] }
+};
+
+function groupNotifications(notifs) {
+  const groups = { today: [], yesterday: [], week: [], older: [] };
+  notifs.forEach(n => {
+    const t = n.time;
+    if (t.includes('minute') || t.includes('hour')) groups.today.push(n);
+    else if (t === '1 day ago') groups.yesterday.push(n);
+    else if (t.includes('day')) groups.week.push(n);
+    else groups.older.push(n);
+  });
+  return groups;
+}
+
+function renderFeed(notifs) {
+  const feed = document.getElementById('notifFeed');
+  if (!feed) return;
+  
+  const grouped = groupNotifications(notifs);
+  let html = '';
+  
+  const groupConfig = [
+    { key: 'today', label: 'Today' },
+    { key: 'yesterday', label: 'Yesterday' },
+    { key: 'week', label: 'This Week' },
+    { key: 'older', label: 'Older' }
+  ];
+  
+  let hasContent = false;
+  groupConfig.forEach(({ key, label }) => {
+    if (grouped[key].length === 0) return;
+    hasContent = true;
+    html += `<div class="notif-date-group">
+      <div class="notif-date-label">${label}</div>
+      <div class="notif-feed">
+        ${grouped[key].map(n => renderNotifItem(n)).join('')}
+      </div>
+    </div>`;
+  });
+
+  if (!hasContent) {
+    html = `<div class="notif-empty">
+      <div class="notif-empty-icon">🔔</div>
+      <h3>No notifications found</h3>
+      <p>No notifications match your current filter.</p>
+    </div>`;
+  }
+  
+  feed.innerHTML = html;
+  updateUnreadCount();
+}
+
+function renderNotifItem(n) {
+  const actionsHtml = (n.actions || []).map(a => {
+    if (a.link) return `<a href="${a.link}" class="notif-action-btn ${a.class}" onclick="event.stopPropagation(); markRead('${n.id}')">${a.label}</a>`;
+    return `<button class="notif-action-btn ${a.class}" onclick="event.stopPropagation(); ${a.onclick || ''}">${a.label}</button>`;
+  }).join('');
+  
+  return `
+    <div class="notif-item ${n.unread ? n.borderClass || 'unread' : ''}" id="notif-${n.id}" onclick="markRead('${n.id}')">
+      ${n.unread ? '<div class="unread-dot"></div>' : ''}
+      <div class="notif-icon-wrap ${n.iconClass}" style="font-size:${n.icon === '@' ? '16px' : '20px'}; font-weight: bold;">${n.icon}</div>
+      <div class="notif-body">
+        <div class="notif-title">${n.title}</div>
+        <div class="notif-text">${n.text}</div>
+        <div class="notif-meta">
+          <span><i class="fas fa-clock"></i> ${n.time}</span>
+          <span class="notif-tag" style="${n.tagStyle}">${n.tag}</span>
+        </div>
+        ${actionsHtml ? `<div class="notif-action-row">${actionsHtml}</div>` : ''}
+      </div>
+    </div>`;
+}
+
+function filterNotifs(el, type) {
+  currentFilter = type;
+  document.querySelectorAll('.notif-nav-item').forEach(i => i.classList.remove('active'));
+  if (el) el.classList.add('active');
+  
+  displayedNotifications = type === 'all' ? [...allNotifications] : allNotifications.filter(n => n.type === type);
+  renderFeed(displayedNotifications);
+}
+
+function searchNotifs(val) {
+  const v = val.toLowerCase();
+  const base = currentFilter === 'all' ? allNotifications : allNotifications.filter(n => n.type === currentFilter);
+  displayedNotifications = !v ? base : base.filter(n =>
+    n.title.toLowerCase().includes(v) || n.text.toLowerCase().includes(v)
+  );
+  renderFeed(displayedNotifications);
+}
+
+function sortNotifs(val) {
+  if (val === 'unread') displayedNotifications = [...displayedNotifications].sort((a, b) => (b.unread ? 1 : 0) - (a.unread ? 1 : 0));
+  else if (val === 'oldest') displayedNotifications = [...displayedNotifications].reverse();
+  else displayedNotifications = currentFilter === 'all' ? [...allNotifications] : allNotifications.filter(n => n.type === currentFilter);
+  renderFeed(displayedNotifications);
+}
+
+function markRead(id) {
+  const notif = allNotifications.find(n => n.id === id);
+  if (notif && notif.unread) {
+    notif.unread = false;
+    notif.borderClass = '';
+    const el = document.getElementById(`notif-${id}`);
+    if (el) {
+      el.classList.remove('unread', 'unread-gold', 'unread-cyan', 'unread-green', 'unread-red');
+      const dot = el.querySelector('.unread-dot');
+      if (dot) dot.remove();
+    }
+    updateUnreadCount();
+  }
+}
+
+function markAllRead() {
+  allNotifications.forEach(n => { n.unread = false; n.borderClass = ''; });
+  renderFeed(displayedNotifications);
+  showToast('All notifications marked as read! ✓', 'success');
+}
+
+function clearAll() {
+  if (!confirm('Clear all notifications? This cannot be undone.')) return;
+  allNotifications = [];
+  displayedNotifications = [];
+  renderFeed([]);
+  showToast('All notifications cleared.', 'info');
+}
+
+function dismissNotif(id) {
+  const idx = allNotifications.findIndex(n => n.id === id);
+  if (idx > -1) allNotifications.splice(idx, 1);
+  displayedNotifications = displayedNotifications.filter(n => n.id !== id);
+  renderFeed(displayedNotifications);
+}
+
+function updateUnreadCount() {
+  const unread = allNotifications.filter(n => n.unread).length;
+  const el = document.getElementById('unreadCount');
+  if (el) el.textContent = unread > 0 ? `${unread} unread` : 'All caught up!';
+  
+  // Update nav badges
+  const countUpdate = { all: allNotifications.length, investor: 0, event: 0, challenge: 0, forum: 0, award: 0, mention: 0, system: 0 };
+  allNotifications.filter(n => n.unread).forEach(n => { if (countUpdate[n.type] !== undefined) countUpdate[n.type]++; });
+  Object.entries(countUpdate).forEach(([key, val]) => {
+    const navEl = document.getElementById(`nav${key.charAt(0).toUpperCase() + key.slice(1)}`);
+    if (navEl) navEl.textContent = val || (key === 'all' ? allNotifications.length : 0);
+  });
+}
+
+function toggleSetting(el) {
+  el.classList.toggle('on');
+  showToast(el.classList.contains('on') ? 'Notifications enabled ✓' : 'Notifications disabled', el.classList.contains('on') ? 'success' : 'info', 2000);
+}
+
+function sendPitch() { showToast('Pitch sent to Partech Africa! 📧', 'success'); markRead('n1'); }
+function acceptConnection(id) { showToast('Connection accepted! TLcom Capital will be notified. 🤝', 'success'); markRead(id); dismissNotif(id); }
+function addToCalendar() { showToast('Event added to your calendar! 📅', 'success'); }
+function shareNomination() { showToast('Share link copied! 🔗', 'success'); }
+function sendFollowUp() { showToast('Follow-up email sent to Lagos Ventures! ✉️', 'success'); }
+function openNotifSettings() { showToast('Advanced settings panel coming soon!', 'info'); }
+
+document.addEventListener('DOMContentLoaded', () => {
+  renderFeed(allNotifications);
+});
+</script>
+</body>
+</html>

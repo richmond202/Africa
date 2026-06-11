@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Startup Challenges — AfricaLaunch</title>
+  <meta name="description" content="Compete in Africa's biggest startup challenges and innovation contests. Win prizes, gain exposure, and connect with top investors.">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .challenges-hero {
+      padding: 120px 0 60px;
+      background: radial-gradient(ellipse at 30% 0%, rgba(245,158,11,0.2) 0%, transparent 60%),
+                  radial-gradient(ellipse at 80% 50%, rgba(124,58,237,0.15) 0%, transparent 50%);
+      text-align: center;
+    }
+    .challenges-hero h1 { font-family: var(--font-display); font-size: clamp(2rem, 5vw, 3.2rem); font-weight: 800; margin-bottom: 16px; }
+    .challenges-hero p { font-size: 1.1rem; color: var(--text-muted); max-width: 600px; margin: 0 auto; }
+
+    /* Hero Stats */
+    .challenge-hero-stats { display: flex; justify-content: center; gap: 48px; margin-top: 40px; flex-wrap: wrap; }
+    .ch-stat { text-align: center; }
+    .ch-stat strong { display: block; font-size: 2.2rem; font-weight: 900; background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .ch-stat span { font-size: 0.85rem; color: var(--text-muted); }
+
+    /* Filter Tabs */
+    .challenge-tabs { display: flex; gap: 8px; margin: 40px 0 32px; flex-wrap: wrap; }
+    .ch-tab {
+      padding: 10px 22px; border-radius: 50px; font-size: 0.88rem; font-weight: 600;
+      border: 1px solid var(--border); background: transparent; color: var(--text-muted);
+      cursor: pointer; transition: var(--transition); display: flex; align-items: center; gap: 8px;
+    }
+    .ch-tab.active, .ch-tab:hover { background: var(--primary); color: #fff; border-color: var(--primary); }
+    .ch-tab-count { background: rgba(255,255,255,0.2); padding: 1px 7px; border-radius: 10px; font-size: 0.72rem; }
+
+    /* Featured Challenge Banner */
+    .featured-challenge {
+      position: relative; border-radius: var(--radius-xl); overflow: hidden;
+      background: linear-gradient(135deg, #1a0533 0%, #0d1f3c 100%);
+      border: 1px solid rgba(124,58,237,0.4); margin-bottom: 40px;
+      display: grid; grid-template-columns: 1fr 340px;
+    }
+    .featured-challenge-info { padding: 48px; }
+    .featured-label { display: inline-flex; align-items: center; gap: 6px; background: var(--secondary); color: #000; font-size: 11px; font-weight: 800; padding: 4px 12px; border-radius: 20px; margin-bottom: 16px; text-transform: uppercase; letter-spacing: 1px; }
+    .featured-challenge h2 { font-family: var(--font-display); font-size: 2rem; font-weight: 900; margin-bottom: 12px; }
+    .featured-challenge p { color: var(--text-muted); font-size: 0.95rem; line-height: 1.7; margin-bottom: 24px; max-width: 480px; }
+    .challenge-prize-row { display: flex; gap: 24px; margin-bottom: 24px; flex-wrap: wrap; }
+    .prize-item { display: flex; align-items: center; gap: 8px; }
+    .prize-icon { width: 36px; height: 36px; border-radius: var(--radius); display: flex; align-items: center; justify-content: center; font-size: 18px; }
+    .prize-label { font-size: 0.8rem; color: var(--text-muted); }
+    .prize-value { font-weight: 700; font-size: 0.95rem; }
+    .challenge-cta-row { display: flex; gap: 12px; flex-wrap: wrap; }
+    .featured-challenge-visual {
+      background: linear-gradient(135deg, rgba(124,58,237,0.2), rgba(245,158,11,0.15));
+      display: flex; align-items: center; justify-content: center; position: relative;
+      overflow: hidden;
+    }
+    .challenge-trophy-lg { font-size: 100px; opacity: 0.6; animation: float 3s ease-in-out infinite; }
+    @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-16px); } }
+    .featured-deadline {
+      position: absolute; bottom: 20px; right: 20px; text-align: center;
+      background: rgba(0,0,0,0.6); border-radius: var(--radius); padding: 12px 16px;
+    }
+    .deadline-label { font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+    .countdown-row { display: flex; gap: 8px; margin-top: 6px; }
+    .countdown-item { text-align: center; }
+    .countdown-num { display: block; font-size: 1.4rem; font-weight: 800; color: var(--secondary); line-height: 1; }
+    .countdown-label-sm { font-size: 0.65rem; color: var(--text-muted); }
+
+    /* Challenge Cards Grid */
+    .challenges-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 24px; margin-bottom: 60px; }
+    .challenge-card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius-xl); overflow: hidden; transition: var(--transition);
+      display: flex; flex-direction: column; position: relative;
+    }
+    .challenge-card:hover { transform: translateY(-6px); border-color: var(--primary); box-shadow: var(--shadow-lg); }
+    .challenge-card-img {
+      height: 180px; position: relative; overflow: hidden;
+      background: linear-gradient(135deg, #1a1a2e, #16213e);
+      display: flex; align-items: center; justify-content: center; font-size: 64px;
+    }
+    .challenge-card-img-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to bottom, transparent 40%, rgba(0,0,0,0.6));
+    }
+    .challenge-status-badge {
+      position: absolute; top: 14px; right: 14px;
+      padding: 4px 12px; border-radius: 20px; font-size: 0.72rem; font-weight: 800;
+      text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    .status-open { background: rgba(22,163,74,0.9); color: #fff; }
+    .status-closing { background: rgba(245,158,11,0.9); color: #000; }
+    .status-closed { background: rgba(107,114,128,0.8); color: #fff; }
+    .status-upcoming { background: rgba(59,130,246,0.9); color: #fff; }
+    .difficulty-badge {
+      position: absolute; top: 14px; left: 14px;
+      padding: 4px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 700;
+    }
+    .diff-beginner { background: rgba(22,163,74,0.15); color: #16a34a; border: 1px solid rgba(22,163,74,0.3); }
+    .diff-intermediate { background: rgba(245,158,11,0.15); color: var(--secondary); border: 1px solid rgba(245,158,11,0.3); }
+    .diff-advanced { background: rgba(239,68,68,0.15); color: #ef4444; border: 1px solid rgba(239,68,68,0.3); }
+    .challenge-card-body { padding: 24px; flex: 1; display: flex; flex-direction: column; }
+    .challenge-org { display: flex; align-items: center; gap: 8px; font-size: 0.78rem; color: var(--text-muted); margin-bottom: 8px; }
+    .org-logo { width: 22px; height: 22px; border-radius: 4px; background: var(--gradient-primary); display: flex; align-items: center; justify-content: center; font-size: 10px; }
+    .challenge-card-title { font-family: var(--font-display); font-size: 1.05rem; font-weight: 800; margin-bottom: 8px; line-height: 1.3; }
+    .challenge-card-desc { font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 16px; flex: 1; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+    .challenge-prizes { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+    .prize-tag { display: flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 20px; font-size: 0.78rem; font-weight: 700; }
+    .prize-1st { background: rgba(245,158,11,0.15); color: var(--secondary); }
+    .prize-2nd { background: rgba(148,163,184,0.15); color: #94a3b8; }
+    .prize-3rd { background: rgba(180,120,60,0.15); color: #b4783c; }
+    .prize-other { background: rgba(124,58,237,0.15); color: var(--primary); }
+    .challenge-card-footer { display: flex; align-items: center; justify-content: space-between; padding-top: 16px; border-top: 1px solid var(--border); }
+    .challenge-meta { font-size: 0.78rem; color: var(--text-muted); display: flex; flex-direction: column; gap: 2px; }
+    .challenge-participants { display: flex; align-items: center; gap: 6px; font-size: 0.82rem; color: var(--text-muted); }
+    .participants-avatars { display: flex; }
+    .p-avatar { width: 24px; height: 24px; border-radius: 50%; border: 2px solid var(--bg-card); background: var(--gradient-primary); display: flex; align-items: center; justify-content: center; font-size: 9px; color: #fff; font-weight: 700; margin-left: -6px; }
+    .p-avatar:first-child { margin-left: 0; }
+
+    /* Leaderboard tab */
+    .challenge-leaderboard { margin-bottom: 60px; }
+    .challenge-lb-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+    .challenge-lb-header h2 { font-family: var(--font-display); font-size: 1.4rem; font-weight: 800; }
+    .lb-table { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
+    .lb-row { display: grid; grid-template-columns: 64px 1fr 140px 120px 100px; align-items: center; gap: 16px; padding: 16px 20px; border-bottom: 1px solid var(--border); transition: var(--transition); }
+    .lb-row:hover { background: rgba(124,58,237,0.05); }
+    .lb-row.lb-header { background: var(--bg-surface); font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+    .lb-row:last-child { border-bottom: none; }
+    .lb-rank { text-align: center; font-weight: 900; font-size: 1.1rem; }
+    .rank-gold { color: var(--secondary); }
+    .rank-silver { color: #94a3b8; }
+    .rank-bronze { color: #b4783c; }
+    .lb-startup { display: flex; align-items: center; gap: 12px; }
+    .lb-avatar { width: 38px; height: 38px; border-radius: var(--radius); background: var(--gradient-primary); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+    .lb-name { font-weight: 700; font-size: 0.92rem; }
+    .lb-sub { font-size: 0.75rem; color: var(--text-muted); }
+    .lb-score { font-weight: 800; color: var(--primary); }
+    .lb-change { display: flex; align-items: center; gap: 4px; font-size: 0.8rem; }
+    .lb-change.up { color: #16a34a; }
+    .lb-change.down { color: #ef4444; }
+    .lb-change.same { color: var(--text-dim); }
+
+    /* Submission flow */
+    .register-steps { display: flex; gap: 8px; margin-bottom: 24px; align-items: center; }
+    .reg-step { display: flex; align-items: center; gap: 6px; font-size: 0.82rem; }
+    .reg-step-num { width: 24px; height: 24px; border-radius: 50%; background: var(--border); color: var(--text-muted); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; }
+    .reg-step.active .reg-step-num { background: var(--primary); color: #fff; }
+    .reg-step-divider { width: 24px; height: 1px; background: var(--border); }
+
+    @media (max-width: 900px) {
+      .featured-challenge { grid-template-columns: 1fr; }
+      .featured-challenge-visual { min-height: 200px; }
+      .challenges-grid { grid-template-columns: 1fr; }
+      .lb-row { grid-template-columns: 48px 1fr 100px; }
+      .lb-row > :nth-child(4), .lb-row > :nth-child(5) { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="toastContainer" class="toast-container"></div>
+
+<!-- ===== NAVIGATION ===== -->
+<nav class="navbar" id="navbar">
+  <div class="nav-container">
+    <a href="index.html" class="nav-logo"><span class="logo-icon">🚀</span><span class="logo-text">AfricaLaunch</span></a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="index.html" class="nav-link">Home</a></li>
+      <li><a href="startups.html" class="nav-link">Startups</a></li>
+      <li><a href="investors.html" class="nav-link">Investors</a></li>
+      <li><a href="events.html" class="nav-link">Events</a></li>
+      <li><a href="marketplace.html" class="nav-link">Marketplace</a></li>
+      <li class="nav-dropdown">
+        <a href="#" class="nav-link dropdown-toggle">More <i class="fas fa-chevron-down"></i></a>
+        <ul class="dropdown-menu">
+          <li><a href="media.html"><i class="fas fa-play-circle"></i> Media Center</a></li>
+          <li><a href="forum.html"><i class="fas fa-comments"></i> Community Forum</a></li>
+          <li><a href="challenges.html"><i class="fas fa-bolt"></i> Challenges</a></li>
+          <li><a href="compare.html"><i class="fas fa-balance-scale"></i> Compare Startups</a></li>
+          <li><a href="growth.html"><i class="fas fa-chart-line"></i> Growth Tracker</a></li>
+          <li><a href="notifications.html"><i class="fas fa-bell"></i> Notifications</a></li>
+          <li><a href="incubator.html"><i class="fas fa-building"></i> Incubator Hub</a></li>
+          <li><a href="ecosystem.html"><i class="fas fa-globe-africa"></i> Ecosystem</a></li>
+          <li><a href="analytics.html"><i class="fas fa-chart-bar"></i> Analytics</a></li>
+          <li><a href="leaderboard.html"><i class="fas fa-trophy"></i> Leaderboard</a></li>
+          <li><a href="awards.html"><i class="fas fa-medal"></i> Awards</a></li>
+          <li><a href="pricing.html"><i class="fas fa-crown"></i> Pricing</a></li>
+        </ul>
+      </li>
+    </ul>
+    <div class="nav-actions">
+      <a href="notifications.html" class="btn btn-ghost"><i class="fas fa-bell"></i></a>
+      <a href="submit.html" class="btn btn-primary"><i class="fas fa-plus"></i> Submit Startup</a>
+    </div>
+    <button class="nav-toggle" id="navToggle" onclick="toggleNav()"><i class="fas fa-bars"></i></button>
+  </div>
+</nav>
+
+<!-- ===== HERO ===== -->
+<section class="challenges-hero">
+  <div class="container">
+    <div class="section-label"><i class="fas fa-bolt"></i> Innovation Contests</div>
+    <h1>Compete. <span class="gradient-text">Win. Grow.</span></h1>
+    <p>Join Africa's most exciting startup challenges. Compete for funding, mentorship, media exposure, and accelerator entry.</p>
+    <div style="display:flex; gap:12px; justify-content:center; margin-top:24px; flex-wrap:wrap;">
+      <button class="btn btn-primary" onclick="document.getElementById('challengesGrid').scrollIntoView({behavior:'smooth'})">
+        <i class="fas fa-search"></i> Browse Challenges
+      </button>
+      <button class="btn btn-outline" onclick="openHostModal()">
+        <i class="fas fa-plus"></i> Host a Challenge
+      </button>
+    </div>
+    <div class="challenge-hero-stats">
+      <div class="ch-stat"><strong>$2.4M+</strong><span>Total Prize Pool</span></div>
+      <div class="ch-stat"><strong>48</strong><span>Active Challenges</span></div>
+      <div class="ch-stat"><strong>12,400+</strong><span>Participants</span></div>
+      <div class="ch-stat"><strong>340</strong><span>Winners to Date</span></div>
+    </div>
+  </div>
+</section>
+
+<main class="container" style="padding-bottom: 80px;">
+
+  <!-- Featured Challenge -->
+  <div class="featured-challenge">
+    <div class="featured-challenge-info">
+      <div class="featured-label"><i class="fas fa-star"></i> Featured Challenge</div>
+      <h2>AfricaLaunch Grand Innovation Challenge 2025</h2>
+      <p>Africa's biggest startup challenge with $250,000 in prizes, 6-month accelerator entry, and direct investor introductions to 40+ VCs. Open to all African founders.</p>
+      <div class="challenge-prize-row">
+        <div class="prize-item">
+          <div class="prize-icon" style="background: rgba(245,158,11,0.15);">🥇</div>
+          <div><div class="prize-label">1st Prize</div><div class="prize-value">$100,000</div></div>
+        </div>
+        <div class="prize-item">
+          <div class="prize-icon" style="background: rgba(148,163,184,0.15);">🥈</div>
+          <div><div class="prize-label">2nd Prize</div><div class="prize-value">$50,000</div></div>
+        </div>
+        <div class="prize-item">
+          <div class="prize-icon" style="background: rgba(180,120,60,0.15);">🥉</div>
+          <div><div class="prize-label">3rd Prize</div><div class="prize-value">$25,000</div></div>
+        </div>
+        <div class="prize-item">
+          <div class="prize-icon" style="background: rgba(124,58,237,0.15);">🚀</div>
+          <div><div class="prize-label">Accelerator</div><div class="prize-value">6-month program</div></div>
+        </div>
+      </div>
+      <div class="challenge-cta-row">
+        <button class="btn btn-primary" onclick="openRegisterModal('grand2025')" style="font-size: 1rem; padding: 14px 28px;">
+          <i class="fas fa-paper-plane"></i> Apply Now — Free Entry
+        </button>
+        <button class="btn btn-outline" onclick="openChallengeDetail('grand2025')">
+          <i class="fas fa-info-circle"></i> Learn More
+        </button>
+      </div>
+      <p style="font-size:0.8rem; color:var(--text-dim); margin-top: 12px;"><i class="fas fa-users"></i> 2,847 startups registered · <i class="fas fa-clock"></i> Applications close Jun 30, 2025</p>
+    </div>
+    <div class="featured-challenge-visual">
+      <div class="challenge-trophy-lg">🏆</div>
+      <div class="featured-deadline">
+        <div class="deadline-label">Closes in</div>
+        <div class="countdown-row" id="featuredCountdown">
+          <div class="countdown-item"><span class="countdown-num" id="cd-days">29</span><span class="countdown-label-sm">DAYS</span></div>
+          <div class="countdown-item"><span class="countdown-num" id="cd-hours">14</span><span class="countdown-label-sm">HRS</span></div>
+          <div class="countdown-item"><span class="countdown-num" id="cd-mins">32</span><span class="countdown-label-sm">MIN</span></div>
+          <div class="countdown-item"><span class="countdown-num" id="cd-secs">08</span><span class="countdown-label-sm">SEC</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filter Tabs -->
+  <div class="challenge-tabs" id="challengeTabsBar">
+    <button class="ch-tab active" onclick="filterChallenges(this,'all')"><i class="fas fa-th"></i> All <span class="ch-tab-count">12</span></button>
+    <button class="ch-tab" onclick="filterChallenges(this,'open')"><i class="fas fa-door-open"></i> Open <span class="ch-tab-count">7</span></button>
+    <button class="ch-tab" onclick="filterChallenges(this,'upcoming')"><i class="fas fa-calendar"></i> Upcoming <span class="ch-tab-count">3</span></button>
+    <button class="ch-tab" onclick="filterChallenges(this,'fintech')"><i class="fas fa-credit-card"></i> FinTech</button>
+    <button class="ch-tab" onclick="filterChallenges(this,'healthtech')"><i class="fas fa-heartbeat"></i> HealthTech</button>
+    <button class="ch-tab" onclick="filterChallenges(this,'agritech')"><i class="fas fa-leaf"></i> AgriTech</button>
+    <button class="ch-tab" onclick="filterChallenges(this,'climate')"><i class="fas fa-sun"></i> ClimaTech</button>
+    <button class="ch-tab" onclick="filterChallenges(this,'ai')"><i class="fas fa-brain"></i> AI/ML</button>
+    <button class="ch-tab" onclick="viewLeaderboard()"><i class="fas fa-trophy"></i> Leaderboard</button>
+  </div>
+
+  <!-- Challenges Grid -->
+  <div class="challenges-grid" id="challengesGrid">
+    <!-- Rendered dynamically -->
+  </div>
+
+  <!-- Challenge Leaderboard -->
+  <div class="challenge-leaderboard" id="leaderboardSection" style="display:none;">
+    <div class="challenge-lb-header">
+      <h2><i class="fas fa-trophy" style="color: var(--secondary);"></i> Challenge Leaderboard</h2>
+      <select class="forum-sort-select" onchange="switchLeaderboardChallenge(this.value)">
+        <option value="grand">Grand Innovation 2025</option>
+        <option value="fintech">FinTech Challenge</option>
+        <option value="health">HealthTech Sprint</option>
+      </select>
+    </div>
+    <div class="lb-table">
+      <div class="lb-row lb-header">
+        <div>Rank</div><div>Startup</div><div>Score</div><div>Change</div><div>Stage</div>
+      </div>
+      <div id="leaderboardRows"></div>
+    </div>
+  </div>
+
+</main>
+
+<!-- ===== REGISTRATION MODAL ===== -->
+<div class="modal-overlay" id="registerModal" onclick="if(event.target===this) closeRegister()">
+  <div class="modal-box" style="max-width: 580px;">
+    <button class="modal-close" onclick="closeRegister()"><i class="fas fa-times"></i></button>
+    <h2 style="font-family: var(--font-display); font-size: 1.4rem; font-weight: 800; margin-bottom: 8px;">
+      <i class="fas fa-rocket" style="color: var(--primary);"></i> Register for Challenge
+    </h2>
+    <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom: 20px;">Complete your application below. All fields marked * are required.</p>
+    <form onsubmit="submitRegistration(event)">
+      <div class="form-group">
+        <label class="form-label">Startup Name *</label>
+        <input type="text" class="form-input" id="regStartupName" placeholder="Your startup's name" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Category / Sector *</label>
+        <select class="form-input" id="regSector" required>
+          <option value="">Select primary sector</option>
+          <option>FinTech</option><option>HealthTech</option><option>AgriTech</option>
+          <option>EdTech</option><option>ClimaTech</option><option>Logistics</option>
+          <option>E-commerce</option><option>AI/ML</option><option>Other</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Stage *</label>
+        <select class="form-input" id="regStage" required>
+          <option value="">Select stage</option>
+          <option>Idea / Pre-product</option><option>MVP / Beta</option>
+          <option>Pre-revenue</option><option>Early Revenue</option><option>Growth Stage</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">One-Line Description *</label>
+        <input type="text" class="form-input" id="regDesc" placeholder="What problem does your startup solve?" required maxlength="120">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Pitch Deck / Website URL</label>
+        <input type="url" class="form-input" id="regUrl" placeholder="https://...">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Founder Email *</label>
+        <input type="email" class="form-input" id="regEmail" placeholder="founder@startup.com" required>
+      </div>
+      <div style="background: rgba(124,58,237,0.08); border: 1px solid rgba(124,58,237,0.2); border-radius: var(--radius); padding: 12px 16px; margin-bottom: 16px; font-size: 0.82rem; color: var(--text-muted);">
+        <i class="fas fa-info-circle" style="color: var(--primary);"></i> By registering, you agree to the challenge terms. Our panel will review applications and notify shortlisted startups within 2 weeks.
+      </div>
+      <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center; font-size:1rem; padding:14px;">
+        <i class="fas fa-paper-plane"></i> Submit Application
+      </button>
+    </form>
+  </div>
+</div>
+
+<!-- ===== CHALLENGE DETAIL MODAL ===== -->
+<div class="modal-overlay" id="challengeDetailModal" onclick="if(event.target===this) closeChallengeDetail()">
+  <div class="modal-box" style="max-width: 680px; max-height: 85vh; overflow-y: auto;">
+    <button class="modal-close" onclick="closeChallengeDetail()"><i class="fas fa-times"></i></button>
+    <div id="challengeDetailContent"></div>
+  </div>
+</div>
+
+<!-- ===== HOST CHALLENGE MODAL ===== -->
+<div class="modal-overlay" id="hostModal" onclick="if(event.target===this) closeHostModal()">
+  <div class="modal-box" style="max-width: 560px;">
+    <button class="modal-close" onclick="closeHostModal()"><i class="fas fa-times"></i></button>
+    <h2 style="font-family: var(--font-display); font-size: 1.4rem; font-weight: 800; margin-bottom: 8px;">
+      <i class="fas fa-trophy" style="color: var(--secondary);"></i> Host a Challenge
+    </h2>
+    <p style="color: var(--text-muted); font-size:0.88rem; margin-bottom: 20px;">Partner with AfricaLaunch to run your innovation challenge and reach 50,000+ African founders.</p>
+    <form onsubmit="submitHostApplication(event)">
+      <div class="form-group">
+        <label class="form-label">Organization Name *</label>
+        <input type="text" class="form-input" placeholder="Company / Foundation name" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Challenge Theme *</label>
+        <input type="text" class="form-input" placeholder="e.g. Climate Innovation for Sub-Saharan Africa" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Total Prize Pool *</label>
+        <input type="text" class="form-input" placeholder="e.g. $50,000" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Your Contact Email *</label>
+        <input type="email" class="form-input" placeholder="contact@organization.com" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Brief Description</label>
+        <textarea class="form-input" rows="3" placeholder="Tell us about your challenge goals and target participants..." style="resize:vertical;"></textarea>
+      </div>
+      <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center; margin-top:8px;">
+        <i class="fas fa-envelope"></i> Send Enquiry
+      </button>
+    </form>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand"><div class="footer-logo">🚀 AfricaLaunch</div><p class="footer-desc">Africa's premier startup ecosystem platform.</p></div>
+      <div class="footer-links"><h4>Platform</h4><ul><li><a href="startups.html">Startups</a></li><li><a href="investors.html">Investors</a></li><li><a href="media.html">Media</a></li></ul></div>
+      <div class="footer-links"><h4>Community</h4><ul><li><a href="challenges.html">Challenges</a></li><li><a href="forum.html">Forum</a></li><li><a href="leaderboard.html">Leaderboard</a></li></ul></div>
+      <div class="footer-links"><h4>Resources</h4><ul><li><a href="analytics.html">Analytics</a></li><li><a href="growth.html">Growth Tracker</a></li><li><a href="pricing.html">Pricing</a></li></ul></div>
+    </div>
+    <div class="footer-bottom"><p>© 2025 AfricaLaunch. All rights reserved.</p></div>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+<script>
+// ===== CHALLENGE DATA =====
+const challengeData = [
+  {
+    id: 'grand2025', emoji: '🏆', status: 'open', difficulty: 'advanced', category: 'all',
+    title: 'AfricaLaunch Grand Innovation Challenge 2025',
+    org: 'AfricaLaunch', orgLogo: '🚀',
+    desc: 'Africa\'s biggest startup challenge open to all sectors. 3-stage competition with expert judges from Google, Sequoia, and leading African VCs.',
+    prizes: [{ label: '🥇 1st', value: '$100K', class: 'prize-1st' }, { label: '🥈 2nd', value: '$50K', class: 'prize-2nd' }, { label: '🥉 3rd', value: '$25K', class: 'prize-3rd' }],
+    deadline: 'Jun 30, 2025', participants: 2847, maxParticipants: 5000,
+    avatars: ['AO', 'DM', 'KN', 'ZA', 'FA'],
+    details: 'This premier challenge evaluates startups across: Innovation (30%), Market Potential (25%), Traction (25%), Team (20%). Winners receive $100K cash, 6-month accelerator placement, and introductions to 40+ investors.'
+  },
+  {
+    id: 'fintech2025', emoji: '💳', status: 'open', difficulty: 'intermediate', category: 'fintech',
+    title: 'Africa FinTech Innovation Sprint',
+    org: 'Standard Bank Africa', orgLogo: '🏦',
+    desc: 'Build the future of African financial services. Focus areas: payments, lending, insurance, and wealth management for the unbanked.',
+    prizes: [{ label: '🥇 Winner', value: '$40K', class: 'prize-1st' }, { label: '🥈 Runner', value: '$15K', class: 'prize-2nd' }, { label: '🚀 Accel', value: '3-month', class: 'prize-other' }],
+    deadline: 'Jul 15, 2025', participants: 1240, maxParticipants: 2000,
+    avatars: ['TE', 'AO', 'NK', 'BT'],
+    details: 'Open to FinTech startups in seed or early revenue stage. Judged by Standard Bank executives and regional VC partners. Top 3 receive pilot partnerships with Standard Bank.'
+  },
+  {
+    id: 'health72h', emoji: '🏥', status: 'open', difficulty: 'beginner', category: 'healthtech',
+    title: 'HealthTech Africa 72-Hour Sprint',
+    org: 'WHO Africa + Merck', orgLogo: '🏥',
+    desc: 'Build a health tech solution in 72 hours. Tackle maternal health, disease prevention, medical supply chains, or telemedicine access.',
+    prizes: [{ label: '🥇 Grand', value: '$30K', class: 'prize-1st' }, { label: '🥈 2nd', value: '$10K', class: 'prize-2nd' }, { label: '🏆 5 Grants', value: '$5K each', class: 'prize-other' }],
+    deadline: 'Jun 20, 2025', participants: 680, maxParticipants: 1000,
+    avatars: ['VS', 'AO', 'KE'],
+    details: '72-hour hackathon format. Teams of 2-5. All health sub-sectors welcome. Prototype must address a real African health challenge with a viable path to deployment.'
+  },
+  {
+    id: 'climate2025', emoji: '🌱', status: 'open', difficulty: 'intermediate', category: 'climate',
+    title: 'Africa ClimaTech Challenge 2025',
+    org: 'African Development Bank', orgLogo: '🌍',
+    desc: 'Climate solutions built for Africa. Renewable energy, sustainable agriculture, water tech, waste management, and clean transport.',
+    prizes: [{ label: '🥇 1st', value: '$60K', class: 'prize-1st' }, { label: '🌍 Grant', value: '$25K x 3', class: 'prize-other' }, { label: '🚀 Pilot', value: 'AfDB pilot', class: 'prize-other' }],
+    deadline: 'Aug 1, 2025', participants: 930, maxParticipants: 2000,
+    avatars: ['MA', 'OS', 'NK', 'DT', 'KA'],
+    details: 'Supported by African Development Bank. Winners receive a funded pilot project with AfDB partners. Track 1: Clean Energy. Track 2: AgriClimate. Track 3: Urban Resilience.'
+  },
+  {
+    id: 'agri2025', emoji: '🌾', status: 'closing', difficulty: 'intermediate', category: 'agritech',
+    title: 'Feeding Africa Innovation Challenge',
+    org: 'Olam Agri + World Bank', orgLogo: '🌾',
+    desc: 'Transform African food systems. Supply chain digitization, precision farming, food traceability, cold chain logistics, and market access.',
+    prizes: [{ label: '🥇 Winner', value: '$50K', class: 'prize-1st' }, { label: '🥈 2nd', value: '$20K', class: 'prize-2nd' }, { label: '🌾 Pilots', value: '3 pilots', class: 'prize-other' }],
+    deadline: 'Jun 15, 2025', participants: 1580, maxParticipants: 2000,
+    avatars: ['KO', 'AM', 'DS', 'TN'],
+    details: 'CLOSING SOON — only 200 spots remaining. Olam Agri will offer 3 commercial pilot projects to top applicants, regardless of final placement.'
+  },
+  {
+    id: 'ai2025', emoji: '🤖', status: 'open', difficulty: 'advanced', category: 'ai',
+    title: 'AI for Africa Challenge',
+    org: 'Google AI + Microsoft', orgLogo: '🤖',
+    desc: 'Apply AI/ML to solve uniquely African problems. Natural language processing for local languages, predictive analytics, computer vision, and more.',
+    prizes: [{ label: '🥇 Grand', value: '$75K', class: 'prize-1st' }, { label: '☁️ Cloud', value: '$100K credits', class: 'prize-other' }, { label: '👥 Mentors', value: 'Google + MS', class: 'prize-other' }],
+    deadline: 'Jul 31, 2025', participants: 2100, maxParticipants: 3000,
+    avatars: ['JA', 'SO', 'KD', 'LM', 'RP'],
+    details: 'Co-hosted by Google AI and Microsoft. Requires a working AI prototype. Judges include AI researchers from DeepMind, Google Brain, and African AI researchers.'
+  },
+  {
+    id: 'edtech2025', emoji: '📚', status: 'upcoming', difficulty: 'beginner', category: 'all',
+    title: 'Africa EdTech Transform Prize 2025',
+    org: 'UNESCO + Mastercard Foundation', orgLogo: '📚',
+    desc: 'Reimagine education for 600 million African children and youth. Focus on offline-first, low-bandwidth solutions and teacher empowerment.',
+    prizes: [{ label: '🥇 1st', value: '$45K', class: 'prize-1st' }, { label: '🎓 Scale', value: '12-month support', class: 'prize-other' }],
+    deadline: 'Sep 1, 2025', participants: 0, maxParticipants: 1500,
+    avatars: [],
+    details: 'Opens August 1, 2025. Backed by UNESCO and Mastercard Foundation. Winners receive scaling support including deployment grants in 3+ African countries.'
+  },
+  {
+    id: 'logistics2025', emoji: '🚚', status: 'upcoming', difficulty: 'intermediate', category: 'all',
+    title: 'Last-Mile Logistics Challenge',
+    org: 'DHL + TechCabal', orgLogo: '🚚',
+    desc: 'Solve Africa\'s last-mile delivery problem. Route optimization, delivery verification, cash-on-delivery systems, and cross-border logistics.',
+    prizes: [{ label: '🥇 Winner', value: '$35K', class: 'prize-1st' }, { label: '🤝 DHL', value: 'Partnership', class: 'prize-other' }],
+    deadline: 'Aug 15, 2025', participants: 120, maxParticipants: 800,
+    avatars: ['DO', 'AK'],
+    details: 'Pre-registration open. Challenge starts July 1. DHL will partner with the winner to deploy their solution across DHL\'s African network.'
+  }
+];
+
+const leaderboardData = {
+  grand: [
+    { rank: 1, startup: 'PayLink NG', emoji: '💳', country: 'Nigeria', sector: 'FinTech', score: 94.2, change: 'up', changeVal: '+2', stage: 'Series A' },
+    { rank: 2, startup: 'HealthBridge', emoji: '🏥', country: 'Kenya', sector: 'HealthTech', score: 91.8, change: 'same', changeVal: '—', stage: 'Series B' },
+    { rank: 3, startup: 'Farmly', emoji: '🌱', country: 'Ghana', sector: 'AgriTech', score: 89.5, change: 'up', changeVal: '+1', stage: 'Seed' },
+    { rank: 4, startup: 'SolarGrid Africa', emoji: '☀️', country: 'S. Africa', sector: 'ClimaTech', score: 87.3, change: 'down', changeVal: '-1', stage: 'Seed' },
+    { rank: 5, startup: 'MediTrack', emoji: '💊', country: 'Ethiopia', sector: 'HealthTech', score: 85.1, change: 'up', changeVal: '+3', stage: 'Pre-seed' },
+    { rank: 6, startup: 'FleetX', emoji: '🚚', country: 'Egypt', sector: 'Logistics', score: 82.9, change: 'down', changeVal: '-2', stage: 'Series A' },
+    { rank: 7, startup: 'CropSense', emoji: '🌾', country: 'Uganda', sector: 'AgriTech', score: 80.7, change: 'up', changeVal: '+2', stage: 'MVP' },
+    { rank: 8, startup: 'EduPanda', emoji: '📚', country: 'S. Africa', sector: 'EdTech', score: 78.4, change: 'same', changeVal: '—', stage: 'Pre-seed' }
+  ]
+};
+
+let currentChallengeFilter = 'all';
+
+function initChallenges() {
+  fetch('tables/challenges?limit=20')
+    .then(r => r.json())
+    .then(d => {
+      const apiChallenges = (d.data || []).map(c => ({
+        id: c.id, emoji: '🏆', status: c.status || 'open', difficulty: c.difficulty || 'intermediate',
+        category: c.category || 'all', title: c.title || 'Challenge', org: c.organizer || 'AfricaLaunch', orgLogo: '🏢',
+        desc: c.description || '', prizes: [{ label: '🥇 Prize', value: c.prize_pool || 'TBD', class: 'prize-1st' }],
+        deadline: c.deadline || 'TBD', participants: c.participants || 0, maxParticipants: 500, avatars: []
+      }));
+      const combined = [...challengeData, ...apiChallenges];
+      renderChallenges(combined);
+    })
+    .catch(() => renderChallenges(challengeData));
+}
+
+function renderChallenges(data) {
+  const grid = document.getElementById('challengesGrid');
+  if (!grid) return;
+  
+  const filtered = currentChallengeFilter === 'all' ? data :
+    data.filter(c => c.status === currentChallengeFilter || c.category === currentChallengeFilter);
+  
+  grid.innerHTML = filtered.map(c => `
+    <article class="challenge-card" onclick="openChallengeDetail('${c.id}')">
+      <div class="challenge-card-img">
+        <span style="opacity:0.4;">${c.emoji}</span>
+        <div class="challenge-card-img-overlay"></div>
+        <span class="challenge-status-badge status-${c.status}">${c.status}</span>
+        <span class="difficulty-badge diff-${c.difficulty}">${c.difficulty}</span>
+      </div>
+      <div class="challenge-card-body">
+        <div class="challenge-org">
+          <div class="org-logo">${c.orgLogo}</div>
+          <span>${c.org}</span>
+        </div>
+        <h3 class="challenge-card-title">${c.title}</h3>
+        <p class="challenge-card-desc">${c.desc}</p>
+        <div class="challenge-prizes">
+          ${c.prizes.map(p => `<span class="prize-tag ${p.class}">${p.label} ${p.value}</span>`).join('')}
+        </div>
+        <div class="challenge-card-footer">
+          <div class="challenge-meta">
+            <span><i class="fas fa-calendar"></i> Closes ${c.deadline}</span>
+            <span><i class="fas fa-users"></i> ${c.participants.toLocaleString()} registered</span>
+          </div>
+          <div class="challenge-participants">
+            <div class="participants-avatars">
+              ${c.avatars.slice(0,4).map((a, i) => `<div class="p-avatar" style="background: hsl(${i*60},60%,40%);">${a}</div>`).join('')}
+              ${c.avatars.length > 4 ? `<div class="p-avatar" style="background:var(--border-light);">+${c.avatars.length - 4}</div>` : ''}
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>`).join('');
+}
+
+function filterChallenges(btn, filter) {
+  currentChallengeFilter = filter;
+  document.querySelectorAll('.ch-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  
+  if (filter === 'leaderboard') { viewLeaderboard(); return; }
+  document.getElementById('leaderboardSection').style.display = 'none';
+  document.getElementById('challengesGrid').style.display = 'grid';
+  renderChallenges(challengeData);
+}
+
+function viewLeaderboard() {
+  document.getElementById('leaderboardSection').style.display = 'block';
+  document.getElementById('challengesGrid').style.display = 'none';
+  renderLeaderboard('grand');
+  document.getElementById('leaderboardSection').scrollIntoView({ behavior: 'smooth' });
+}
+
+function renderLeaderboard(key) {
+  const data = leaderboardData[key] || leaderboardData.grand;
+  const container = document.getElementById('leaderboardRows');
+  if (!container) return;
+  
+  container.innerHTML = data.map(row => {
+    const rankClass = row.rank === 1 ? 'rank-gold' : row.rank === 2 ? 'rank-silver' : row.rank === 3 ? 'rank-bronze' : '';
+    const rankDisplay = row.rank <= 3 ? ['🥇','🥈','🥉'][row.rank-1] : row.rank;
+    const changeClass = row.change;
+    const changeIcon = { up: 'fa-arrow-up', down: 'fa-arrow-down', same: 'fa-minus' }[row.change];
+    return `
+      <div class="lb-row">
+        <div class="lb-rank ${rankClass}">${rankDisplay}</div>
+        <div class="lb-startup">
+          <div class="lb-avatar">${row.emoji}</div>
+          <div><div class="lb-name">${row.startup}</div><div class="lb-sub">${row.country} · ${row.sector}</div></div>
+        </div>
+        <div class="lb-score">${row.score}</div>
+        <div class="lb-change ${changeClass}"><i class="fas ${changeIcon}"></i> ${row.changeVal}</div>
+        <div style="font-size:0.8rem; color:var(--text-muted);">${row.stage}</div>
+      </div>`;
+  }).join('');
+}
+
+function switchLeaderboardChallenge(val) { renderLeaderboard(val); }
+
+function openChallengeDetail(id) {
+  const challenge = challengeData.find(c => c.id === id);
+  if (!challenge) return;
+  
+  const content = document.getElementById('challengeDetailContent');
+  content.innerHTML = `
+    <div style="height: 160px; border-radius: var(--radius-lg); background: linear-gradient(135deg, rgba(124,58,237,0.2), rgba(245,158,11,0.15)); display:flex; align-items:center; justify-content:center; font-size:60px; margin-bottom:24px; position:relative;">
+      ${challenge.emoji}
+      <span class="challenge-status-badge status-${challenge.status}" style="position:absolute; top:14px; right:14px;">${challenge.status}</span>
+    </div>
+    <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px; font-size:0.85rem; color:var(--text-muted);">
+      <span style="font-size:18px;">${challenge.orgLogo}</span> <strong>${challenge.org}</strong>
+    </div>
+    <h2 style="font-family:var(--font-display); font-size:1.5rem; font-weight:800; margin-bottom:12px;">${challenge.title}</h2>
+    <div style="display:flex; gap:16px; margin-bottom:20px; flex-wrap:wrap; font-size:0.85rem; color:var(--text-muted);">
+      <span><i class="fas fa-calendar"></i> Closes ${challenge.deadline}</span>
+      <span><i class="fas fa-users"></i> ${challenge.participants.toLocaleString()} / ${challenge.maxParticipants.toLocaleString()} registered</span>
+      <span class="difficulty-badge diff-${challenge.difficulty}" style="position:relative; top:auto; left:auto;">${challenge.difficulty}</span>
+    </div>
+    <p style="color:var(--text-muted); line-height:1.7; margin-bottom:20px; font-size:0.95rem;">${challenge.details || challenge.desc}</p>
+    <h3 style="font-weight:700; margin-bottom:12px;">🏆 Prize Structure</h3>
+    <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:24px;">
+      ${challenge.prizes.map(p => `<span class="prize-tag ${p.class}" style="font-size:0.9rem; padding: 6px 14px;">${p.label} ${p.value}</span>`).join('')}
+    </div>
+    <div style="display:flex; gap:12px;">
+      <button class="btn btn-primary" onclick="closeModalAndRegister('${challenge.id}')" style="flex:1; justify-content:center;">
+        <i class="fas fa-paper-plane"></i> Apply Now
+      </button>
+      <button class="btn btn-outline" onclick="closeChallengeDetail()" style="flex:1; justify-content:center;">
+        <i class="fas fa-times"></i> Close
+      </button>
+    </div>`;
+  
+  document.getElementById('challengeDetailModal').classList.add('active');
+}
+
+function closeModalAndRegister(id) {
+  closeChallengeDetail();
+  openRegisterModal(id);
+}
+
+function closeChallengeDetail() { document.getElementById('challengeDetailModal').classList.remove('active'); }
+
+function openRegisterModal(id) {
+  document.getElementById('registerModal').classList.add('active');
+}
+function closeRegister() { document.getElementById('registerModal').classList.remove('active'); }
+
+function submitRegistration(e) {
+  e.preventDefault();
+  const data = {
+    startup_name: document.getElementById('regStartupName').value,
+    sector: document.getElementById('regSector').value,
+    stage: document.getElementById('regStage').value,
+    description: document.getElementById('regDesc').value,
+    email: document.getElementById('regEmail').value
+  };
+  fetch('tables/challenges', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  }).catch(() => {});
+  closeRegister();
+  e.target.reset();
+  showToast('Application submitted! 🎉 We\'ll review and notify you within 2 weeks.', 'success', 5000);
+}
+
+function openHostModal() { document.getElementById('hostModal').classList.add('active'); }
+function closeHostModal() { document.getElementById('hostModal').classList.remove('active'); }
+function submitHostApplication(e) {
+  e.preventDefault();
+  closeHostModal();
+  e.target.reset();
+  showToast('Enquiry sent! Our partnerships team will be in touch within 48 hours.', 'success', 5000);
+}
+
+// Countdown timer
+function updateCountdown() {
+  const deadline = new Date('2025-06-30T23:59:59');
+  const now = new Date();
+  const diff = deadline - now;
+  if (diff <= 0) return;
+  const days = Math.floor(diff / 86400000);
+  const hours = Math.floor((diff % 86400000) / 3600000);
+  const mins = Math.floor((diff % 3600000) / 60000);
+  const secs = Math.floor((diff % 60000) / 1000);
+  const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = String(val).padStart(2,'0'); };
+  set('cd-days', days); set('cd-hours', hours); set('cd-mins', mins); set('cd-secs', secs);
+}
+setInterval(updateCountdown, 1000);
+updateCountdown();
+
+document.addEventListener('DOMContentLoaded', initChallenges);
+</script>
+</body>
+</html>

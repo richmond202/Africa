@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Leaderboard — AfricaLaunch</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .lb-hero-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 48px; }
+    .lb-kpi { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 24px; text-align: center; }
+    .lb-kpi-val { font-size: 2rem; font-weight: 900; background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .lb-kpi-lbl { font-size: 13px; color: var(--text-muted); }
+    .full-podium { display: flex; align-items: flex-end; justify-content: center; gap: 20px; padding: 40px 20px 0; margin-bottom: 40px; }
+    .full-podium-item { text-align: center; flex: 1; max-width: 180px; }
+    .full-podium-avatar { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin: 0 auto 8px; border: 3px solid; }
+    .podium-1st .full-podium-avatar { border-color: #f59e0b; width: 100px; height: 100px; }
+    .podium-2nd .full-podium-avatar { border-color: #9ca3af; }
+    .podium-3rd .full-podium-avatar { border-color: #b45309; }
+    .full-podium-bar { border-radius: 8px 8px 0 0; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 900; margin-top: 12px; }
+    .podium-1st .full-podium-bar { height: 120px; background: linear-gradient(180deg, rgba(245,158,11,0.3), rgba(245,158,11,0.08)); color: #f59e0b; }
+    .podium-2nd .full-podium-bar { height: 80px; background: linear-gradient(180deg, rgba(156,163,175,0.3), rgba(156,163,175,0.08)); color: #9ca3af; }
+    .podium-3rd .full-podium-bar { height: 60px; background: linear-gradient(180deg, rgba(180,83,9,0.3), rgba(180,83,9,0.08)); color: #b45309; }
+    .lb-full-table { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-xl); overflow: hidden; }
+    .lb-full-table table { width: 100%; border-collapse: collapse; }
+    .lb-full-table th { text-align: left; padding: 14px 20px; font-size: 12px; font-weight: 600; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px; background: rgba(255,255,255,0.02); border-bottom: 1px solid var(--border); }
+    .lb-full-table td { padding: 16px 20px; border-bottom: 1px solid rgba(255,255,255,0.04); font-size: 14px; vertical-align: middle; }
+    .lb-full-table tr:hover td { background: rgba(255,255,255,0.02); }
+    .lb-full-table tr:last-child td { border-bottom: none; }
+    .rank-num { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; }
+    .rank-1 { background: linear-gradient(135deg,#f59e0b,#d97706); color: #fff; }
+    .rank-2 { background: linear-gradient(135deg,#9ca3af,#6b7280); color: #fff; }
+    .rank-3 { background: linear-gradient(135deg,#b45309,#92400e); color: #fff; }
+    .rank-other { background: rgba(255,255,255,0.06); color: var(--text-muted); }
+    .badges-wrap { display: flex; gap: 4px; flex-wrap: wrap; }
+    .badge-pill { background: rgba(124,58,237,0.12); border: 1px solid rgba(124,58,237,0.2); border-radius: 50px; padding: 3px 10px; font-size: 11px; color: #a78bfa; }
+    .points-bar-wrap { display: flex; align-items: center; gap: 10px; }
+    .points-bar { flex: 1; height: 4px; background: rgba(255,255,255,0.08); border-radius: 2px; min-width: 60px; }
+    .points-bar-fill { height: 100%; background: var(--gradient-primary); border-radius: 2px; }
+    .level-pills { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 28px; }
+    .join-card { background: var(--gradient-primary); border-radius: var(--radius-xl); padding: 48px; text-align: center; margin-top: 48px; }
+    .how-to-earn { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; margin-bottom: 48px; }
+    .earn-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 24px; text-align: center; }
+    .earn-icon { font-size: 36px; margin-bottom: 12px; }
+    .earn-pts { font-size: 1.4rem; font-weight: 800; color: var(--primary); margin-bottom: 4px; }
+    @media (max-width: 900px) { .lb-hero-grid { grid-template-columns: repeat(2,1fr); } .full-podium { display: none; } }
+    @media (max-width: 640px) { .lb-hero-grid { grid-template-columns: 1fr 1fr; } }
+  </style>
+</head>
+<body>
+<nav class="navbar scrolled" id="navbar">
+  <div class="nav-container">
+    <a href="index.html" class="nav-logo"><span class="logo-icon">🚀</span><span class="logo-text">AfricaLaunch</span></a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="index.html" class="nav-link">Home</a></li>
+      <li><a href="startups.html" class="nav-link">Startups</a></li>
+      <li><a href="investors.html" class="nav-link">Investors</a></li>
+      <li><a href="events.html" class="nav-link">Events</a></li>
+      <li><a href="marketplace.html" class="nav-link">Marketplace</a></li>
+      <li class="nav-dropdown">
+        <a href="#" class="nav-link dropdown-toggle">More <i class="fas fa-chevron-down"></i></a>
+        <ul class="dropdown-menu">
+          <li><a href="incubator.html"><i class="fas fa-building"></i> Incubator Hub</a></li>
+          <li><a href="ecosystem.html"><i class="fas fa-globe-africa"></i> Ecosystem</a></li>
+          <li><a href="analytics.html"><i class="fas fa-chart-bar"></i> Analytics</a></li>
+          <li><a href="leaderboard.html"><i class="fas fa-trophy"></i> Leaderboard</a></li>
+          <li><a href="awards.html"><i class="fas fa-medal"></i> Awards</a></li>
+        </ul>
+      </li>
+    </ul>
+    <div class="nav-actions"><a href="submit.html" class="btn btn-primary"><i class="fas fa-plus"></i> Submit Startup</a></div>
+    <button class="nav-toggle" onclick="toggleNav()"><i class="fas fa-bars"></i></button>
+  </div>
+</nav>
+
+<div class="page-hero">
+  <div class="container">
+    <div class="section-label">🏆 Gamification</div>
+    <h1>Community <span class="gradient-text">Leaderboard</span></h1>
+    <p>Earn points, collect badges, climb the ranks, and become a legend in Africa's startup ecosystem.</p>
+  </div>
+</div>
+
+<section class="section" style="padding-top:40px">
+  <div class="container">
+    <div class="lb-hero-grid">
+      <div class="lb-kpi"><div class="lb-kpi-val" id="lbTotalMembers">—</div><div class="lb-kpi-lbl">Community Members</div></div>
+      <div class="lb-kpi"><div class="lb-kpi-val" id="lbTotalPoints">—</div><div class="lb-kpi-lbl">Total Points Earned</div></div>
+      <div class="lb-kpi"><div class="lb-kpi-val" id="lbTopPoints">—</div><div class="lb-kpi-lbl">Top Score</div></div>
+      <div class="lb-kpi"><div class="lb-kpi-val">6</div><div class="lb-kpi-lbl">Achievement Levels</div></div>
+    </div>
+
+    <!-- Levels explanation -->
+    <div class="level-pills">
+      <span class="level-badge level-Newcomer" style="padding:6px 16px">Newcomer</span>
+      <span style="font-size:12px;color:var(--text-dim);align-self:center">→ 500pts →</span>
+      <span class="level-badge level-Explorer" style="padding:6px 16px">Explorer</span>
+      <span style="font-size:12px;color:var(--text-dim);align-self:center">→ 1,500pts →</span>
+      <span class="level-badge level-Builder" style="padding:6px 16px">Builder</span>
+      <span style="font-size:12px;color:var(--text-dim);align-self:center">→ 3,500pts →</span>
+      <span class="level-badge level-Innovator" style="padding:6px 16px">Innovator</span>
+      <span style="font-size:12px;color:var(--text-dim);align-self:center">→ 6,000pts →</span>
+      <span class="level-badge level-Pioneer" style="padding:6px 16px">Pioneer</span>
+      <span style="font-size:12px;color:var(--text-dim);align-self:center">→ 10,000pts →</span>
+      <span class="level-badge level-Legend" style="padding:6px 16px">🌟 Legend</span>
+    </div>
+
+    <!-- Podium -->
+    <div class="full-podium" id="fullPodium"></div>
+
+    <!-- Full Table -->
+    <div class="lb-full-table">
+      <table>
+        <thead>
+          <tr>
+            <th>Rank</th>
+            <th>Member</th>
+            <th>Country</th>
+            <th>Level</th>
+            <th>Points</th>
+            <th>Badges</th>
+            <th>Activity</th>
+          </tr>
+        </thead>
+        <tbody id="fullLbTbody"></tbody>
+      </table>
+    </div>
+
+    <!-- How to Earn -->
+    <div style="margin-top:60px">
+      <div class="section-header" style="margin-bottom:28px">
+        <h2 class="section-title">How to <span class="gradient-text">Earn Points</span></h2>
+      </div>
+      <div class="how-to-earn">
+        <div class="earn-card"><div class="earn-icon">🚀</div><div class="earn-pts">+200</div><h4>Submit a Startup</h4><p style="font-size:12px;color:var(--text-dim)">Per approved submission</p></div>
+        <div class="earn-card"><div class="earn-icon">🗳️</div><div class="earn-pts">+5</div><h4>Vote for Startups</h4><p style="font-size:12px;color:var(--text-dim)">Per upvote cast</p></div>
+        <div class="earn-card"><div class="earn-icon">📅</div><div class="earn-pts">+50</div><h4>Attend Events</h4><p style="font-size:12px;color:var(--text-dim)">Per event attended</p></div>
+        <div class="earn-card"><div class="earn-icon">👥</div><div class="earn-pts">+100</div><h4>Refer Friends</h4><p style="font-size:12px;color:var(--text-dim)">Per successful referral</p></div>
+        <div class="earn-card"><div class="earn-icon">🏆</div><div class="earn-pts">+500</div><h4>Win an Award</h4><p style="font-size:12px;color:var(--text-dim)">Per award category won</p></div>
+        <div class="earn-card"><div class="earn-icon">💬</div><div class="earn-pts">+25</div><h4>Community Posts</h4><p style="font-size:12px;color:var(--text-dim)">Per quality discussion post</p></div>
+      </div>
+    </div>
+
+    <div class="join-card">
+      <h2 style="font-size:2rem;font-weight:800;margin-bottom:12px">🏅 Join the Community</h2>
+      <p style="color:rgba(255,255,255,0.8);max-width:480px;margin:0 auto 28px">Start earning points today. Submit startups, vote, attend events, and claim your place at the top!</p>
+      <a href="submit.html" class="btn btn-lg" style="background:#fff;color:var(--primary);font-weight:700"><i class="fas fa-rocket"></i> Submit Your Startup</a>
+    </div>
+  </div>
+</section>
+
+<div class="toast-container" id="toastContainer"></div>
+<script src="js/main.js"></script>
+<script>
+  async function loadLeaderboard() {
+    try {
+      const res = await fetch('tables/leaderboard?limit=50');
+      const data = await res.json();
+      const leaders = (data.data || []).sort((a, b) => (b.points||0) - (a.points||0));
+      const totalPts = leaders.reduce((a,l)=>a+(l.points||0),0);
+
+      document.getElementById('lbTotalMembers').textContent = leaders.length + '+';
+      document.getElementById('lbTotalPoints').textContent = (totalPts/1000).toFixed(0) + 'K';
+      document.getElementById('lbTopPoints').textContent = (leaders[0]?.points||0).toLocaleString();
+
+      // Podium top 3
+      if (leaders.length >= 3) {
+        const order = [leaders[1], leaders[0], leaders[2]];
+        const classes = ['podium-2nd', 'podium-1st', 'podium-3rd'];
+        const ranks = ['2nd', '1st', '3rd'];
+        const medals = ['🥈', '🥇', '🥉'];
+        document.getElementById('fullPodium').innerHTML = order.map((l, i) => `
+          <div class="full-podium-item ${classes[i]}">
+            <img src="${l.avatar_url}" alt="${l.user_name}" class="full-podium-avatar">
+            <div style="font-weight:700;font-size:15px">${l.user_name}</div>
+            <div style="font-size:12px;color:var(--text-muted)">${(l.points||0).toLocaleString()} pts</div>
+            <div class="full-podium-bar">${medals[i]}</div>
+          </div>
+        `).join('');
+      }
+
+      // Full table
+      const maxPts = leaders[0]?.points || 1;
+      document.getElementById('fullLbTbody').innerHTML = leaders.map((l, i) => {
+        const pct = Math.round(((l.points||0) / maxPts) * 100);
+        const rankClass = i === 0 ? 'rank-1' : i === 1 ? 'rank-2' : i === 2 ? 'rank-3' : 'rank-other';
+        const rankLabel = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : i + 1;
+        return `
+          <tr>
+            <td><div class="rank-num ${rankClass}">${rankLabel}</div></td>
+            <td>
+              <div style="display:flex;align-items:center;gap:10px">
+                <img src="${l.avatar_url}" alt="${l.user_name}" style="width:40px;height:40px;border-radius:50%;object-fit:cover">
+                <div>
+                  <div style="font-weight:700">${l.user_name}</div>
+                  <div style="font-size:12px;color:var(--text-dim)">${l.startups_submitted||0} startups · ${l.events_attended||0} events</div>
+                </div>
+              </div>
+            </td>
+            <td style="color:var(--text-muted)">${l.country||'—'}</td>
+            <td><span class="level-badge level-${l.level}">${l.level}</span></td>
+            <td>
+              <div class="points-bar-wrap">
+                <strong style="color:var(--primary)">${(l.points||0).toLocaleString()}</strong>
+                <div class="points-bar"><div class="points-bar-fill" style="width:${pct}%"></div></div>
+              </div>
+            </td>
+            <td><div class="badges-wrap">${(l.badges||[]).slice(0,3).map(b=>`<span class="badge-pill" title="${b}">🏅</span>`).join('')}${(l.badges||[]).length > 3 ? `<span style="font-size:12px;color:var(--text-dim)">+${(l.badges||[]).length-3}</span>`:''}</div></td>
+            <td style="color:var(--text-muted);font-size:13px">${l.referrals||0} referrals</td>
+          </tr>
+        `;
+      }).join('');
+    } catch(e) { console.error(e); }
+  }
+  document.addEventListener('DOMContentLoaded', loadLeaderboard);
+</script>
+</body>
+</html>

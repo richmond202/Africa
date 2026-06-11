@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Analytics Dashboard — AfricaLaunch</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .analytics-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 32px; }
+    .kpi-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 24px; position: relative; overflow: hidden; }
+    .kpi-card::before { content: ''; position: absolute; right: -20px; top: -20px; width: 80px; height: 80px; border-radius: 50%; opacity: 0.1; }
+    .kpi-card.purple::before { background: var(--primary); }
+    .kpi-card.green::before { background: var(--accent); }
+    .kpi-card.gold::before { background: var(--secondary); }
+    .kpi-card.blue::before { background: var(--blue); }
+    .kpi-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; margin-bottom: 12px; }
+    .kpi-icon.purple { background: rgba(124,58,237,0.15); color: var(--primary); }
+    .kpi-icon.green { background: rgba(22,163,74,0.15); color: var(--accent); }
+    .kpi-icon.gold { background: rgba(245,158,11,0.15); color: var(--secondary); }
+    .kpi-icon.blue { background: rgba(59,130,246,0.15); color: var(--blue); }
+    .kpi-value { font-size: 2rem; font-weight: 800; margin-bottom: 4px; }
+    .kpi-label { font-size: 13px; color: var(--text-muted); margin-bottom: 8px; }
+    .kpi-change { font-size: 12px; font-weight: 600; }
+    .kpi-change.up { color: #4ade80; }
+    .kpi-change.down { color: #f87171; }
+    .charts-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 24px; margin-bottom: 24px; }
+    .chart-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 24px; }
+    .chart-card h4 { font-weight: 700; font-size: 15px; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
+    .chart-card h4 i { color: var(--primary); }
+    .chart-container { position: relative; height: 280px; }
+    .charts-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; margin-bottom: 24px; }
+    .top-list { display: flex; flex-direction: column; gap: 12px; }
+    .top-item { display: flex; align-items: center; gap: 12px; }
+    .top-rank { width: 28px; height: 28px; border-radius: 50%; background: rgba(124,58,237,0.1); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: var(--primary); flex-shrink: 0; }
+    .top-logo { width: 36px; height: 36px; border-radius: 8px; }
+    .top-name { font-weight: 600; font-size: 14px; }
+    .top-val { font-size: 12px; color: var(--text-muted); }
+    .top-bar { flex: 1; }
+    .top-bar-fill { height: 4px; border-radius: 2px; background: var(--gradient-primary); }
+    .tab-bar { display: flex; gap: 4px; border-bottom: 1px solid var(--border); margin-bottom: 28px; }
+    .tab-btn { padding: 10px 20px; border-radius: 8px 8px 0 0; font-size: 14px; font-weight: 500; color: var(--text-muted); cursor: pointer; transition: var(--transition); border-bottom: 2px solid transparent; margin-bottom: -1px; }
+    .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); background: rgba(124,58,237,0.06); }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+    .ecosystem-summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    @media (max-width: 1100px) { .analytics-grid { grid-template-columns: repeat(2, 1fr); } .charts-grid { grid-template-columns: 1fr; } .charts-grid-3 { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 640px) { .analytics-grid { grid-template-columns: 1fr 1fr; } .charts-grid-3 { grid-template-columns: 1fr; } .ecosystem-summary { grid-template-columns: 1fr 1fr; } }
+  </style>
+</head>
+<body>
+<nav class="navbar scrolled" id="navbar">
+  <div class="nav-container">
+    <a href="index.html" class="nav-logo"><span class="logo-icon">🚀</span><span class="logo-text">AfricaLaunch</span></a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="index.html" class="nav-link">Home</a></li>
+      <li><a href="startups.html" class="nav-link">Startups</a></li>
+      <li><a href="investors.html" class="nav-link">Investors</a></li>
+      <li><a href="events.html" class="nav-link">Events</a></li>
+      <li><a href="marketplace.html" class="nav-link">Marketplace</a></li>
+      <li class="nav-dropdown">
+        <a href="#" class="nav-link dropdown-toggle">More <i class="fas fa-chevron-down"></i></a>
+        <ul class="dropdown-menu">
+          <li><a href="incubator.html"><i class="fas fa-building"></i> Incubator Hub</a></li>
+          <li><a href="ecosystem.html"><i class="fas fa-globe-africa"></i> Ecosystem</a></li>
+          <li><a href="analytics.html"><i class="fas fa-chart-bar"></i> Analytics</a></li>
+          <li><a href="leaderboard.html"><i class="fas fa-trophy"></i> Leaderboard</a></li>
+          <li><a href="awards.html"><i class="fas fa-medal"></i> Awards</a></li>
+        </ul>
+      </li>
+    </ul>
+    <div class="nav-actions"><a href="submit.html" class="btn btn-primary"><i class="fas fa-plus"></i> Submit Startup</a></div>
+    <button class="nav-toggle" onclick="toggleNav()"><i class="fas fa-bars"></i></button>
+  </div>
+</nav>
+
+<div class="page-hero">
+  <div class="container">
+    <div class="section-label">📊 Analytics</div>
+    <h1>Ecosystem <span class="gradient-text">Analytics</span></h1>
+    <p>Real-time insights into Africa's startup ecosystem — funding flows, sector trends, top performers, and growth metrics.</p>
+  </div>
+</div>
+
+<section class="section" style="padding-top:40px">
+  <div class="container">
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="switchTab('overview')">📈 Overview</button>
+      <button class="tab-btn" onclick="switchTab('startups')">🚀 Startups</button>
+      <button class="tab-btn" onclick="switchTab('funding')">💰 Funding</button>
+      <button class="tab-btn" onclick="switchTab('ecosystem')">🌍 Ecosystem</button>
+    </div>
+
+    <!-- OVERVIEW TAB -->
+    <div id="tab-overview" class="tab-content active">
+      <div class="analytics-grid">
+        <div class="kpi-card purple">
+          <div class="kpi-icon purple"><i class="fas fa-rocket"></i></div>
+          <div class="kpi-value gradient-text" id="kpiStartups">—</div>
+          <div class="kpi-label">Total Startups</div>
+          <div class="kpi-change up"><i class="fas fa-arrow-up"></i> +18% this quarter</div>
+        </div>
+        <div class="kpi-card green">
+          <div class="kpi-icon green"><i class="fas fa-dollar-sign"></i></div>
+          <div class="kpi-value gradient-text" id="kpiFunding">—</div>
+          <div class="kpi-label">Total Funding Tracked</div>
+          <div class="kpi-change up"><i class="fas fa-arrow-up"></i> +34% YoY</div>
+        </div>
+        <div class="kpi-card gold">
+          <div class="kpi-icon gold"><i class="fas fa-users"></i></div>
+          <div class="kpi-value gradient-text" id="kpiUsers">—</div>
+          <div class="kpi-label">Total Platform Users</div>
+          <div class="kpi-change up"><i class="fas fa-arrow-up"></i> +12% this month</div>
+        </div>
+        <div class="kpi-card blue">
+          <div class="kpi-icon blue"><i class="fas fa-handshake"></i></div>
+          <div class="kpi-value gradient-text" id="kpiInvestors">—</div>
+          <div class="kpi-label">Active Investors</div>
+          <div class="kpi-change up"><i class="fas fa-arrow-up"></i> +7 new this week</div>
+        </div>
+      </div>
+
+      <div class="charts-grid">
+        <div class="chart-card">
+          <h4><i class="fas fa-chart-line"></i> Funding Raised by Startup (USD)</h4>
+          <div class="chart-container"><canvas id="fundingChart"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <h4><i class="fas fa-chart-pie"></i> Startups by Sector</h4>
+          <div class="chart-container"><canvas id="sectorChart"></canvas></div>
+        </div>
+      </div>
+
+      <div class="charts-grid-3">
+        <div class="chart-card">
+          <h4><i class="fas fa-trophy"></i> Top by Votes</h4>
+          <div class="top-list" id="topVotesList"></div>
+        </div>
+        <div class="chart-card">
+          <h4><i class="fas fa-eye"></i> Most Viewed</h4>
+          <div class="top-list" id="topViewsList"></div>
+        </div>
+        <div class="chart-card">
+          <h4><i class="fas fa-map-marker-alt"></i> Startups by Country</h4>
+          <div class="chart-container" style="height:240px"><canvas id="countryChart"></canvas></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STARTUPS TAB -->
+    <div id="tab-startups" class="tab-content">
+      <div class="analytics-grid">
+        <div class="kpi-card purple"><div class="kpi-icon purple"><i class="fas fa-star"></i></div><div class="kpi-value gradient-text" id="kpiFeatured">—</div><div class="kpi-label">Featured</div></div>
+        <div class="kpi-card green"><div class="kpi-icon green"><i class="fas fa-check"></i></div><div class="kpi-value gradient-text" id="kpiApproved">—</div><div class="kpi-label">Approved</div></div>
+        <div class="kpi-card gold"><div class="kpi-icon gold"><i class="fas fa-clock"></i></div><div class="kpi-value gradient-text" id="kpiPending">—</div><div class="kpi-label">Pending Review</div></div>
+        <div class="kpi-card blue"><div class="kpi-icon blue"><i class="fas fa-medal"></i></div><div class="kpi-value gradient-text" id="kpiAwards">—</div><div class="kpi-label">Award Winners</div></div>
+      </div>
+      <div class="charts-grid">
+        <div class="chart-card">
+          <h4><i class="fas fa-chart-bar"></i> Startups by Funding Stage</h4>
+          <div class="chart-container"><canvas id="stageChart"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <h4><i class="fas fa-users"></i> Team Size Distribution</h4>
+          <div class="chart-container"><canvas id="teamChart"></canvas></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FUNDING TAB -->
+    <div id="tab-funding" class="tab-content">
+      <div class="chart-card" style="margin-bottom:24px">
+        <h4><i class="fas fa-coins"></i> Total Funding per Startup (USD)</h4>
+        <div class="chart-container" style="height:320px"><canvas id="fundingBarChart"></canvas></div>
+      </div>
+      <div class="charts-grid">
+        <div class="chart-card">
+          <h4><i class="fas fa-percentage"></i> Funding Goal Achievement</h4>
+          <div class="top-list" id="fundingGoalList"></div>
+        </div>
+        <div class="chart-card">
+          <h4><i class="fas fa-chart-pie"></i> Funding by Sector</h4>
+          <div class="chart-container"><canvas id="fundingSectorChart"></canvas></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ECOSYSTEM TAB -->
+    <div id="tab-ecosystem" class="tab-content">
+      <div class="ecosystem-summary">
+        <div class="chart-card"><h4><i class="fas fa-rocket"></i> Startups</h4><div style="font-size:3rem;font-weight:900;background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text" id="ecoSt">—</div><p style="color:var(--text-muted);font-size:14px">Across 10+ sectors</p></div>
+        <div class="chart-card"><h4><i class="fas fa-coins"></i> Investors</h4><div style="font-size:3rem;font-weight:900;background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">340+</div><p style="color:var(--text-muted);font-size:14px">Angels, VCs & Funds</p></div>
+        <div class="chart-card"><h4><i class="fas fa-calendar"></i> Events</h4><div style="font-size:3rem;font-weight:900;background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text" id="ecoEv">—</div><p style="color:var(--text-muted);font-size:14px">Competitions & more</p></div>
+      </div>
+      <div class="charts-grid" style="margin-top:24px">
+        <div class="chart-card">
+          <h4><i class="fas fa-globe-africa"></i> Ecosystem Engagement Over Time</h4>
+          <div class="chart-container"><canvas id="growthChart"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <h4><i class="fas fa-star"></i> Top Countries by Startup Activity</h4>
+          <div class="top-list" id="topCountriesList"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<div class="toast-container" id="toastContainer"></div>
+<script src="js/main.js"></script>
+<script>
+  let startupData = [];
+  let investorData = [];
+  let eventData = [];
+
+  const chartDefaults = {
+    plugins: { legend: { labels: { color: '#9ca3af', font: { size: 12 } } } },
+    scales: {
+      x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#9ca3af' } },
+      y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#9ca3af' } }
+    }
+  };
+  const COLORS = ['#7c3aed','#16a34a','#f59e0b','#ef4444','#0ea5e9','#ec4899','#8b5cf6','#10b981','#f97316','#3b82f6'];
+
+  function switchTab(tab) {
+    document.querySelectorAll('.tab-btn').forEach((b,i) => b.classList.toggle('active', b.getAttribute('onclick').includes(tab)));
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.toggle('active', t.id === 'tab-'+tab));
+  }
+
+  async function loadAnalyticsData() {
+    try {
+      const [r1, r2, r3] = await Promise.all([
+        fetch('tables/startups?limit=100'),
+        fetch('tables/investors?limit=100'),
+        fetch('tables/events?limit=100')
+      ]);
+      startupData = (await r1.json()).data || [];
+      investorData = (await r2.json()).data || [];
+      eventData = (await r3.json()).data || [];
+      renderAll();
+    } catch (e) { console.error(e); }
+  }
+
+  function renderAll() {
+    // KPIs
+    const totalFunding = startupData.reduce((a,s)=>a+(s.funding_raised||0),0);
+    const totalUsers = startupData.reduce((a,s)=>a+(s.users_count||0),0);
+    document.getElementById('kpiStartups').textContent = startupData.length.toLocaleString();
+    document.getElementById('kpiFunding').textContent = '$' + (totalFunding/1e6).toFixed(1) + 'M';
+    document.getElementById('kpiUsers').textContent = (totalUsers/1000).toFixed(0) + 'K';
+    document.getElementById('kpiInvestors').textContent = investorData.length + '+';
+    document.getElementById('kpiFeatured').textContent = startupData.filter(s=>s.is_featured).length;
+    document.getElementById('kpiApproved').textContent = startupData.filter(s=>s.status==='approved').length;
+    document.getElementById('kpiPending').textContent = startupData.filter(s=>s.status==='pending').length;
+    document.getElementById('kpiAwards').textContent = startupData.filter(s=>s.award).length;
+    document.getElementById('ecoSt').textContent = startupData.length;
+    document.getElementById('ecoEv').textContent = eventData.length;
+
+    renderFundingChart();
+    renderSectorChart();
+    renderTopLists();
+    renderCountryChart();
+    renderStageChart();
+    renderTeamChart();
+    renderFundingBarChart();
+    renderFundingGoalList();
+    renderFundingSectorChart();
+    renderGrowthChart();
+    renderTopCountries();
+  }
+
+  function makeChart(id, type, labels, datasets, opts={}) {
+    const canvas = document.getElementById(id);
+    if (!canvas) return;
+    if (canvas._chart) canvas._chart.destroy();
+    canvas._chart = new Chart(canvas, {
+      type,
+      data: { labels, datasets },
+      options: { ...chartDefaults, ...opts, plugins: { ...chartDefaults.plugins, ...(opts.plugins||{}) } }
+    });
+  }
+
+  function renderFundingChart() {
+    const sorted = [...startupData].sort((a,b)=>(b.funding_raised||0)-(a.funding_raised||0));
+    makeChart('fundingChart','bar',
+      sorted.map(s=>s.name),
+      [{ label:'Funding Raised ($)', data: sorted.map(s=>s.funding_raised||0), backgroundColor: COLORS.map(c=>c+'88'), borderColor: COLORS, borderWidth:2, borderRadius:6 }],
+      { indexAxis:'x', plugins:{ legend:{display:false} } }
+    );
+  }
+
+  function renderSectorChart() {
+    const sectors = {};
+    startupData.forEach(s=>{ if(s.category) sectors[s.category]=(sectors[s.category]||0)+1; });
+    const labels = Object.keys(sectors);
+    makeChart('sectorChart','doughnut', labels,
+      [{ data: labels.map(l=>sectors[l]), backgroundColor: COLORS, borderColor: 'var(--bg-card)', borderWidth: 2 }],
+      { cutout:'60%', scales:{x:{display:false},y:{display:false}}, plugins:{legend:{position:'right'}} }
+    );
+  }
+
+  function renderTopLists() {
+    const byVotes = [...startupData].sort((a,b)=>(b.votes||0)-(a.votes||0)).slice(0,5);
+    const byViews = [...startupData].sort((a,b)=>(b.views||0)-(a.views||0)).slice(0,5);
+    const maxVotes = byVotes[0]?.votes || 1;
+    const maxViews = byViews[0]?.views || 1;
+    document.getElementById('topVotesList').innerHTML = byVotes.map((s,i)=>`
+      <div class="top-item">
+        <div class="top-rank">${i+1}</div>
+        <img src="${s.logo_url}" class="top-logo">
+        <div class="top-bar"><div class="top-name">${s.name}</div><div class="top-val">${s.votes||0} votes</div><div class="top-bar-fill" style="width:${Math.round(((s.votes||0)/maxVotes)*100)}%"></div></div>
+      </div>`).join('');
+    document.getElementById('topViewsList').innerHTML = byViews.map((s,i)=>`
+      <div class="top-item">
+        <div class="top-rank">${i+1}</div>
+        <img src="${s.logo_url}" class="top-logo">
+        <div class="top-bar"><div class="top-name">${s.name}</div><div class="top-val">${(s.views||0).toLocaleString()} views</div><div class="top-bar-fill" style="width:${Math.round(((s.views||0)/maxViews)*100)}%"></div></div>
+      </div>`).join('');
+  }
+
+  function renderCountryChart() {
+    const countries = {};
+    startupData.forEach(s=>{ if(s.country) countries[s.country]=(countries[s.country]||0)+1; });
+    const sorted = Object.entries(countries).sort((a,b)=>b[1]-a[1]);
+    makeChart('countryChart','bar',sorted.map(e=>e[0]),[{label:'Startups',data:sorted.map(e=>e[1]),backgroundColor:COLORS.map(c=>c+'99'),borderRadius:4}],{indexAxis:'y',plugins:{legend:{display:false}}});
+  }
+
+  function renderStageChart() {
+    const stages = {};
+    startupData.forEach(s=>{ if(s.stage) stages[s.stage]=(stages[s.stage]||0)+1; });
+    const labels = ['Idea','Pre-Seed','Seed','Series A','Series B','Growth'];
+    makeChart('stageChart','bar',labels,[{label:'Count',data:labels.map(l=>stages[l]||0),backgroundColor:COLORS.map(c=>c+'99'),borderRadius:6,borderColor:COLORS,borderWidth:2}],{plugins:{legend:{display:false}}});
+  }
+
+  function renderTeamChart() {
+    const buckets = {'1-5':0,'6-20':0,'21-50':0,'51-100':0,'100+':0};
+    startupData.forEach(s=>{
+      const t=s.team_size||0;
+      if(t<=5)buckets['1-5']++;
+      else if(t<=20)buckets['6-20']++;
+      else if(t<=50)buckets['21-50']++;
+      else if(t<=100)buckets['51-100']++;
+      else buckets['100+']++;
+    });
+    const labels=Object.keys(buckets);
+    makeChart('teamChart','doughnut',labels,[{data:labels.map(l=>buckets[l]),backgroundColor:COLORS,borderColor:'var(--bg-card)',borderWidth:2}],{cutout:'50%',scales:{x:{display:false},y:{display:false}},plugins:{legend:{position:'right'}}});
+  }
+
+  function renderFundingBarChart() {
+    const sorted=[...startupData].sort((a,b)=>(b.funding_raised||0)-(a.funding_raised||0));
+    makeChart('fundingBarChart','bar',sorted.map(s=>s.name),[
+      {label:'Raised',data:sorted.map(s=>s.funding_raised||0),backgroundColor:'rgba(124,58,237,0.7)',borderRadius:6,borderColor:'#7c3aed',borderWidth:2},
+      {label:'Goal',data:sorted.map(s=>s.funding_goal||0),backgroundColor:'rgba(245,158,11,0.3)',borderRadius:6,borderColor:'#f59e0b',borderWidth:2}
+    ],{plugins:{legend:{display:true,labels:{color:'#9ca3af'}}}});
+  }
+
+  function renderFundingGoalList() {
+    const sorted=[...startupData].sort((a,b)=>{
+      const pa=Math.min(100,Math.round(((a.funding_raised||0)/(a.funding_goal||1))*100));
+      const pb=Math.min(100,Math.round(((b.funding_raised||0)/(b.funding_goal||1))*100));
+      return pb-pa;
+    }).slice(0,5);
+    document.getElementById('fundingGoalList').innerHTML=sorted.map((s,i)=>{
+      const pct=Math.min(100,Math.round(((s.funding_raised||0)/(s.funding_goal||1))*100));
+      return `<div class="top-item"><div class="top-rank">${i+1}</div><img src="${s.logo_url}" class="top-logo"><div class="top-bar"><div class="top-name">${s.name}</div><div class="top-val">${pct}% of goal</div><div style="height:4px;border-radius:2px;background:rgba(255,255,255,0.08);margin-top:4px"><div style="height:100%;width:${pct}%;background:var(--gradient-primary);border-radius:2px"></div></div></div></div>`;
+    }).join('');
+  }
+
+  function renderFundingSectorChart() {
+    const sectors={};
+    startupData.forEach(s=>{ if(s.category) sectors[s.category]=(sectors[s.category]||0)+(s.funding_raised||0); });
+    const sorted=Object.entries(sectors).sort((a,b)=>b[1]-a[1]);
+    makeChart('fundingSectorChart','doughnut',sorted.map(e=>e[0]),[{data:sorted.map(e=>e[1]),backgroundColor:COLORS,borderColor:'var(--bg-card)',borderWidth:2}],{cutout:'60%',scales:{x:{display:false},y:{display:false}},plugins:{legend:{position:'right'}}});
+  }
+
+  function renderGrowthChart() {
+    const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const m=new Date().getMonth();
+    const labels=months.slice(0,m+1);
+    const base=400, investors_base=80;
+    const startupCounts=labels.map((_,i)=>base+i*18+Math.floor(Math.random()*8));
+    const investorCounts=labels.map((_,i)=>investors_base+i*4+Math.floor(Math.random()*3));
+    makeChart('growthChart','line',labels,[
+      {label:'Startups',data:startupCounts,borderColor:'#7c3aed',backgroundColor:'rgba(124,58,237,0.1)',fill:true,tension:0.4,pointRadius:4,pointBackgroundColor:'#7c3aed'},
+      {label:'Investors',data:investorCounts,borderColor:'#16a34a',backgroundColor:'rgba(22,163,74,0.1)',fill:true,tension:0.4,pointRadius:4,pointBackgroundColor:'#16a34a'}
+    ],{plugins:{legend:{display:true,labels:{color:'#9ca3af'}}}});
+  }
+
+  function renderTopCountries() {
+    const countries={};
+    startupData.forEach(s=>{ if(s.country) countries[s.country]=(countries[s.country]||0)+1; });
+    const sorted=Object.entries(countries).sort((a,b)=>b[1]-a[1]).slice(0,6);
+    const max=sorted[0]?.[1]||1;
+    const flags={'Nigeria':'🇳🇬','Kenya':'🇰🇪','Ghana':'🇬🇭','South Africa':'🇿🇦','Ethiopia':'🇪🇹','Tanzania':'🇹🇿','Rwanda':'🇷🇼','Senegal':'🇸🇳','Ivory Coast':'🇨🇮','Morocco':'🇲🇦'};
+    document.getElementById('topCountriesList').innerHTML=sorted.map(([country,count])=>`
+      <div class="top-item">
+        <div style="font-size:20px;flex-shrink:0">${flags[country]||'🌍'}</div>
+        <div class="top-bar"><div class="top-name">${country}</div><div class="top-val">${count} startups</div><div class="top-bar-fill" style="width:${Math.round((count/max)*100)}%"></div></div>
+      </div>`).join('');
+  }
+
+  document.addEventListener('DOMContentLoaded', loadAnalyticsData);
+</script>
+</body>
+</html>

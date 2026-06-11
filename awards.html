@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Awards & Recognition — AfricaLaunch</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .award-hero-banner { background: linear-gradient(135deg, rgba(245,158,11,0.15), rgba(124,58,237,0.1)); border: 1px solid rgba(245,158,11,0.25); border-radius: var(--radius-xl); padding: 48px; text-align: center; margin-bottom: 60px; position: relative; overflow: hidden; }
+    .award-hero-banner::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at center, rgba(245,158,11,0.1) 0%, transparent 70%); }
+    .confetti { position: absolute; font-size: 24px; animation: confettiFall 3s linear infinite; pointer-events: none; }
+    @keyframes confettiFall { 0% { transform: translateY(-20px) rotate(0deg); opacity: 1; } 100% { transform: translateY(100px) rotate(360deg); opacity: 0; } }
+    .award-categories { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 28px; margin-bottom: 60px; }
+    .award-cat-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-xl); overflow: hidden; transition: var(--transition); }
+    .award-cat-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+    .award-cat-header { padding: 28px; text-align: center; }
+    .award-cat-header.gold { background: linear-gradient(135deg, rgba(245,158,11,0.15), rgba(251,191,36,0.05)); }
+    .award-cat-header.purple { background: linear-gradient(135deg, rgba(124,58,237,0.15), rgba(167,139,250,0.05)); }
+    .award-cat-header.green { background: linear-gradient(135deg, rgba(22,163,74,0.15), rgba(74,222,128,0.05)); }
+    .award-cat-header.blue { background: linear-gradient(135deg, rgba(14,165,233,0.15), rgba(56,189,248,0.05)); }
+    .award-trophy-big { font-size: 56px; margin-bottom: 12px; }
+    .award-cat-body { padding: 24px; }
+    .award-winner-large { display: flex; align-items: center; gap: 14px; background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin-bottom: 12px; }
+    .award-winner-large img { width: 52px; height: 52px; border-radius: 12px; }
+    .winner-crown { font-size: 18px; margin-right: 4px; }
+    .vote-award-btn { width: 100%; padding: 10px; border-radius: 8px; background: rgba(124,58,237,0.1); border: 1px solid rgba(124,58,237,0.3); color: #a78bfa; font-size: 13px; font-weight: 600; transition: var(--transition); cursor: pointer; }
+    .vote-award-btn:hover { background: rgba(124,58,237,0.2); }
+    .nominees-section { margin-bottom: 60px; }
+    .nominees-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
+    .nominee-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; display: flex; align-items: center; gap: 12px; cursor: pointer; transition: var(--transition); }
+    .nominee-card:hover { border-color: rgba(245,158,11,0.4); background: rgba(245,158,11,0.04); }
+    .nominee-card img { width: 44px; height: 44px; border-radius: 10px; flex-shrink: 0; }
+    .history-table { width: 100%; border-collapse: collapse; }
+    .history-table th { text-align: left; padding: 12px 16px; font-size: 12px; font-weight: 600; color: var(--text-dim); text-transform: uppercase; border-bottom: 1px solid var(--border); }
+    .history-table td { padding: 14px 16px; border-bottom: 1px solid rgba(255,255,255,0.04); font-size: 14px; }
+    .history-table tr:hover td { background: rgba(255,255,255,0.02); }
+    .nominate-banner { background: var(--gradient-primary); border-radius: var(--radius-xl); padding: 48px; text-align: center; margin-top: 60px; }
+    .nominate-banner h2 { font-family: var(--font-display); font-size: 2rem; font-weight: 800; margin-bottom: 12px; }
+  </style>
+</head>
+<body>
+<nav class="navbar scrolled" id="navbar">
+  <div class="nav-container">
+    <a href="index.html" class="nav-logo"><span class="logo-icon">🚀</span><span class="logo-text">AfricaLaunch</span></a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="index.html" class="nav-link">Home</a></li>
+      <li><a href="startups.html" class="nav-link">Startups</a></li>
+      <li><a href="investors.html" class="nav-link">Investors</a></li>
+      <li><a href="events.html" class="nav-link">Events</a></li>
+      <li><a href="marketplace.html" class="nav-link">Marketplace</a></li>
+      <li class="nav-dropdown">
+        <a href="#" class="nav-link dropdown-toggle">More <i class="fas fa-chevron-down"></i></a>
+        <ul class="dropdown-menu">
+          <li><a href="incubator.html"><i class="fas fa-building"></i> Incubator Hub</a></li>
+          <li><a href="ecosystem.html"><i class="fas fa-globe-africa"></i> Ecosystem</a></li>
+          <li><a href="analytics.html"><i class="fas fa-chart-bar"></i> Analytics</a></li>
+          <li><a href="leaderboard.html"><i class="fas fa-trophy"></i> Leaderboard</a></li>
+          <li><a href="awards.html"><i class="fas fa-medal"></i> Awards</a></li>
+        </ul>
+      </li>
+    </ul>
+    <div class="nav-actions"><a href="submit.html" class="btn btn-primary"><i class="fas fa-plus"></i> Submit Startup</a></div>
+    <button class="nav-toggle" onclick="toggleNav()"><i class="fas fa-bars"></i></button>
+  </div>
+</nav>
+
+<section class="section" style="padding-top:120px">
+  <div class="container">
+    <div class="award-hero-banner">
+      <span class="confetti" style="left:10%;animation-delay:0s">🏆</span>
+      <span class="confetti" style="left:25%;animation-delay:0.5s">⭐</span>
+      <span class="confetti" style="left:75%;animation-delay:0.8s">🥇</span>
+      <span class="confetti" style="left:90%;animation-delay:1.2s">🎉</span>
+      <div class="section-label">🏅 Recognition Program</div>
+      <h1 style="font-family:var(--font-display);font-size:clamp(2rem,5vw,3.5rem);font-weight:900;margin:16px 0">Africa's Most Celebrated <span class="gradient-text">Startup Awards</span></h1>
+      <p style="color:var(--text-muted);font-size:17px;max-width:600px;margin:0 auto 28px">Recognizing Africa's most innovative, fastest-growing, and community-loved startups every quarter.</p>
+      <div style="display:flex;gap:32px;justify-content:center;flex-wrap:wrap;margin-bottom:32px">
+        <div><strong style="font-size:1.8rem;background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">4</strong><div style="font-size:13px;color:var(--text-muted)">Award Categories</div></div>
+        <div><strong style="font-size:1.8rem;background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">Quarterly</strong><div style="font-size:13px;color:var(--text-muted)">Award Cycle</div></div>
+        <div><strong style="font-size:1.8rem;background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">Community</strong><div style="font-size:13px;color:var(--text-muted)">Voted Awards</div></div>
+      </div>
+      <button class="btn btn-primary btn-lg" onclick="openNominateModal()"><i class="fas fa-medal"></i> Nominate a Startup</button>
+    </div>
+
+    <!-- AWARD CATEGORIES -->
+    <div class="section-header" style="margin-bottom:40px">
+      <h2 class="section-title">🏆 Q2 2025 <span class="gradient-text">Award Winners</span></h2>
+    </div>
+    <div class="award-categories" id="awardCategoriesGrid">
+      <!-- Loaded dynamically -->
+    </div>
+
+    <!-- NOMINEES -->
+    <div class="nominees-section">
+      <div class="section-header" style="margin-bottom:28px">
+        <h2 class="section-title">All <span class="gradient-text">Nominees</span></h2>
+        <p class="section-desc">All startups listed on AfricaLaunch are eligible for nomination. Community votes influence the People's Choice award.</p>
+      </div>
+      <div class="nominees-grid" id="nomineesGrid"></div>
+    </div>
+
+    <!-- HISTORY -->
+    <div class="section-header" style="margin-bottom:28px">
+      <h2 class="section-title">Award <span class="gradient-text">History</span></h2>
+    </div>
+    <div class="chart-card" style="overflow-x:auto;margin-bottom:60px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px">
+      <table class="history-table">
+        <thead><tr><th>Period</th><th>Startup of the Month</th><th>Most Innovative</th><th>Fastest Growing</th><th>People's Choice</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Q2 2025</strong></td><td>🥇 PaySwift Africa</td><td>💡 AgriSense AI</td><td>⚡ SolarGrid</td><td>❤️ MediConnect</td></tr>
+          <tr><td>Q1 2025</td><td>🥇 LogiTrack</td><td>💡 EduPath</td><td>⚡ PaySwift Africa</td><td>❤️ AgriSense AI</td></tr>
+          <tr><td>Q4 2024</td><td>🥇 AgriSense AI</td><td>💡 SolarGrid</td><td>⚡ LogiTrack</td><td>❤️ EduPath</td></tr>
+          <tr><td>Q3 2024</td><td>🥇 MediConnect</td><td>💡 PaySwift Africa</td><td>⚡ AgriSense AI</td><td>❤️ SolarGrid</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- NOMINATE CTA -->
+    <div class="nominate-banner">
+      <h2>Know a Startup That <span style="color:#fbbf24">Deserves Recognition?</span></h2>
+      <p style="color:rgba(255,255,255,0.8);margin-bottom:28px;font-size:16px">Nominate outstanding African startups for our quarterly awards. Community votes count!</p>
+      <button class="btn btn-lg" style="background:#fff;color:var(--primary);font-weight:700" onclick="openNominateModal()"><i class="fas fa-star"></i> Submit Nomination</button>
+    </div>
+  </div>
+</section>
+
+<!-- Nominate Modal -->
+<div class="modal-overlay" id="nominateModal" onclick="closeNominate(event)">
+  <div class="modal-box">
+    <div class="modal-header"><h3><i class="fas fa-star"></i> Nominate a Startup</h3><button class="modal-close" onclick="closeNominate()"><i class="fas fa-times"></i></button></div>
+    <div class="form-group" style="margin-bottom:16px"><label class="form-label">Startup Name *</label><input type="text" class="form-input" id="nom_name" placeholder="Which startup?"></div>
+    <div class="form-group" style="margin-bottom:16px"><label class="form-label">Award Category *</label>
+      <select class="form-select" id="nom_cat">
+        <option>Startup of the Month</option><option>Most Innovative Startup</option>
+        <option>Fastest Growing Startup</option><option>People's Choice Award</option>
+      </select>
+    </div>
+    <div class="form-group" style="margin-bottom:20px"><label class="form-label">Why do they deserve this award?</label><textarea class="form-textarea" id="nom_reason" rows="3" placeholder="Tell us why..."></textarea></div>
+    <button class="btn btn-primary" style="width:100%" onclick="submitNomination()"><i class="fas fa-paper-plane"></i> Submit Nomination</button>
+  </div>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+<script src="js/main.js"></script>
+<script>
+  const awardCategories = [
+    { type: 'monthly', color: 'gold', emoji: '🥇', icon: '🏆', title: 'Startup of the Month', period: 'May 2025', winner: { name: 'PaySwift Africa', logo: 'https://ui-avatars.com/api/?name=PaySwift&background=7c3aed&color=fff&size=64', country: 'Nigeria', category: 'FinTech', stage: 'Series B' }, desc: 'Awarded to the startup with the most significant impact and traction in the past month.' },
+    { type: 'innovative', color: 'purple', emoji: '💡', icon: '🔬', title: 'Most Innovative Startup', period: 'Q2 2025', winner: { name: 'AgriSense AI', logo: 'https://ui-avatars.com/api/?name=AgriSense+AI&background=16a34a&color=fff&size=64', country: 'Kenya', category: 'AgriTech', stage: 'Series A' }, desc: 'Recognizing startups pushing the boundaries of innovation and technology in Africa.' },
+    { type: 'fastest', color: 'green', emoji: '⚡', icon: '🚀', title: 'Fastest Growing Startup', period: 'Q2 2025', winner: { name: 'SolarGrid', logo: 'https://ui-avatars.com/api/?name=SolarGrid&background=eab308&color=fff&size=64', country: 'Tanzania', category: 'CleanTech', stage: 'Series A' }, desc: 'Awarded to startups demonstrating exceptional user and revenue growth rates.' },
+    { type: 'peoples', color: 'blue', emoji: '❤️', icon: '🗳️', title: "People's Choice Award", period: 'Community Vote', winner: { name: 'MediConnect', logo: 'https://ui-avatars.com/api/?name=MediConnect&background=0ea5e9&color=fff&size=64', country: 'Ghana', category: 'HealthTech', stage: 'Seed' }, desc: "Chosen entirely by community votes — Africa's most loved startup by the people." },
+  ];
+
+  async function loadAwardData() {
+    try {
+      const res = await fetch('tables/startups?limit=20');
+      const data = await res.json();
+      const startups = data.data || [];
+      
+      // Award categories
+      document.getElementById('awardCategoriesGrid').innerHTML = awardCategories.map(cat => `
+        <div class="award-cat-card">
+          <div class="award-cat-header ${cat.color}">
+            <div class="award-trophy-big">${cat.emoji}</div>
+            <h3 style="font-weight:800;font-size:18px;margin-bottom:6px">${cat.title}</h3>
+            <span style="font-size:12px;color:var(--text-dim)">${cat.period}</span>
+          </div>
+          <div class="award-cat-body">
+            <p style="font-size:13px;color:var(--text-muted);margin-bottom:16px">${cat.desc}</p>
+            <div class="award-winner-large">
+              <img src="${cat.winner.logo}" alt="${cat.winner.name}">
+              <div>
+                <div style="font-weight:700;font-size:15px"><span class="winner-crown">${cat.emoji}</span>${cat.winner.name}</div>
+                <div style="font-size:12px;color:var(--text-muted)">${cat.winner.country} · ${cat.winner.category} · ${cat.winner.stage}</div>
+              </div>
+            </div>
+            <button class="vote-award-btn" onclick="voteForAward('${cat.type}','${cat.winner.name}')"><i class="fas fa-heart"></i> Support ${cat.winner.name}</button>
+          </div>
+        </div>`).join('');
+
+      // Nominees
+      document.getElementById('nomineesGrid').innerHTML = startups.map(s => `
+        <div class="nominee-card" onclick="window.location.href='startups.html?id=${s.id}'">
+          <img src="${s.logo_url}" alt="${s.name}">
+          <div>
+            <div style="font-weight:700;font-size:14px">${s.name}</div>
+            <div style="font-size:12px;color:var(--text-muted)">${s.country} · ${s.category}</div>
+            ${s.award ? `<div style="font-size:11px;color:#fbbf24;margin-top:2px">🏆 ${s.award}</div>` : ''}
+          </div>
+        </div>`).join('');
+    } catch(e) { console.error(e); }
+  }
+
+  const votedAwards = JSON.parse(localStorage.getItem('votedAwards') || '[]');
+  function voteForAward(type, name) {
+    if (votedAwards.includes(type)) { showToast(`You already supported this award winner!`, 'info'); return; }
+    votedAwards.push(type);
+    localStorage.setItem('votedAwards', JSON.stringify(votedAwards));
+    showToast(`❤️ You supported ${name} for ${awardCategories.find(c=>c.type===type)?.title}!`, 'success');
+  }
+
+  function openNominateModal() { document.getElementById('nominateModal').classList.add('open'); }
+  function closeNominate(e) { if (!e || e.target === document.getElementById('nominateModal')) document.getElementById('nominateModal')?.classList.remove('open'); }
+  function submitNomination() {
+    const name = document.getElementById('nom_name')?.value.trim();
+    const cat = document.getElementById('nom_cat')?.value;
+    if (!name) { showToast('Please enter a startup name', 'error'); return; }
+    showToast(`🎉 Nomination submitted for "${name}" — ${cat}!`, 'success');
+    closeNominate();
+  }
+
+  document.addEventListener('DOMContentLoaded', loadAwardData);
+</script>
+</body>
+</html>

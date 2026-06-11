@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Community Forum — AfricaLaunch</title>
+  <meta name="description" content="Join Africa's startup community. Ask questions, share insights, discuss funding, and connect with fellow founders and investors.">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .forum-hero {
+      padding: 120px 0 60px;
+      background: radial-gradient(ellipse at 40% 0%, rgba(59,130,246,0.18) 0%, transparent 70%);
+      text-align: center;
+    }
+    .forum-hero h1 { font-family: var(--font-display); font-size: clamp(2rem, 5vw, 3.2rem); font-weight: 800; margin-bottom: 16px; }
+    .forum-hero p { font-size: 1.1rem; color: var(--text-muted); max-width: 580px; margin: 0 auto; }
+
+    /* Forum Layout */
+    .forum-layout { display: grid; grid-template-columns: 260px 1fr; gap: 32px; padding: 40px 0 80px; }
+    .forum-sidebar { display: flex; flex-direction: column; gap: 20px; }
+
+    /* Category sidebar */
+    .forum-cat-widget {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); overflow: hidden;
+    }
+    .forum-cat-header {
+      padding: 16px 20px; background: var(--bg-surface); border-bottom: 1px solid var(--border);
+      font-weight: 700; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .forum-cat-list { display: flex; flex-direction: column; }
+    .forum-cat-item {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 20px; border-bottom: 1px solid var(--border);
+      cursor: pointer; transition: var(--transition); font-size: 0.9rem;
+    }
+    .forum-cat-item:last-child { border-bottom: none; }
+    .forum-cat-item:hover, .forum-cat-item.active { background: rgba(124,58,237,0.1); color: var(--primary); }
+    .forum-cat-item .cat-left { display: flex; align-items: center; gap: 10px; }
+    .forum-cat-icon { width: 32px; height: 32px; border-radius: var(--radius); display: flex; align-items: center; justify-content: center; font-size: 14px; }
+    .forum-count-badge { background: var(--bg-surface); border: 1px solid var(--border); padding: 2px 8px; border-radius: 20px; font-size: 0.75rem; color: var(--text-muted); }
+
+    /* Stats widget */
+    .forum-stats-widget {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); padding: 20px;
+    }
+    .forum-stats-widget h4 { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+    .forum-stat-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 0.88rem; }
+    .forum-stat-row:last-child { border-bottom: none; }
+    .forum-stat-row strong { color: var(--primary); }
+
+    /* Top members */
+    .top-member { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 0.85rem; }
+    .top-member:last-child { border-bottom: none; }
+    .member-avatar-sm { width: 34px; height: 34px; border-radius: 50%; background: var(--gradient-primary); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 13px; flex-shrink: 0; }
+    .member-info h5 { font-weight: 600; font-size: 0.85rem; }
+    .member-info span { font-size: 0.75rem; color: var(--text-muted); }
+    .member-pts { margin-left: auto; font-size: 0.78rem; color: var(--secondary); font-weight: 700; }
+
+    /* Main Forum Area */
+    .forum-main {}
+    .forum-top-bar {
+      display: flex; align-items: center; justify-content: space-between; gap: 16px;
+      margin-bottom: 24px; flex-wrap: wrap;
+    }
+    .forum-search-bar {
+      display: flex; align-items: center; gap: 8px;
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 50px; padding: 10px 18px; flex: 1; min-width: 200px;
+    }
+    .forum-search-bar input { background: none; border: none; outline: none; color: var(--text); font-size: 0.9rem; width: 100%; }
+    .forum-sort-select {
+      background: var(--bg-card); border: 1px solid var(--border); color: var(--text);
+      padding: 10px 16px; border-radius: 50px; font-size: 0.85rem; cursor: pointer; outline: none;
+    }
+
+    /* Post Cards */
+    .forum-posts-list { display: flex; flex-direction: column; gap: 16px; }
+    .forum-post-card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); padding: 24px;
+      transition: var(--transition); cursor: pointer; position: relative;
+    }
+    .forum-post-card:hover { border-color: var(--primary); box-shadow: 0 4px 24px rgba(124,58,237,0.15); }
+    .forum-post-card.pinned { border-left: 3px solid var(--secondary); }
+    .forum-post-card.hot { border-left: 3px solid #ef4444; }
+    .post-top { display: flex; align-items: flex-start; gap: 16px; }
+    .post-vote-col { display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 48px; }
+    .vote-btn {
+      width: 36px; height: 36px; border-radius: var(--radius); border: 1px solid var(--border);
+      background: transparent; color: var(--text-muted); font-size: 14px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: var(--transition);
+    }
+    .vote-btn:hover, .vote-btn.voted { background: var(--primary); color: #fff; border-color: var(--primary); }
+    .vote-count { font-size: 1rem; font-weight: 700; color: var(--text); }
+    .post-body { flex: 1; min-width: 0; }
+    .post-meta-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
+    .post-category-badge {
+      padding: 3px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    .cat-general { background: rgba(59,130,246,0.15); color: #3b82f6; }
+    .cat-funding { background: rgba(245,158,11,0.15); color: #f59e0b; }
+    .cat-tech { background: rgba(124,58,237,0.15); color: #7c3aed; }
+    .cat-hiring { background: rgba(16,163,74,0.15); color: #16a34a; }
+    .cat-marketing { background: rgba(236,72,153,0.15); color: #ec4899; }
+    .cat-legal { background: rgba(239,68,68,0.15); color: #ef4444; }
+    .cat-partnerships { background: rgba(14,165,233,0.15); color: #0ea5e9; }
+    .post-badge-pin { background: rgba(245,158,11,0.15); color: var(--secondary); padding: 3px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; display: flex; align-items: center; gap: 4px; }
+    .post-badge-hot { background: rgba(239,68,68,0.15); color: #ef4444; padding: 3px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; display: flex; align-items: center; gap: 4px; }
+    .post-title { font-family: var(--font-display); font-size: 1.05rem; font-weight: 700; margin-bottom: 8px; line-height: 1.4; }
+    .post-excerpt { font-size: 0.88rem; color: var(--text-muted); line-height: 1.6; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-bottom: 12px; }
+    .post-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+    .post-tag { padding: 2px 8px; border-radius: 10px; font-size: 0.72rem; background: var(--bg-surface); border: 1px solid var(--border); color: var(--text-muted); }
+    .post-footer { display: flex; align-items: center; justify-content: space-between; padding-top: 12px; border-top: 1px solid var(--border); flex-wrap: wrap; gap: 8px; }
+    .post-author { display: flex; align-items: center; gap: 8px; font-size: 0.82rem; color: var(--text-muted); }
+    .post-author-avatar { width: 26px; height: 26px; border-radius: 50%; background: var(--gradient-primary); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 11px; font-weight: 700; }
+    .post-stats { display: flex; gap: 14px; font-size: 0.8rem; color: var(--text-dim); }
+    .post-stats span { display: flex; align-items: center; gap: 5px; }
+    .post-stats span:hover { color: var(--primary); cursor: pointer; }
+
+    /* Thread/Reply View Modal */
+    .thread-header { margin-bottom: 24px; }
+    .thread-post-full { background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 24px; margin-bottom: 24px; }
+    .thread-post-content { font-size: 0.95rem; line-height: 1.8; color: var(--text-muted); margin: 16px 0; }
+    .replies-section h3 { font-size: 1rem; font-weight: 700; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+    .reply-card { display: flex; gap: 14px; padding: 16px 0; border-bottom: 1px solid var(--border); }
+    .reply-card:last-child { border-bottom: none; }
+    .reply-avatar { width: 38px; height: 38px; border-radius: 50%; background: var(--gradient-primary); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 13px; flex-shrink: 0; }
+    .reply-body { flex: 1; }
+    .reply-meta { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; font-size: 0.82rem; }
+    .reply-author-name { font-weight: 700; }
+    .reply-time { color: var(--text-muted); }
+    .reply-best { background: rgba(16,163,74,0.15); color: #16a34a; padding: 2px 8px; border-radius: 20px; font-size: 0.72rem; font-weight: 700; display: flex; align-items: center; gap: 4px; }
+    .reply-text { font-size: 0.88rem; line-height: 1.7; color: var(--text-muted); }
+    .reply-actions { display: flex; gap: 12px; margin-top: 8px; }
+    .reply-action-btn { background: none; border: none; color: var(--text-dim); font-size: 0.78rem; cursor: pointer; display: flex; align-items: center; gap: 4px; transition: var(--transition); }
+    .reply-action-btn:hover { color: var(--primary); }
+    .write-reply { margin-top: 20px; }
+    .write-reply h4 { font-size: 0.9rem; font-weight: 700; margin-bottom: 10px; }
+    .write-reply textarea {
+      width: 100%; padding: 12px 16px; border-radius: var(--radius); border: 1px solid var(--border);
+      background: var(--bg-surface); color: var(--text); font-size: 0.9rem; resize: vertical;
+      outline: none; font-family: var(--font); transition: var(--transition);
+    }
+    .write-reply textarea:focus { border-color: var(--primary); }
+    .write-reply-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
+
+    /* New Post Modal */
+    .new-post-form { display: flex; flex-direction: column; gap: 16px; }
+    .post-toolbar { display: flex; gap: 8px; margin-bottom: 4px; }
+    .toolbar-btn { padding: 6px 10px; border-radius: var(--radius); border: 1px solid var(--border); background: var(--bg-surface); color: var(--text-muted); font-size: 12px; cursor: pointer; transition: var(--transition); }
+    .toolbar-btn:hover { border-color: var(--primary); color: var(--primary); }
+    .tag-input-wrap { display: flex; flex-wrap: wrap; gap: 6px; padding: 10px 12px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg-surface); align-items: center; min-height: 44px; }
+    .tag-chip { display: flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 20px; background: var(--bg-card); border: 1px solid var(--border); font-size: 0.78rem; }
+    .tag-chip button { background: none; border: none; color: var(--text-dim); font-size: 10px; cursor: pointer; line-height: 1; }
+    #tagTextInput { background: none; border: none; outline: none; color: var(--text); font-size: 0.85rem; flex: 1; min-width: 80px; }
+
+    @media (max-width: 900px) {
+      .forum-layout { grid-template-columns: 1fr; }
+      .forum-sidebar { display: grid; grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 560px) {
+      .forum-sidebar { grid-template-columns: 1fr; }
+      .post-top { flex-direction: column; }
+      .post-vote-col { flex-direction: row; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="toastContainer" class="toast-container"></div>
+
+<!-- ===== NAVIGATION ===== -->
+<nav class="navbar" id="navbar">
+  <div class="nav-container">
+    <a href="index.html" class="nav-logo">
+      <span class="logo-icon">🚀</span>
+      <span class="logo-text">AfricaLaunch</span>
+    </a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="index.html" class="nav-link">Home</a></li>
+      <li><a href="startups.html" class="nav-link">Startups</a></li>
+      <li><a href="investors.html" class="nav-link">Investors</a></li>
+      <li><a href="events.html" class="nav-link">Events</a></li>
+      <li><a href="marketplace.html" class="nav-link">Marketplace</a></li>
+      <li class="nav-dropdown">
+        <a href="#" class="nav-link dropdown-toggle">More <i class="fas fa-chevron-down"></i></a>
+        <ul class="dropdown-menu">
+          <li><a href="media.html"><i class="fas fa-play-circle"></i> Media Center</a></li>
+          <li><a href="forum.html"><i class="fas fa-comments"></i> Community Forum</a></li>
+          <li><a href="challenges.html"><i class="fas fa-bolt"></i> Challenges</a></li>
+          <li><a href="compare.html"><i class="fas fa-balance-scale"></i> Compare Startups</a></li>
+          <li><a href="growth.html"><i class="fas fa-chart-line"></i> Growth Tracker</a></li>
+          <li><a href="notifications.html"><i class="fas fa-bell"></i> Notifications</a></li>
+          <li><a href="incubator.html"><i class="fas fa-building"></i> Incubator Hub</a></li>
+          <li><a href="ecosystem.html"><i class="fas fa-globe-africa"></i> Ecosystem</a></li>
+          <li><a href="analytics.html"><i class="fas fa-chart-bar"></i> Analytics</a></li>
+          <li><a href="leaderboard.html"><i class="fas fa-trophy"></i> Leaderboard</a></li>
+          <li><a href="awards.html"><i class="fas fa-medal"></i> Awards</a></li>
+          <li><a href="pricing.html"><i class="fas fa-crown"></i> Pricing</a></li>
+        </ul>
+      </li>
+    </ul>
+    <div class="nav-actions">
+      <a href="notifications.html" class="btn btn-ghost" title="Notifications"><i class="fas fa-bell"></i></a>
+      <a href="submit.html" class="btn btn-primary"><i class="fas fa-plus"></i> Submit Startup</a>
+    </div>
+    <button class="nav-toggle" id="navToggle" onclick="toggleNav()"><i class="fas fa-bars"></i></button>
+  </div>
+</nav>
+
+<!-- ===== FORUM HERO ===== -->
+<section class="forum-hero">
+  <div class="container">
+    <div class="section-label"><i class="fas fa-comments"></i> Community Forum</div>
+    <h1>Ask, Share, <span class="gradient-text">Connect</span></h1>
+    <p>Africa's largest startup community forum. Share expertise, ask questions, and build meaningful connections.</p>
+    <div style="display:flex; gap:12px; justify-content:center; margin-top:24px; flex-wrap:wrap;">
+      <button class="btn btn-primary" onclick="openNewPostModal()"><i class="fas fa-pen"></i> Start Discussion</button>
+      <a href="startups.html" class="btn btn-outline"><i class="fas fa-rocket"></i> Browse Startups</a>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FORUM LAYOUT ===== -->
+<div class="container">
+  <div class="forum-layout">
+
+    <!-- ===== SIDEBAR ===== -->
+    <aside class="forum-sidebar">
+      <!-- Categories -->
+      <div class="forum-cat-widget">
+        <div class="forum-cat-header"><i class="fas fa-folder"></i> Categories</div>
+        <div class="forum-cat-list" id="categoryList">
+          <div class="forum-cat-item active" onclick="filterCategory(this, 'all')">
+            <div class="cat-left">
+              <div class="forum-cat-icon" style="background: rgba(124,58,237,0.15);">🌍</div>
+              <span>All Topics</span>
+            </div>
+            <span class="forum-count-badge" id="catCountAll">—</span>
+          </div>
+          <div class="forum-cat-item" onclick="filterCategory(this, 'general')">
+            <div class="cat-left">
+              <div class="forum-cat-icon" style="background: rgba(59,130,246,0.15);">💬</div>
+              <span>General</span>
+            </div>
+            <span class="forum-count-badge">12</span>
+          </div>
+          <div class="forum-cat-item" onclick="filterCategory(this, 'funding')">
+            <div class="cat-left">
+              <div class="forum-cat-icon" style="background: rgba(245,158,11,0.15);">💰</div>
+              <span>Funding & VC</span>
+            </div>
+            <span class="forum-count-badge">18</span>
+          </div>
+          <div class="forum-cat-item" onclick="filterCategory(this, 'tech')">
+            <div class="cat-left">
+              <div class="forum-cat-icon" style="background: rgba(124,58,237,0.15);">⚙️</div>
+              <span>Technology</span>
+            </div>
+            <span class="forum-count-badge">24</span>
+          </div>
+          <div class="forum-cat-item" onclick="filterCategory(this, 'hiring')">
+            <div class="cat-left">
+              <div class="forum-cat-icon" style="background: rgba(16,163,74,0.15);">👥</div>
+              <span>Hiring & Team</span>
+            </div>
+            <span class="forum-count-badge">9</span>
+          </div>
+          <div class="forum-cat-item" onclick="filterCategory(this, 'marketing')">
+            <div class="cat-left">
+              <div class="forum-cat-icon" style="background: rgba(236,72,153,0.15);">📣</div>
+              <span>Marketing</span>
+            </div>
+            <span class="forum-count-badge">15</span>
+          </div>
+          <div class="forum-cat-item" onclick="filterCategory(this, 'legal')">
+            <div class="cat-left">
+              <div class="forum-cat-icon" style="background: rgba(239,68,68,0.15);">⚖️</div>
+              <span>Legal & Compliance</span>
+            </div>
+            <span class="forum-count-badge">7</span>
+          </div>
+          <div class="forum-cat-item" onclick="filterCategory(this, 'partnerships')">
+            <div class="cat-left">
+              <div class="forum-cat-icon" style="background: rgba(14,165,233,0.15);">🤝</div>
+              <span>Partnerships</span>
+            </div>
+            <span class="forum-count-badge">11</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Forum Stats -->
+      <div class="forum-stats-widget">
+        <h4><i class="fas fa-chart-bar"></i> Community Stats</h4>
+        <div class="forum-stat-row"><span>Total Posts</span><strong id="totalPosts">—</strong></div>
+        <div class="forum-stat-row"><span>Replies</span><strong id="totalReplies">—</strong></div>
+        <div class="forum-stat-row"><span>Members</span><strong>4,821</strong></div>
+        <div class="forum-stat-row"><span>Online Now</span><strong style="color: #16a34a;">142</strong></div>
+        <div class="forum-stat-row"><span>This Week</span><strong>+89 posts</strong></div>
+      </div>
+
+      <!-- Top Members -->
+      <div class="forum-stats-widget">
+        <h4><i class="fas fa-crown" style="color: var(--secondary);"></i> Top Contributors</h4>
+        <div id="topMembersList">
+          <div class="top-member">
+            <div class="member-avatar-sm">AO</div>
+            <div class="member-info"><h5>Amara Osei</h5><span>FinTech Founder</span></div>
+            <span class="member-pts">4.2k pts</span>
+          </div>
+          <div class="top-member">
+            <div class="member-avatar-sm" style="background: var(--gradient-green);">DM</div>
+            <div class="member-info"><h5>David Mwangi</h5><span>VC Partner</span></div>
+            <span class="member-pts">3.8k pts</span>
+          </div>
+          <div class="top-member">
+            <div class="member-avatar-sm" style="background: var(--gradient-gold);">FA</div>
+            <div class="member-info"><h5>Fatima Al-Hassan</h5><span>Series A Founder</span></div>
+            <span class="member-pts">3.1k pts</span>
+          </div>
+          <div class="top-member">
+            <div class="member-avatar-sm" style="background: linear-gradient(135deg, #ec4899, #f59e0b);">KN</div>
+            <div class="member-info"><h5>Kwame Nkrumah Jr.</h5><span>Angel Investor</span></div>
+            <span class="member-pts">2.7k pts</span>
+          </div>
+          <div class="top-member">
+            <div class="member-avatar-sm" style="background: linear-gradient(135deg, #0ea5e9, #7c3aed);">ZA</div>
+            <div class="member-info"><h5>Zanele Mokoena</h5><span>Product Lead</span></div>
+            <span class="member-pts">2.4k pts</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ===== MAIN POSTS AREA ===== -->
+    <main class="forum-main">
+      <!-- Top Bar -->
+      <div class="forum-top-bar">
+        <div class="forum-search-bar">
+          <i class="fas fa-search" style="color: var(--text-muted);"></i>
+          <input type="text" id="forumSearch" placeholder="Search discussions..." oninput="searchPosts(this.value)">
+        </div>
+        <select class="forum-sort-select" id="sortSelect" onchange="sortPosts(this.value)">
+          <option value="newest">Newest First</option>
+          <option value="popular">Most Popular</option>
+          <option value="replies">Most Replies</option>
+          <option value="unanswered">Unanswered</option>
+        </select>
+        <button class="btn btn-primary" onclick="openNewPostModal()">
+          <i class="fas fa-pen"></i> New Post
+        </button>
+      </div>
+
+      <!-- Posts List -->
+      <div class="forum-posts-list" id="postsList">
+        <!-- Rendered dynamically -->
+      </div>
+
+      <div style="text-align:center; margin-top: 32px;">
+        <button class="btn btn-outline" id="loadMorePosts" onclick="loadMorePosts()">
+          <i class="fas fa-plus"></i> Load More Discussions
+        </button>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- ===== THREAD VIEW MODAL ===== -->
+<div class="modal-overlay" id="threadModal" onclick="if(event.target===this) closeThread()">
+  <div class="modal-box" style="max-width: 780px; max-height: 85vh; overflow-y: auto;">
+    <button class="modal-close" onclick="closeThread()"><i class="fas fa-times"></i></button>
+    <div id="threadContent"></div>
+  </div>
+</div>
+
+<!-- ===== NEW POST MODAL ===== -->
+<div class="modal-overlay" id="newPostModal" onclick="if(event.target===this) closeNewPost()">
+  <div class="modal-box" style="max-width: 640px;">
+    <button class="modal-close" onclick="closeNewPost()"><i class="fas fa-times"></i></button>
+    <h2 style="font-family: var(--font-display); font-size: 1.4rem; font-weight: 800; margin-bottom: 20px;">
+      <i class="fas fa-pen" style="color: var(--primary);"></i> Start a New Discussion
+    </h2>
+    <form class="new-post-form" onsubmit="submitNewPost(event)">
+      <div class="form-group">
+        <label class="form-label">Category *</label>
+        <select class="form-input" id="newPostCategory" required>
+          <option value="">Select a category</option>
+          <option value="general">General Discussion</option>
+          <option value="funding">Funding & VC</option>
+          <option value="tech">Technology</option>
+          <option value="hiring">Hiring & Team</option>
+          <option value="marketing">Marketing</option>
+          <option value="legal">Legal & Compliance</option>
+          <option value="partnerships">Partnerships</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Title *</label>
+        <input type="text" class="form-input" id="newPostTitle" placeholder="Ask a question or start a discussion..." required maxlength="120">
+        <div style="text-align:right; font-size:0.78rem; color:var(--text-dim); margin-top:4px;"><span id="titleCount">0</span>/120</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Content *</label>
+        <div class="post-toolbar">
+          <button type="button" class="toolbar-btn" onclick="insertFormat('**', '**')"><b>B</b></button>
+          <button type="button" class="toolbar-btn" onclick="insertFormat('*', '*')"><i>I</i></button>
+          <button type="button" class="toolbar-btn" onclick="insertFormat('\n> ', '')">Quote</button>
+          <button type="button" class="toolbar-btn" onclick="insertFormat('\n```\n', '\n```')">Code</button>
+          <button type="button" class="toolbar-btn" onclick="insertFormat('\n- ', '')">List</button>
+        </div>
+        <textarea class="form-input" id="newPostContent" rows="7" placeholder="Share your thoughts, experience, or question in detail..." required style="resize:vertical;"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Tags (press Enter to add)</label>
+        <div class="tag-input-wrap" id="tagWrap">
+          <input type="text" id="tagTextInput" placeholder="Add tags..." onkeydown="handleTagInput(event)">
+        </div>
+        <input type="hidden" id="postTagsHidden">
+      </div>
+      <div style="display:flex; gap:12px; justify-content:flex-end;">
+        <button type="button" class="btn btn-ghost" onclick="closeNewPost()">Cancel</button>
+        <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane"></i> Post Discussion</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ===== FOOTER ===== -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="footer-logo">🚀 AfricaLaunch</div>
+        <p class="footer-desc">Africa's premier startup ecosystem platform.</p>
+        <div class="footer-social">
+          <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+          <a href="#" class="social-link"><i class="fab fa-linkedin"></i></a>
+          <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+        </div>
+      </div>
+      <div class="footer-links"><h4>Platform</h4><ul>
+        <li><a href="startups.html">Startups</a></li><li><a href="investors.html">Investors</a></li>
+        <li><a href="media.html">Media Center</a></li><li><a href="forum.html">Forum</a></li>
+      </ul></div>
+      <div class="footer-links"><h4>Community</h4><ul>
+        <li><a href="challenges.html">Challenges</a></li><li><a href="leaderboard.html">Leaderboard</a></li>
+        <li><a href="awards.html">Awards</a></li><li><a href="incubator.html">Incubator</a></li>
+      </ul></div>
+      <div class="footer-links"><h4>Tools</h4><ul>
+        <li><a href="analytics.html">Analytics</a></li><li><a href="growth.html">Growth Tracker</a></li>
+        <li><a href="pricing.html">Pricing</a></li><li><a href="compare.html">Compare</a></li>
+      </ul></div>
+    </div>
+    <div class="footer-bottom"><p>© 2025 AfricaLaunch. All rights reserved.</p></div>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+<script>
+// ===== FORUM DATA & STATE =====
+let allPosts = [];
+let filteredPosts = [];
+let displayCount = 8;
+let currentCategory = 'all';
+const postTags = [];
+
+// Static seed posts (enhanced)
+const staticPosts = [
+  {
+    id: 'fp1', category: 'funding', pinned: true, hot: true,
+    title: 'How I raised my Seed Round in Nigeria without a warm intro — step by step breakdown',
+    excerpt: 'After 6 months and 40+ investor rejections, I finally closed a $350K seed round with zero warm introductions. Here\'s the exact playbook I used.',
+    content: 'After 6 months and 40+ investor rejections, I finally closed my $350K seed round. Here\'s the full breakdown:\n\n**1. Built in public on Twitter/X**\nI documented every milestone — user growth, revenue, product updates. This brought inbound interest from 3 investors.\n\n**2. Refined my pitch deck for African context**\nMost decks I saw were copied from Silicon Valley templates. I rebuilt mine with TAM figures specific to West Africa and showed unit economics for Nigerian users.\n\n**3. Used AngelList to connect internationally**\nFiled as a Delaware C-Corp to attract US-based angels interested in Africa.\n\n**4. The email cold outreach strategy**\nSent personalized emails referencing each investor\'s specific portfolio companies in Africa. Response rate went from 2% to 18%.',
+    author: 'Emeka Eze', authorInitial: 'EE', role: 'Founder @ PayLink NG', votes: 284, replies: 47,
+    views: 3400, time: '3 days ago', tags: ['Seed Funding','Nigeria','Fundraising']
+  },
+  {
+    id: 'fp2', category: 'tech', hot: true,
+    title: 'Which stack are African founders actually using in 2025? Results from my survey of 200 startups',
+    excerpt: 'I surveyed 200 African startups on their tech stack, infrastructure choices, and the specific challenges they face. The results might surprise you.',
+    content: 'I spent 3 months surveying 200 African startups on their technology choices. Key findings:\n\n- 67% use AWS, 23% GCP, 10% Azure\n- React.js dominates (72% of frontend teams)\n- Node.js + Python are the top backend languages\n- 45% cite data costs as their #1 engineering challenge\n- USSD-first products represent 34% of the sample',
+    author: 'Sarah Chen', authorInitial: 'SC', role: 'CTO @ DevAfrica', votes: 198, replies: 32,
+    views: 2800, time: '5 days ago', tags: ['Tech Stack','Engineering','Survey']
+  },
+  {
+    id: 'fp3', category: 'general',
+    title: 'AfricaLaunch Q2 2025 Ecosystem Report is live — here\'s the TLDR',
+    excerpt: 'The Q2 2025 African startup ecosystem report highlights record deal flow, rising valuations, and a surprising shift toward B2B SaaS.',
+    content: 'Key highlights from the Q2 2025 AfricaLaunch Ecosystem Report:\n\n📊 $2.3B raised across 284 deals (up 18% YoY)\n🌍 Nigeria leads with 34% of deals\n📈 B2B SaaS now 41% of all investment (up from 28%)\n🏥 HealthTech saw the biggest YoY growth (+67%)\n🌱 ClimaTech emerging as a new powerhouse sector',
+    author: 'AfricaLaunch Team', authorInitial: 'AL', role: 'Platform Team', votes: 156, replies: 23,
+    views: 5200, time: '1 week ago', tags: ['Report','Ecosystem','2025']
+  },
+  {
+    id: 'fp4', category: 'hiring',
+    title: 'Looking for a CTO with mobile payment experience — Lagos/Remote',
+    excerpt: 'My fintech startup needs a technical co-founder or CTO. 3 years of experience with mobile payments, ideally with USSD/mobile money integrations.',
+    content: 'We are a Lagos-based FinTech startup building the first B2B expense management platform for African SMEs. Revenue: $18K MRR, growing 20% month-over-month.\n\nLooking for:\n- CTO / Technical Co-Founder\n- Mobile payment integration experience (MTN MoMo, M-Pesa, Flutterwave)\n- Equity-first + small salary once we close our seed round\n\nDM me or email apply@fintrack.ng',
+    author: 'Daniel Okafor', authorInitial: 'DO', role: 'CEO @ FinTrack', votes: 89, replies: 31,
+    views: 1900, time: '2 days ago', tags: ['Hiring','CTO','FinTech','Lagos']
+  },
+  {
+    id: 'fp5', category: 'marketing',
+    title: 'Our WhatsApp marketing strategy that drove 40% of our growth — full breakdown',
+    excerpt: 'We scaled from 200 to 12,000 users in 4 months using WhatsApp. No paid ads, just a well-designed WhatsApp funnel and referral loop.',
+    content: 'WhatsApp is Africa\'s most powerful marketing channel and most founders aren\'t using it strategically.\n\nOur approach:\n1. WhatsApp Business API for automated onboarding\n2. Referral incentive — share and earn 1 month free\n3. Community groups for product updates and support\n4. Flash sale notifications with 72-hour urgency\n\nResults after 4 months: 200 → 12,000 users, 40% of growth from WhatsApp.',
+    author: 'Adaeze Umeh', authorInitial: 'AU', role: 'CMO @ Farmly', votes: 234, replies: 55,
+    views: 4100, time: '4 days ago', tags: ['Marketing','WhatsApp','Growth']
+  },
+  {
+    id: 'fp6', category: 'legal',
+    title: 'Flipping to a Delaware C-Corp as an African founder — what you need to know in 2025',
+    excerpt: 'I\'ve helped 15 startups flip to Delaware. Here are the costs, timelines, common mistakes, and what changed with US regulations in 2025.',
+    content: 'As more African startups seek US-based VC funding, the question of Delaware "flipping" comes up constantly.\n\n**Why Delaware?**\n- US VCs are most comfortable with Delaware law\n- Streamlined equity splits and SAFEs\n- Better IP protection for software\n\n**Typical costs: $3,000-$8,000**\nIncludes legal fees, state filing fees, and transfer costs.\n\n**Timeline: 4-8 weeks**\n\n**Key risks:**\n- Tax implications in your home country\n- Potential double taxation if not structured correctly',
+    author: 'Counsel Nadia Asante', authorInitial: 'NA', role: 'Startup Attorney', votes: 312, replies: 68,
+    views: 6800, time: '2 weeks ago', tags: ['Legal','Delaware','International']
+  },
+  {
+    id: 'fp7', category: 'partnerships',
+    title: 'How to approach Google for Africa partnerships — my experience',
+    excerpt: 'I landed a Google partnership for our EdTech. Here\'s the 5-month process, who to contact, and the proposal framework that worked.',
+    content: 'Getting a partnership with Google felt impossible at first. Here\'s the realistic path:\n\n1. **Google for Startups** program — apply first, get Google credits + mentorship\n2. **Attend Google Developer events** in your city\n3. **Direct LinkedIn outreach** to Google Africa country managers\n4. **Proposal structure**: mutual benefit, user metrics, technical integration\n\nThe timeline from first contact to signed MOU was 5 months.',
+    author: 'Kwame Asare', authorInitial: 'KA', role: 'CEO @ LearnAfrica', votes: 145, replies: 38,
+    views: 3200, time: '1 week ago', tags: ['Partnerships','Google','EdTech']
+  },
+  {
+    id: 'fp8', category: 'funding',
+    title: 'SAFE vs. Convertible Note vs. Priced Round — what\'s right for African startups in 2025?',
+    excerpt: 'Breaking down the three most common early-stage funding instruments with specific context for African jurisdictions and investor preferences.',
+    content: 'This question comes up in every accelerator cohort:\n\n**SAFE (Simple Agreement for Future Equity)**\n- Easiest for founders\n- YC standard, widely accepted\n- Less protection for investors\n- Works best with US-incorporated entities\n\n**Convertible Note**\n- More common in Africa\n- Has maturity date and interest\n- Flexible for both parties\n\n**Priced Round**\n- Full valuation negotiation\n- Best for Seed B+ rounds\n- More legal costs',
+    author: 'Temi Soyinka', authorInitial: 'TS', role: 'GP @ Lagos Ventures', votes: 267, replies: 44,
+    views: 4600, time: '10 days ago', tags: ['SAFE','Convertible Note','Investment Structure']
+  }
+];
+
+function initForum() {
+  fetch('tables/forum_posts?limit=30&sort=created_at')
+    .then(r => r.json())
+    .then(d => {
+      const apiPosts = (d.data || []).map(p => ({
+        id: p.id, category: p.category || 'general', pinned: false, hot: false,
+        title: p.title || 'Untitled',
+        excerpt: p.content ? p.content.substring(0, 150) + '...' : '',
+        content: p.content || '',
+        author: p.author_name || 'Community Member', authorInitial: (p.author_name || 'C')[0].toUpperCase(),
+        role: p.author_role || 'Member',
+        votes: p.votes || 0, replies: p.replies_count || 0, views: p.view_count || 0,
+        time: timeSince(p.created_at),
+        tags: p.tags ? p.tags.split(',') : []
+      }));
+      allPosts = [...staticPosts, ...apiPosts];
+    })
+    .catch(() => { allPosts = [...staticPosts]; })
+    .finally(() => {
+      filteredPosts = [...allPosts];
+      renderPosts();
+      updateStats();
+    });
+}
+
+function renderPosts() {
+  const list = document.getElementById('postsList');
+  if (!list) return;
+  const toShow = filteredPosts.slice(0, displayCount);
+  list.innerHTML = toShow.map(p => createPostCard(p)).join('');
+  const btn = document.getElementById('loadMorePosts');
+  if (btn) btn.style.display = toShow.length >= filteredPosts.length ? 'none' : 'inline-flex';
+}
+
+function createPostCard(post) {
+  const catClass = `cat-${post.category}`;
+  const pinnedBadge = post.pinned ? `<span class="post-badge-pin"><i class="fas fa-thumbtack"></i> Pinned</span>` : '';
+  const hotBadge = post.hot ? `<span class="post-badge-hot"><i class="fas fa-fire"></i> Hot</span>` : '';
+  const borderClass = post.pinned ? 'pinned' : post.hot ? 'hot' : '';
+  return `
+    <article class="forum-post-card ${borderClass}" onclick="openThread('${post.id}')">
+      <div class="post-top">
+        <div class="post-vote-col">
+          <button class="vote-btn" id="vote-${post.id}" onclick="votePost(event,'${post.id}')"><i class="fas fa-chevron-up"></i></button>
+          <span class="vote-count" id="voteCount-${post.id}">${post.votes}</span>
+          <button class="vote-btn" onclick="downvotePost(event,'${post.id}')"><i class="fas fa-chevron-down"></i></button>
+        </div>
+        <div class="post-body">
+          <div class="post-meta-row">
+            <span class="post-category-badge ${catClass}">${post.category}</span>
+            ${pinnedBadge}${hotBadge}
+          </div>
+          <h3 class="post-title">${post.title}</h3>
+          <p class="post-excerpt">${post.excerpt}</p>
+          <div class="post-tags">
+            ${(post.tags || []).map(t => `<span class="post-tag">#${t}</span>`).join('')}
+          </div>
+          <div class="post-footer">
+            <div class="post-author">
+              <div class="post-author-avatar">${post.authorInitial}</div>
+              <span><strong>${post.author}</strong> · ${post.role}</span>
+            </div>
+            <div class="post-stats">
+              <span><i class="fas fa-comment"></i> ${post.replies}</span>
+              <span><i class="fas fa-eye"></i> ${post.views?.toLocaleString()}</span>
+              <span><i class="fas fa-clock"></i> ${post.time}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>`;
+}
+
+function filterCategory(el, cat) {
+  currentCategory = cat;
+  document.querySelectorAll('.forum-cat-item').forEach(i => i.classList.remove('active'));
+  el.classList.add('active');
+  const search = document.getElementById('forumSearch')?.value.toLowerCase() || '';
+  filteredPosts = allPosts.filter(p => {
+    const matchCat = cat === 'all' || p.category === cat;
+    const matchSearch = !search || p.title.toLowerCase().includes(search) || p.excerpt.toLowerCase().includes(search);
+    return matchCat && matchSearch;
+  });
+  displayCount = 8;
+  renderPosts();
+}
+
+function searchPosts(val) {
+  const v = val.toLowerCase();
+  filteredPosts = allPosts.filter(p => {
+    const matchCat = currentCategory === 'all' || p.category === currentCategory;
+    return matchCat && (p.title.toLowerCase().includes(v) || p.excerpt.toLowerCase().includes(v));
+  });
+  displayCount = 8;
+  renderPosts();
+}
+
+function sortPosts(val) {
+  if (val === 'popular') filteredPosts.sort((a, b) => b.votes - a.votes);
+  else if (val === 'replies') filteredPosts.sort((a, b) => b.replies - a.replies);
+  else if (val === 'unanswered') filteredPosts = filteredPosts.filter(p => p.replies === 0);
+  else filteredPosts.sort((a, b) => allPosts.indexOf(a) - allPosts.indexOf(b));
+  renderPosts();
+}
+
+function loadMorePosts() { displayCount += 6; renderPosts(); }
+
+function updateStats() {
+  const tp = document.getElementById('totalPosts');
+  const tr = document.getElementById('totalReplies');
+  if (tp) tp.textContent = allPosts.length + 96;
+  if (tr) tr.textContent = allPosts.reduce((s, p) => s + p.replies, 0) + 340;
+  const catAll = document.getElementById('catCountAll');
+  if (catAll) catAll.textContent = allPosts.length + 96;
+}
+
+// Thread view
+const replyData = {
+  fp1: [
+    { author: 'Tolu Adeyemi', initial: 'TA', role: 'Angel Investor', time: '2 days ago', text: 'This is gold! The email cold outreach strategy you mentioned — did you use a specific tool for tracking replies or just plain Gmail?', votes: 34, best: false },
+    { author: 'Nkechi Eze', initial: 'NE', role: 'Founder @ LogiTrack', time: '2 days ago', text: 'I went through something similar. The "building in public" approach is underrated for African founders. I\'d add Twitter Spaces to the mix.', votes: 28, best: true },
+    { author: 'Emeka Eze', initial: 'EE', role: 'OP · Founder @ PayLink NG', time: '1 day ago', text: '@Tolu — I used Streak (Gmail CRM) for tracking. Free plan was more than enough for 40 investors.', votes: 19, best: false },
+  ],
+  fp5: [
+    { author: 'Grace Obi', initial: 'GO', role: 'Growth Hacker', time: '3 days ago', text: 'The WhatsApp API costs can be significant at scale though. What was your cost per acquisition via WhatsApp vs. other channels?', votes: 45, best: false },
+    { author: 'Adaeze Umeh', initial: 'AU', role: 'OP · CMO @ Farmly', time: '3 days ago', text: 'Great question. WhatsApp CPA was $0.40. Facebook ads were $3.80. Email was $1.20. WhatsApp wins every time for our product.', votes: 61, best: true },
+  ]
+};
+
+function openThread(postId) {
+  const post = allPosts.find(p => p.id === postId);
+  if (!post) return;
+  const replies = replyData[postId] || [];
+  
+  // Increment view count
+  post.views = (post.views || 0) + 1;
+  
+  const content = document.getElementById('threadContent');
+  content.innerHTML = `
+    <div class="thread-header">
+      <span class="post-category-badge cat-${post.category}" style="display:inline-block; margin-bottom:12px;">${post.category}</span>
+      <h2 style="font-family: var(--font-display); font-size: 1.4rem; font-weight: 800; margin-bottom: 8px;">${post.title}</h2>
+      <div style="display:flex; align-items:center; gap: 12px; color: var(--text-muted); font-size: 0.85rem; flex-wrap:wrap;">
+        <span style="display:flex; align-items:center; gap:6px;">
+          <div class="post-author-avatar" style="width:28px;height:28px;border-radius:50%;background:var(--gradient-primary);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:12px;">${post.authorInitial}</div>
+          <strong>${post.author}</strong> · ${post.role}
+        </span>
+        <span><i class="fas fa-clock"></i> ${post.time}</span>
+        <span><i class="fas fa-eye"></i> ${post.views?.toLocaleString()} views</span>
+        <span><i class="fas fa-chevron-up" style="color: var(--primary);"></i> ${post.votes} votes</span>
+      </div>
+    </div>
+    <div class="thread-post-full">
+      <div class="thread-post-content">${(post.content || post.excerpt || '').replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')}</div>
+      <div class="post-tags" style="margin-top:12px;">
+        ${(post.tags || []).map(t => `<span class="post-tag">#${t}</span>`).join('')}
+      </div>
+    </div>
+
+    <div class="replies-section">
+      <h3><i class="fas fa-comments" style="color: var(--primary);"></i> ${replies.length} ${replies.length === 1 ? 'Reply' : 'Replies'}</h3>
+      <div id="repliesList">
+        ${replies.length > 0 ? replies.map((r, i) => `
+          <div class="reply-card">
+            <div class="reply-avatar" style="background: ${i % 2 === 0 ? 'var(--gradient-primary)' : 'var(--gradient-green)'};">${r.initial}</div>
+            <div class="reply-body">
+              <div class="reply-meta">
+                <span class="reply-author-name">${r.author}</span>
+                <span class="reply-time">${r.role} · ${r.time}</span>
+                ${r.best ? '<span class="reply-best"><i class="fas fa-check"></i> Best Answer</span>' : ''}
+              </div>
+              <div class="reply-text">${r.text}</div>
+              <div class="reply-actions">
+                <button class="reply-action-btn" onclick="likeReply(this, ${r.votes})"><i class="fas fa-thumbs-up"></i> <span>${r.votes}</span></button>
+                <button class="reply-action-btn"><i class="fas fa-reply"></i> Reply</button>
+                <button class="reply-action-btn"><i class="fas fa-flag"></i> Report</button>
+              </div>
+            </div>
+          </div>`).join('') : '<p style="color:var(--text-muted); text-align:center; padding:24px 0;">No replies yet. Be the first to respond!</p>'}
+      </div>
+
+      <div class="write-reply">
+        <h4><i class="fas fa-pen" style="color: var(--primary);"></i> Write a Reply</h4>
+        <textarea id="replyTextarea" rows="4" placeholder="Share your insights or answer this question..."></textarea>
+        <div class="write-reply-footer">
+          <span style="font-size:0.78rem; color: var(--text-muted);">Be respectful · Stay on topic · No spam</span>
+          <button class="btn btn-primary" onclick="submitReply('${postId}')">
+            <i class="fas fa-paper-plane"></i> Post Reply
+          </button>
+        </div>
+      </div>
+    </div>`;
+
+  document.getElementById('threadModal').classList.add('active');
+}
+
+function submitReply(postId) {
+  const text = document.getElementById('replyTextarea')?.value.trim();
+  if (!text) { showToast('Please write something first!', 'error'); return; }
+  
+  const repliesList = document.getElementById('repliesList');
+  const noReplyMsg = repliesList?.querySelector('p');
+  if (noReplyMsg) noReplyMsg.remove();
+  
+  const newReply = document.createElement('div');
+  newReply.className = 'reply-card';
+  newReply.innerHTML = `
+    <div class="reply-avatar">ME</div>
+    <div class="reply-body">
+      <div class="reply-meta">
+        <span class="reply-author-name">You</span>
+        <span class="reply-time">Community Member · Just now</span>
+      </div>
+      <div class="reply-text">${text}</div>
+      <div class="reply-actions">
+        <button class="reply-action-btn" onclick="likeReply(this, 0)"><i class="fas fa-thumbs-up"></i> <span>0</span></button>
+      </div>
+    </div>`;
+  repliesList.appendChild(newReply);
+  
+  // Save to API
+  fetch('tables/forum_replies', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ post_id: postId, content: text, author_name: 'Community Member' })
+  }).catch(() => {});
+  
+  const post = allPosts.find(p => p.id === postId);
+  if (post) post.replies++;
+  
+  document.getElementById('replyTextarea').value = '';
+  showToast('Reply posted! 💬', 'success');
+  renderPosts();
+}
+
+function likeReply(btn, currentVotes) {
+  const span = btn.querySelector('span');
+  const newVotes = currentVotes + 1;
+  span.textContent = newVotes;
+  btn.style.color = 'var(--primary)';
+  showToast('Liked! 👍', 'success', 1500);
+}
+
+function closeThread() { document.getElementById('threadModal').classList.remove('active'); }
+
+// New Post
+function openNewPostModal() { document.getElementById('newPostModal').classList.add('active'); }
+function closeNewPost() { document.getElementById('newPostModal').classList.remove('active'); }
+
+const newPostTags = [];
+function handleTagInput(e) {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    const val = e.target.value.trim();
+    if (val && newPostTags.length < 5 && !newPostTags.includes(val)) {
+      newPostTags.push(val);
+      const chip = document.createElement('span');
+      chip.className = 'tag-chip';
+      chip.innerHTML = `${val} <button type="button" onclick="removePostTag(this,'${val}')">×</button>`;
+      document.getElementById('tagWrap').insertBefore(chip, e.target);
+      e.target.value = '';
+      document.getElementById('postTagsHidden').value = newPostTags.join(',');
+    }
+  }
+}
+function removePostTag(btn, tag) {
+  const idx = newPostTags.indexOf(tag);
+  if (idx > -1) newPostTags.splice(idx, 1);
+  btn.parentElement.remove();
+  document.getElementById('postTagsHidden').value = newPostTags.join(',');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const titleInput = document.getElementById('newPostTitle');
+  if (titleInput) {
+    titleInput.addEventListener('input', function() {
+      document.getElementById('titleCount').textContent = this.value.length;
+    });
+  }
+});
+
+function insertFormat(before, after) {
+  const ta = document.getElementById('newPostContent');
+  if (!ta) return;
+  const start = ta.selectionStart, end = ta.selectionEnd;
+  const selected = ta.value.substring(start, end);
+  ta.value = ta.value.substring(0, start) + before + selected + after + ta.value.substring(end);
+  ta.focus();
+  ta.selectionStart = start + before.length;
+  ta.selectionEnd = start + before.length + selected.length;
+}
+
+function submitNewPost(e) {
+  e.preventDefault();
+  const category = document.getElementById('newPostCategory').value;
+  const title = document.getElementById('newPostTitle').value;
+  const content = document.getElementById('newPostContent').value;
+  const tags = document.getElementById('postTagsHidden').value;
+  
+  fetch('tables/forum_posts', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ title, content, category, author_name: 'Community Member', tags, votes: 0, replies_count: 0 })
+  }).then(r => r.json()).then(newPost => {
+    allPosts.unshift({
+      id: newPost.id, category, pinned: false, hot: false,
+      title, excerpt: content.substring(0, 150) + '...',
+      content, author: 'You', authorInitial: 'ME', role: 'Community Member',
+      votes: 0, replies: 0, views: 0, time: 'Just now',
+      tags: tags ? tags.split(',') : []
+    });
+    filteredPosts = [...allPosts];
+    renderPosts();
+    updateStats();
+    closeNewPost();
+    e.target.reset();
+    showToast('Discussion posted! 🎉', 'success');
+  }).catch(() => {
+    allPosts.unshift({
+      id: 'new-' + Date.now(), category, pinned: false, hot: false,
+      title, excerpt: content.substring(0, 150) + '...',
+      content, author: 'You', authorInitial: 'ME', role: 'Community Member',
+      votes: 0, replies: 0, views: 0, time: 'Just now',
+      tags: tags ? tags.split(',') : []
+    });
+    filteredPosts = [...allPosts];
+    renderPosts();
+    updateStats();
+    closeNewPost();
+    e.target.reset();
+    showToast('Discussion posted! 🎉', 'success');
+  });
+}
+
+function votePost(e, postId) {
+  e.stopPropagation();
+  const btn = document.getElementById(`vote-${postId}`);
+  const countEl = document.getElementById(`voteCount-${postId}`);
+  const post = allPosts.find(p => p.id === postId);
+  if (!post) return;
+  if (btn.classList.contains('voted')) {
+    btn.classList.remove('voted');
+    post.votes--;
+  } else {
+    btn.classList.add('voted');
+    post.votes++;
+  }
+  if (countEl) countEl.textContent = post.votes;
+}
+
+function downvotePost(e, postId) {
+  e.stopPropagation();
+  const post = allPosts.find(p => p.id === postId);
+  if (!post) return;
+  post.votes = Math.max(0, post.votes - 1);
+  const countEl = document.getElementById(`voteCount-${postId}`);
+  if (countEl) countEl.textContent = post.votes;
+}
+
+document.addEventListener('DOMContentLoaded', initForum);
+</script>
+</body>
+</html>

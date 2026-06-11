@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Growth Tracker — AfricaLaunch</title>
+  <meta name="description" content="Track your startup's milestones, funding history, team growth and key performance metrics over time.">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .growth-hero {
+      padding: 120px 0 60px;
+      background: radial-gradient(ellipse at 50% 0%, rgba(16,163,74,0.18) 0%, transparent 70%);
+      text-align: center;
+    }
+    .growth-hero h1 { font-family: var(--font-display); font-size: clamp(2rem, 5vw, 3.2rem); font-weight: 800; margin-bottom: 16px; }
+    .growth-hero p { font-size: 1.1rem; color: var(--text-muted); max-width: 600px; margin: 0 auto; }
+
+    /* Startup Selector */
+    .startup-selector {
+      display: flex; gap: 16px; align-items: center; flex-wrap: wrap;
+      padding: 24px; background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); margin: 40px 0 32px;
+    }
+    .startup-selector label { font-size: 0.9rem; font-weight: 600; color: var(--text-muted); white-space: nowrap; }
+    .startup-select {
+      flex: 1; min-width: 200px; padding: 12px 16px; border-radius: var(--radius);
+      border: 1px solid var(--border); background: var(--bg-surface); color: var(--text);
+      font-size: 0.95rem; outline: none; cursor: pointer;
+    }
+    .startup-select:focus { border-color: var(--primary); }
+    .startup-profile-card {
+      display: flex; align-items: center; gap: 16px; padding: 20px 24px;
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); margin-bottom: 32px;
+    }
+    .startup-logo-lg { width: 64px; height: 64px; border-radius: var(--radius-lg); background: var(--gradient-primary); display: flex; align-items: center; justify-content: center; font-size: 28px; flex-shrink: 0; }
+    .startup-profile-info h2 { font-family: var(--font-display); font-size: 1.4rem; font-weight: 800; }
+    .startup-profile-info p { color: var(--text-muted); font-size: 0.9rem; margin-top: 4px; }
+    .startup-profile-badges { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+    .profile-badge { padding: 3px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; background: rgba(124,58,237,0.15); color: var(--primary); border: 1px solid rgba(124,58,237,0.3); }
+    .startup-profile-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-left: auto; text-align: center; }
+    .profile-stat strong { display: block; font-size: 1.3rem; font-weight: 800; background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .profile-stat span { font-size: 0.75rem; color: var(--text-muted); }
+
+    /* KPI Cards Row */
+    .kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 32px; }
+    .kpi-card {
+      padding: 20px 24px; background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); position: relative; overflow: hidden;
+    }
+    .kpi-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
+    .kpi-card.green::before { background: var(--gradient-green); }
+    .kpi-card.purple::before { background: var(--gradient-primary); }
+    .kpi-card.gold::before { background: var(--gradient-gold); }
+    .kpi-card.blue::before { background: linear-gradient(135deg, #3b82f6, #0ea5e9); }
+    .kpi-label { font-size: 0.78rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+    .kpi-value { font-family: var(--font-display); font-size: 1.8rem; font-weight: 800; line-height: 1; }
+    .kpi-change { display: flex; align-items: center; gap: 4px; font-size: 0.82rem; margin-top: 8px; }
+    .kpi-up { color: #16a34a; }
+    .kpi-down { color: #ef4444; }
+    .kpi-icon { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); font-size: 2.5rem; opacity: 0.08; }
+
+    /* Charts Section */
+    .charts-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; margin-bottom: 32px; }
+    .chart-widget {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); padding: 24px;
+    }
+    .chart-widget h3 { font-size: 1rem; font-weight: 700; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; }
+    .chart-period-tabs { display: flex; gap: 4px; }
+    .period-tab {
+      padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600;
+      border: 1px solid var(--border); background: transparent; color: var(--text-muted); cursor: pointer;
+    }
+    .period-tab.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+    .chart-container { height: 220px; position: relative; }
+
+    /* Growth Layout */
+    .growth-main-layout { display: grid; grid-template-columns: 1fr 360px; gap: 32px; }
+
+    /* Timeline */
+    .timeline-section { flex: 1; }
+    .timeline-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+    .timeline-header h3 { font-family: var(--font-display); font-size: 1.2rem; font-weight: 700; }
+    .timeline { position: relative; padding-left: 48px; }
+    .timeline::before {
+      content: ''; position: absolute; left: 16px; top: 0; bottom: 0;
+      width: 2px; background: linear-gradient(to bottom, var(--primary), transparent);
+    }
+    .timeline-item { position: relative; margin-bottom: 32px; }
+    .timeline-dot {
+      position: absolute; left: -40px; top: 4px;
+      width: 32px; height: 32px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; z-index: 2; border: 2px solid var(--bg);
+    }
+    .dot-funding { background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff; }
+    .dot-product { background: var(--gradient-primary); color: #fff; }
+    .dot-team { background: var(--gradient-green); color: #fff; }
+    .dot-award { background: linear-gradient(135deg, #ec4899, #be185d); color: #fff; }
+    .dot-milestone { background: linear-gradient(135deg, #0ea5e9, #3b82f6); color: #fff; }
+    .dot-expansion { background: linear-gradient(135deg, #16a34a, #15803d); color: #fff; }
+    .timeline-card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); padding: 20px 24px;
+      transition: var(--transition);
+    }
+    .timeline-card:hover { border-color: var(--primary); box-shadow: 0 4px 20px rgba(124,58,237,0.12); }
+    .timeline-card-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
+    .timeline-card-title { font-family: var(--font-display); font-weight: 700; font-size: 1rem; }
+    .timeline-date { font-size: 0.78rem; color: var(--text-muted); white-space: nowrap; }
+    .timeline-type-badge { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; margin-bottom: 8px; text-transform: capitalize; }
+    .type-funding { background: rgba(245,158,11,0.15); color: var(--secondary); }
+    .type-product { background: rgba(124,58,237,0.15); color: var(--primary); }
+    .type-team { background: rgba(16,163,74,0.15); color: var(--accent); }
+    .type-award { background: rgba(236,72,153,0.15); color: #ec4899; }
+    .type-milestone { background: rgba(14,165,233,0.15); color: var(--cyan); }
+    .type-expansion { background: rgba(16,163,74,0.2); color: #22c55e; }
+    .timeline-description { font-size: 0.88rem; color: var(--text-muted); line-height: 1.6; }
+    .timeline-metrics { display: flex; gap: 16px; margin-top: 12px; flex-wrap: wrap; }
+    .timeline-metric { display: flex; align-items: center; gap: 6px; font-size: 0.8rem; background: var(--bg-surface); padding: 4px 10px; border-radius: 20px; border: 1px solid var(--border); }
+    .add-milestone-btn {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 16px; border-radius: var(--radius-lg); border: 2px dashed var(--border);
+      width: 100%; background: transparent; color: var(--text-muted);
+      font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: var(--transition);
+    }
+    .add-milestone-btn:hover { border-color: var(--primary); color: var(--primary); }
+
+    /* Sidebar */
+    .growth-sidebar { display: flex; flex-direction: column; gap: 20px; }
+    .growth-widget {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); padding: 20px;
+    }
+    .growth-widget h3 { font-size: 0.95rem; font-weight: 700; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+
+    /* Funding Progress */
+    .funding-progress { margin-bottom: 8px; }
+    .funding-labels { display: flex; justify-content: space-between; font-size: 0.82rem; color: var(--text-muted); margin-bottom: 6px; }
+    .funding-bar { height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; margin-bottom: 12px; }
+    .funding-fill { height: 100%; background: var(--gradient-gold); border-radius: 4px; transition: width 1s ease; }
+    .round-item { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 0.85rem; }
+    .round-item:last-child { border-bottom: none; }
+    .round-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--primary); flex-shrink: 0; }
+
+    /* Team Growth */
+    .team-size-visual { display: flex; flex-wrap: wrap; gap: 4px; margin: 12px 0; }
+    .team-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--primary); opacity: 0.7; transition: var(--transition); }
+    .team-dot:hover { opacity: 1; transform: scale(1.3); }
+    .team-chart-container { height: 120px; position: relative; }
+
+    /* Goals/OKRs */
+    .goal-item { padding: 10px 0; border-bottom: 1px solid var(--border); }
+    .goal-item:last-child { border-bottom: none; }
+    .goal-header { display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 0.85rem; }
+    .goal-name { font-weight: 600; }
+    .goal-pct { color: var(--text-muted); }
+    .goal-bar { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+    .goal-fill { height: 100%; border-radius: 3px; transition: width 1.2s ease; }
+
+    @media (max-width: 1100px) { .growth-main-layout { grid-template-columns: 1fr; } .charts-grid { grid-template-columns: 1fr; } }
+    @media (max-width: 768px) {
+      .kpi-row { grid-template-columns: repeat(2, 1fr); }
+      .startup-profile-stats { grid-template-columns: repeat(2, 1fr); }
+      .startup-profile-card { flex-direction: column; align-items: flex-start; }
+    }
+    @media (max-width: 480px) { .kpi-row { grid-template-columns: 1fr 1fr; } }
+  </style>
+</head>
+<body>
+
+<div id="toastContainer" class="toast-container"></div>
+
+<!-- ===== NAVIGATION ===== -->
+<nav class="navbar" id="navbar">
+  <div class="nav-container">
+    <a href="index.html" class="nav-logo"><span class="logo-icon">🚀</span><span class="logo-text">AfricaLaunch</span></a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="index.html" class="nav-link">Home</a></li>
+      <li><a href="startups.html" class="nav-link">Startups</a></li>
+      <li><a href="investors.html" class="nav-link">Investors</a></li>
+      <li><a href="events.html" class="nav-link">Events</a></li>
+      <li><a href="marketplace.html" class="nav-link">Marketplace</a></li>
+      <li class="nav-dropdown">
+        <a href="#" class="nav-link dropdown-toggle">More <i class="fas fa-chevron-down"></i></a>
+        <ul class="dropdown-menu">
+          <li><a href="media.html"><i class="fas fa-play-circle"></i> Media Center</a></li>
+          <li><a href="forum.html"><i class="fas fa-comments"></i> Community Forum</a></li>
+          <li><a href="challenges.html"><i class="fas fa-bolt"></i> Challenges</a></li>
+          <li><a href="compare.html"><i class="fas fa-balance-scale"></i> Compare Startups</a></li>
+          <li><a href="growth.html"><i class="fas fa-chart-line"></i> Growth Tracker</a></li>
+          <li><a href="notifications.html"><i class="fas fa-bell"></i> Notifications</a></li>
+          <li><a href="incubator.html"><i class="fas fa-building"></i> Incubator Hub</a></li>
+          <li><a href="ecosystem.html"><i class="fas fa-globe-africa"></i> Ecosystem</a></li>
+          <li><a href="analytics.html"><i class="fas fa-chart-bar"></i> Analytics</a></li>
+          <li><a href="leaderboard.html"><i class="fas fa-trophy"></i> Leaderboard</a></li>
+          <li><a href="awards.html"><i class="fas fa-medal"></i> Awards</a></li>
+          <li><a href="pricing.html"><i class="fas fa-crown"></i> Pricing</a></li>
+        </ul>
+      </li>
+    </ul>
+    <div class="nav-actions">
+      <a href="notifications.html" class="btn btn-ghost"><i class="fas fa-bell"></i></a>
+      <a href="submit.html" class="btn btn-primary"><i class="fas fa-plus"></i> Submit Startup</a>
+    </div>
+    <button class="nav-toggle" id="navToggle" onclick="toggleNav()"><i class="fas fa-bars"></i></button>
+  </div>
+</nav>
+
+<!-- ===== HERO ===== -->
+<section class="growth-hero">
+  <div class="container">
+    <div class="section-label"><i class="fas fa-chart-line"></i> Growth Tracker</div>
+    <h1>Track Every <span class="gradient-text">Milestone</span></h1>
+    <p>Visualize your startup's journey from idea to scale. Log milestones, track funding, and measure growth KPIs over time.</p>
+    <div style="display:flex; gap:12px; justify-content:center; margin-top:24px; flex-wrap:wrap;">
+      <button class="btn btn-primary" onclick="openAddMilestoneModal()"><i class="fas fa-plus"></i> Add Milestone</button>
+      <a href="analytics.html" class="btn btn-outline"><i class="fas fa-chart-bar"></i> Full Analytics</a>
+    </div>
+  </div>
+</section>
+
+<div class="container" style="padding-bottom: 80px;">
+
+  <!-- Startup Selector -->
+  <div class="startup-selector">
+    <label><i class="fas fa-rocket" style="color: var(--primary);"></i> Tracking startup:</label>
+    <select class="startup-select" id="startupSelectGrowth" onchange="switchStartup(this.value)">
+      <option value="paylink">PayLink NG — FinTech</option>
+      <option value="farmly">Farmly — AgriTech</option>
+      <option value="healthbridge">HealthBridge — HealthTech</option>
+      <option value="logix">LogiX Africa — Logistics</option>
+      <option value="edupanda">EduPanda — EdTech</option>
+    </select>
+    <button class="btn btn-outline" onclick="openAddMilestoneModal()"><i class="fas fa-plus"></i> Log Milestone</button>
+    <button class="btn btn-ghost" onclick="exportData()"><i class="fas fa-download"></i> Export</button>
+  </div>
+
+  <!-- Startup Profile -->
+  <div class="startup-profile-card" id="startupProfile">
+    <div class="startup-logo-lg" id="profileEmoji">💳</div>
+    <div class="startup-profile-info">
+      <h2 id="profileName">PayLink NG</h2>
+      <p id="profileDesc">B2B payment infrastructure for Nigerian SMEs · Founded 2022 · Lagos, Nigeria</p>
+      <div class="startup-profile-badges" id="profileBadges">
+        <span class="profile-badge">FinTech</span>
+        <span class="profile-badge">Series A</span>
+        <span class="profile-badge">🇳🇬 Nigeria</span>
+      </div>
+    </div>
+    <div class="startup-profile-stats">
+      <div class="profile-stat"><strong id="profileRevenue">$840K</strong><span>MRR</span></div>
+      <div class="profile-stat"><strong id="profileUsers">48K</strong><span>Users</span></div>
+      <div class="profile-stat"><strong id="profileFunding">$4.2M</strong><span>Raised</span></div>
+      <div class="profile-stat"><strong id="profileTeam">32</strong><span>Team Size</span></div>
+    </div>
+  </div>
+
+  <!-- KPI Cards -->
+  <div class="kpi-row">
+    <div class="kpi-card green">
+      <div class="kpi-label"><i class="fas fa-users"></i> Monthly Active Users</div>
+      <div class="kpi-value" id="kpiMAU">48,240</div>
+      <div class="kpi-change kpi-up"><i class="fas fa-arrow-up"></i> +18.4% vs last month</div>
+      <i class="fas fa-users kpi-icon"></i>
+    </div>
+    <div class="kpi-card purple">
+      <div class="kpi-label"><i class="fas fa-dollar-sign"></i> Monthly Revenue</div>
+      <div class="kpi-value" id="kpiRevenue">$840K</div>
+      <div class="kpi-change kpi-up"><i class="fas fa-arrow-up"></i> +22.1% vs last month</div>
+      <i class="fas fa-chart-line kpi-icon"></i>
+    </div>
+    <div class="kpi-card gold">
+      <div class="kpi-label"><i class="fas fa-handshake"></i> Total Funding</div>
+      <div class="kpi-value" id="kpiFunding">$4.2M</div>
+      <div class="kpi-change kpi-up"><i class="fas fa-arrow-up"></i> Series A closed Q1</div>
+      <i class="fas fa-coins kpi-icon"></i>
+    </div>
+    <div class="kpi-card blue">
+      <div class="kpi-label"><i class="fas fa-percentage"></i> Churn Rate</div>
+      <div class="kpi-value" id="kpiChurn">2.8%</div>
+      <div class="kpi-change kpi-down"><i class="fas fa-arrow-down"></i> -0.4% improvement</div>
+      <i class="fas fa-sync kpi-icon"></i>
+    </div>
+  </div>
+
+  <!-- Charts -->
+  <div class="charts-grid">
+    <div class="chart-widget">
+      <h3>Revenue Growth
+        <div class="chart-period-tabs">
+          <button class="period-tab active" onclick="setPeriod(this,'rev','6m')">6M</button>
+          <button class="period-tab" onclick="setPeriod(this,'rev','1y')">1Y</button>
+          <button class="period-tab" onclick="setPeriod(this,'rev','all')">All</button>
+        </div>
+      </h3>
+      <div class="chart-container"><canvas id="revenueChart"></canvas></div>
+    </div>
+    <div class="chart-widget">
+      <h3>User Acquisition
+        <div class="chart-period-tabs">
+          <button class="period-tab active" onclick="setPeriod(this,'user','6m')">6M</button>
+          <button class="period-tab" onclick="setPeriod(this,'user','1y')">1Y</button>
+        </div>
+      </h3>
+      <div class="chart-container"><canvas id="userChart"></canvas></div>
+    </div>
+    <div class="chart-widget">
+      <h3>Funding History</h3>
+      <div class="chart-container"><canvas id="fundingChart"></canvas></div>
+    </div>
+    <div class="chart-widget">
+      <h3>Monthly Burn Rate vs Revenue</h3>
+      <div class="chart-container"><canvas id="burnChart"></canvas></div>
+    </div>
+  </div>
+
+  <!-- Main Layout: Timeline + Sidebar -->
+  <div class="growth-main-layout">
+
+    <!-- Timeline -->
+    <div class="timeline-section">
+      <div class="timeline-header">
+        <h3><i class="fas fa-stream" style="color: var(--primary);"></i> Milestone Timeline</h3>
+        <select class="forum-sort-select" style="padding: 8px 14px;" onchange="filterMilestones(this.value)">
+          <option value="all">All Types</option>
+          <option value="funding">Funding</option>
+          <option value="product">Product</option>
+          <option value="team">Team</option>
+          <option value="expansion">Expansion</option>
+          <option value="milestone">Milestone</option>
+          <option value="award">Award</option>
+        </select>
+      </div>
+      <div class="timeline" id="milestoneTimeline">
+        <!-- Rendered dynamically -->
+      </div>
+      <button class="add-milestone-btn" onclick="openAddMilestoneModal()">
+        <i class="fas fa-plus-circle"></i> Add New Milestone
+      </button>
+    </div>
+
+    <!-- Sidebar Widgets -->
+    <aside class="growth-sidebar">
+
+      <!-- Funding Rounds -->
+      <div class="growth-widget">
+        <h3><i class="fas fa-coins" style="color: var(--secondary);"></i> Funding Rounds</h3>
+        <div class="funding-progress">
+          <div class="funding-labels"><span>Series A Target</span><span>$4.2M / $5M</span></div>
+          <div class="funding-bar"><div class="funding-fill" style="width:84%"></div></div>
+        </div>
+        <div class="round-item"><div class="round-dot" style="background:#16a34a;"></div><span>Pre-Seed</span><strong>$120K</strong><span style="color:var(--text-muted);">2022</span></div>
+        <div class="round-item"><div class="round-dot" style="background:#3b82f6;"></div><span>Seed</span><strong>$800K</strong><span style="color:var(--text-muted);">2023</span></div>
+        <div class="round-item"><div class="round-dot" style="background:var(--primary);"></div><span>Series A</span><strong>$3.28M</strong><span style="color:var(--text-muted);">2025</span></div>
+        <div class="round-item" style="opacity:0.4;"><div class="round-dot" style="background:var(--border-light);"></div><span>Series B</span><strong>—</strong><span style="color:var(--text-muted);">Q1 2026</span></div>
+      </div>
+
+      <!-- Team Growth -->
+      <div class="growth-widget">
+        <h3><i class="fas fa-users" style="color: var(--cyan);"></i> Team Growth</h3>
+        <div class="team-size-visual" id="teamVisual"></div>
+        <div style="font-size:0.82rem; color:var(--text-muted); margin-bottom: 8px;">32 team members · 4 departments</div>
+        <div class="team-chart-container"><canvas id="teamChart"></canvas></div>
+      </div>
+
+      <!-- OKRs / Goals -->
+      <div class="growth-widget">
+        <h3><i class="fas fa-bullseye" style="color: #ef4444;"></i> Q2 2025 Goals</h3>
+        <div class="goal-item">
+          <div class="goal-header"><span class="goal-name">Revenue $1M MRR</span><span class="goal-pct">84%</span></div>
+          <div class="goal-bar"><div class="goal-fill" style="width:84%; background: var(--gradient-green);"></div></div>
+        </div>
+        <div class="goal-item">
+          <div class="goal-header"><span class="goal-name">50K Active Users</span><span class="goal-pct">96%</span></div>
+          <div class="goal-bar"><div class="goal-fill" style="width:96%; background: var(--gradient-primary);"></div></div>
+        </div>
+        <div class="goal-item">
+          <div class="goal-header"><span class="goal-name">Expand to 3 Countries</span><span class="goal-pct">67%</span></div>
+          <div class="goal-bar"><div class="goal-fill" style="width:67%; background: var(--gradient-gold);"></div></div>
+        </div>
+        <div class="goal-item">
+          <div class="goal-header"><span class="goal-name">Reduce Churn &lt; 2%</span><span class="goal-pct">70%</span></div>
+          <div class="goal-bar"><div class="goal-fill" style="width:70%; background: linear-gradient(135deg, #0ea5e9, #3b82f6);"></div></div>
+        </div>
+      </div>
+
+      <!-- Investor Updates -->
+      <div class="growth-widget">
+        <h3><i class="fas fa-envelope-open" style="color: var(--accent);"></i> Investor Updates</h3>
+        <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom: 12px;">Stay transparent with your investors. Send monthly update emails.</p>
+        <button class="btn btn-outline" style="width:100%; justify-content:center;" onclick="showToast('Investor update feature coming soon! 📊', 'info')">
+          <i class="fas fa-paper-plane"></i> Send Monthly Update
+        </button>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<!-- ===== ADD MILESTONE MODAL ===== -->
+<div class="modal-overlay" id="addMilestoneModal" onclick="if(event.target===this) closeAddMilestone()">
+  <div class="modal-box" style="max-width: 560px;">
+    <button class="modal-close" onclick="closeAddMilestone()"><i class="fas fa-times"></i></button>
+    <h2 style="font-family: var(--font-display); font-size: 1.4rem; font-weight: 800; margin-bottom: 20px;">
+      <i class="fas fa-flag" style="color: var(--accent);"></i> Log a Milestone
+    </h2>
+    <form onsubmit="addMilestone(event)">
+      <div class="form-group">
+        <label class="form-label">Milestone Type *</label>
+        <select class="form-input" id="milestoneType" required>
+          <option value="">Select type</option>
+          <option value="funding">💰 Funding Round</option>
+          <option value="product">🚀 Product Launch</option>
+          <option value="team">👥 Team Growth</option>
+          <option value="milestone">🎯 Key Milestone</option>
+          <option value="expansion">🌍 Geographic Expansion</option>
+          <option value="award">🏆 Award / Recognition</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Title *</label>
+        <input type="text" class="form-input" id="milestoneTitle" placeholder="e.g. Closed $1.5M Seed Round" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Date *</label>
+        <input type="date" class="form-input" id="milestoneDate" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Description</label>
+        <textarea class="form-input" id="milestoneDesc" rows="3" placeholder="What happened? What was the impact?" style="resize:vertical;"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Key Metrics (optional)</label>
+        <input type="text" class="form-input" id="milestoneMetrics" placeholder="e.g. $1.5M raised, 12 new hires">
+      </div>
+      <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center; margin-top:8px;">
+        <i class="fas fa-check"></i> Save Milestone
+      </button>
+    </form>
+  </div>
+</div>
+
+<!-- ===== FOOTER ===== -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand"><div class="footer-logo">🚀 AfricaLaunch</div><p class="footer-desc">Africa's premier startup ecosystem platform.</p></div>
+      <div class="footer-links"><h4>Platform</h4><ul><li><a href="startups.html">Startups</a></li><li><a href="investors.html">Investors</a></li><li><a href="media.html">Media</a></li><li><a href="forum.html">Forum</a></li></ul></div>
+      <div class="footer-links"><h4>Tools</h4><ul><li><a href="analytics.html">Analytics</a></li><li><a href="growth.html">Growth Tracker</a></li><li><a href="compare.html">Compare</a></li><li><a href="pricing.html">Pricing</a></li></ul></div>
+      <div class="footer-links"><h4>Community</h4><ul><li><a href="challenges.html">Challenges</a></li><li><a href="leaderboard.html">Leaderboard</a></li><li><a href="awards.html">Awards</a></li><li><a href="incubator.html">Incubator</a></li></ul></div>
+    </div>
+    <div class="footer-bottom"><p>© 2025 AfricaLaunch. All rights reserved.</p></div>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+<script>
+// ===== STARTUP DATA =====
+const startupData = {
+  paylink: {
+    name: 'PayLink NG', emoji: '💳', desc: 'B2B payment infrastructure for Nigerian SMEs · Founded 2022 · Lagos, Nigeria',
+    badges: ['FinTech','Series A','🇳🇬 Nigeria'], revenue: '$840K', users: '48K', funding: '$4.2M', team: 32
+  },
+  farmly: {
+    name: 'Farmly', emoji: '🌱', desc: 'AI-powered farm management platform for smallholders · Founded 2021 · Accra, Ghana',
+    badges: ['AgriTech','Seed Stage','🇬🇭 Ghana'], revenue: '$320K', users: '22K', funding: '$1.8M', team: 18
+  },
+  healthbridge: {
+    name: 'HealthBridge', emoji: '🏥', desc: 'Telemedicine & digital health platform for rural Africa · Founded 2020 · Nairobi, Kenya',
+    badges: ['HealthTech','Series B','🇰🇪 Kenya'], revenue: '$1.2M', users: '134K', funding: '$12M', team: 67
+  },
+  logix: {
+    name: 'LogiX Africa', emoji: '🚚', desc: 'Last-mile logistics network across 8 African countries · Founded 2019 · Lagos & Nairobi',
+    badges: ['Logistics','Series C','🌍 Pan-Africa'], revenue: '$3.4M', users: '8.2K', funding: '$28M', team: 180
+  },
+  edupanda: {
+    name: 'EduPanda', emoji: '📚', desc: 'Gamified K-12 learning platform with offline-first design · Founded 2023 · Johannesburg',
+    badges: ['EdTech','Pre-Seed','🇿🇦 South Africa'], revenue: '$45K', users: '8.9K', funding: '$380K', team: 9
+  }
+};
+
+// Milestone data per startup
+const allMilestones = {
+  paylink: [
+    { id: 'pm1', type: 'funding', title: 'Closed $3.28M Series A', date: 'Mar 2025', description: 'Led by Partech Africa with participation from TLcom Capital. Funding to scale to 3 new Nigerian cities and launch in Ghana.', metrics: ['$3.28M raised', 'Partech Africa led', '18-month runway'] },
+    { id: 'pm2', type: 'milestone', title: '40,000 SMEs Onboarded', date: 'Jan 2025', description: 'Crossed the 40,000 active business milestone — a 3x increase from Q1 2024.', metrics: ['40K businesses', '3x YoY growth', '98.2% uptime'] },
+    { id: 'pm3', type: 'product', title: 'Launched PayLink Pro — API-First Product', date: 'Oct 2024', description: 'New enterprise-tier product enabling Nigerian fintechs to integrate PayLink\'s payment rails directly.', metrics: ['47 API integrations', '$420K new ARR', '99.9% uptime'] },
+    { id: 'pm4', type: 'team', title: 'Engineering Team Doubled to 18', date: 'Aug 2024', description: 'Completed a major hiring sprint — brought on 9 senior engineers from Flutterwave, Paystack, and Google.', metrics: ['32 → 18 eng team', '9 new hires', 'Remote-first'] },
+    { id: 'pm5', type: 'expansion', title: 'Expanded to Abuja & Port Harcourt', date: 'Jun 2024', description: 'Successfully launched in Nigeria\'s 2nd and 3rd largest cities, adding 12,000 new potential business customers.', metrics: ['2 new cities', '+12K businesses', 'Same-day activation'] },
+    { id: 'pm6', type: 'award', title: 'Won Y Combinator W24 Batch', date: 'Mar 2024', description: 'Selected from 40,000+ applicants for YC Winter 2024 batch — one of only 12 African startups in the cohort.', metrics: ['YC W24', '$500K investment', '12 African startups in cohort'] },
+    { id: 'pm7', type: 'funding', title: 'Closed $800K Seed Round', date: 'Sep 2023', description: 'Oversubscribed seed round with 12 angel investors from Nigeria, UK, and USA.', metrics: ['$800K raised', '12 angels', 'Oversubscribed 2x'] },
+    { id: 'pm8', type: 'product', title: 'Launched MVP — First 100 Businesses', date: 'Apr 2022', description: 'Shipped the first version of PayLink to 100 SMEs in Lagos after 4 months of closed beta testing.', metrics: ['100 businesses', '$2.4K first MRR', '0 downtime in month 1'] }
+  ],
+  farmly: [
+    { id: 'fm1', type: 'funding', title: 'Closed $1.8M Seed Round', date: 'Nov 2024', description: 'Backed by Grenfell Holdings and Acumen Capital. Funds for AI model improvements and Ghana expansion.', metrics: ['$1.8M raised', 'Grenfell + Acumen', '14-month runway'] },
+    { id: 'fm2', type: 'milestone', title: '20,000 Farmers Registered', date: 'Sep 2024', description: 'Reached 20K smallholder farmers using the platform — ahead of schedule by 2 months.', metrics: ['20K farmers', '$180K avg saved/farmer', '45% yield improvement'] },
+    { id: 'fm3', type: 'product', title: 'Launched AI Crop Disease Detector', date: 'Jul 2024', description: 'Computer vision model trained on 500K African crop disease images. 94% accuracy in field tests.', metrics: ['94% accuracy', '500K training images', '12 disease types'] },
+    { id: 'fm4', type: 'expansion', title: 'Expanded to Northern Ghana', date: 'Mar 2024', description: 'Partnered with 8 farmer cooperatives to bring Farmly to 340 villages in the Northern Region.', metrics: ['8 cooperatives', '340 villages', '4,500 new users'] }
+  ]
+};
+
+let currentStartup = 'paylink';
+let displayedMilestoneType = 'all';
+let charts = {};
+
+function switchStartup(id) {
+  currentStartup = id;
+  const data = startupData[id];
+  if (!data) return;
+  
+  document.getElementById('profileEmoji').textContent = data.emoji;
+  document.getElementById('profileName').textContent = data.name;
+  document.getElementById('profileDesc').textContent = data.desc;
+  document.getElementById('profileBadges').innerHTML = data.badges.map(b => `<span class="profile-badge">${b}</span>`).join('');
+  document.getElementById('profileRevenue').textContent = data.revenue;
+  document.getElementById('profileUsers').textContent = data.users;
+  document.getElementById('profileFunding').textContent = data.funding;
+  document.getElementById('profileTeam').textContent = data.team;
+  
+  renderTimeline();
+  initTeamVisual(data.team);
+  updateCharts();
+}
+
+function getTypeClass(type) {
+  const map = { funding: 'dot-funding', product: 'dot-product', team: 'dot-team', award: 'dot-award', milestone: 'dot-milestone', expansion: 'dot-expansion' };
+  return map[type] || 'dot-milestone';
+}
+function getTypeIcon(type) {
+  const map = { funding: 'fa-coins', product: 'fa-rocket', team: 'fa-users', award: 'fa-trophy', milestone: 'fa-flag', expansion: 'fa-globe-africa' };
+  return map[type] || 'fa-flag';
+}
+
+function renderTimeline() {
+  const container = document.getElementById('milestoneTimeline');
+  const milestones = allMilestones[currentStartup] || allMilestones.paylink;
+  const filtered = displayedMilestoneType === 'all' ? milestones : milestones.filter(m => m.type === displayedMilestoneType);
+  
+  container.innerHTML = filtered.map(m => `
+    <div class="timeline-item" data-type="${m.type}">
+      <div class="timeline-dot ${getTypeClass(m.type)}"><i class="fas ${getTypeIcon(m.type)}"></i></div>
+      <div class="timeline-card">
+        <div class="timeline-card-header">
+          <div>
+            <span class="timeline-type-badge type-${m.type}"><i class="fas ${getTypeIcon(m.type)}"></i> ${m.type}</span>
+            <h4 class="timeline-card-title">${m.title}</h4>
+          </div>
+          <span class="timeline-date"><i class="fas fa-calendar"></i> ${m.date}</span>
+        </div>
+        <p class="timeline-description">${m.description}</p>
+        ${m.metrics?.length ? `<div class="timeline-metrics">${m.metrics.map(met => `<span class="timeline-metric"><i class="fas fa-check" style="color: var(--accent);"></i> ${met}</span>`).join('')}</div>` : ''}
+      </div>
+    </div>`).join('');
+}
+
+function filterMilestones(type) {
+  displayedMilestoneType = type;
+  renderTimeline();
+}
+
+function initTeamVisual(count) {
+  const wrap = document.getElementById('teamVisual');
+  if (!wrap) return;
+  wrap.innerHTML = Array(count).fill(0).map((_, i) => {
+    const colors = ['var(--primary)', 'var(--accent)', 'var(--secondary)', 'var(--cyan)', '#ec4899'];
+    return `<div class="team-dot" style="background:${colors[i % colors.length]};"></div>`;
+  }).join('');
+}
+
+function initCharts() {
+  const chartConfig = {
+    plugins: { legend: { display: false } },
+    scales: {
+      x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#9ca3af', font: { size: 11 } } },
+      y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#9ca3af', font: { size: 11 } } }
+    }
+  };
+
+  // Revenue Chart
+  const revCtx = document.getElementById('revenueChart');
+  if (revCtx) {
+    charts.revenue = new Chart(revCtx, {
+      type: 'line',
+      data: {
+        labels: ['Dec', 'Jan', 'Feb', 'Mar', 'Apr', 'May'],
+        datasets: [{
+          data: [420, 510, 590, 680, 740, 840],
+          borderColor: '#7c3aed', backgroundColor: 'rgba(124,58,237,0.1)',
+          tension: 0.4, fill: true, borderWidth: 2, pointBackgroundColor: '#7c3aed', pointRadius: 4
+        }]
+      },
+      options: { ...chartConfig, maintainAspectRatio: false }
+    });
+  }
+
+  // User Chart
+  const userCtx = document.getElementById('userChart');
+  if (userCtx) {
+    charts.user = new Chart(userCtx, {
+      type: 'bar',
+      data: {
+        labels: ['Dec', 'Jan', 'Feb', 'Mar', 'Apr', 'May'],
+        datasets: [{
+          data: [28000, 32000, 36400, 40100, 44200, 48240],
+          backgroundColor: 'rgba(22,163,74,0.8)', borderRadius: 6, borderSkipped: false
+        }]
+      },
+      options: { ...chartConfig, maintainAspectRatio: false }
+    });
+  }
+
+  // Funding Chart
+  const fundCtx = document.getElementById('fundingChart');
+  if (fundCtx) {
+    charts.funding = new Chart(fundCtx, {
+      type: 'bar',
+      data: {
+        labels: ['Pre-Seed', 'Seed', 'Series A'],
+        datasets: [{
+          label: 'Amount ($)',
+          data: [120000, 800000, 3280000],
+          backgroundColor: ['rgba(16,163,74,0.8)', 'rgba(59,130,246,0.8)', 'rgba(124,58,237,0.8)'],
+          borderRadius: 8, borderSkipped: false
+        }]
+      },
+      options: { ...chartConfig, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+    });
+  }
+
+  // Burn Chart
+  const burnCtx = document.getElementById('burnChart');
+  if (burnCtx) {
+    charts.burn = new Chart(burnCtx, {
+      type: 'line',
+      data: {
+        labels: ['Dec', 'Jan', 'Feb', 'Mar', 'Apr', 'May'],
+        datasets: [
+          { label: 'Revenue', data: [420, 510, 590, 680, 740, 840], borderColor: '#16a34a', tension: 0.4, borderWidth: 2, fill: false },
+          { label: 'Burn', data: [680, 700, 710, 720, 730, 720], borderColor: '#ef4444', tension: 0.4, borderWidth: 2, fill: false, borderDash: [5,5] }
+        ]
+      },
+      options: {
+        maintainAspectRatio: false,
+        plugins: { legend: { display: true, labels: { color: '#9ca3af', font: { size: 11 }, boxWidth: 20 } } },
+        scales: chartConfig.scales
+      }
+    });
+  }
+
+  // Team Chart
+  const teamCtx = document.getElementById('teamChart');
+  if (teamCtx) {
+    charts.team = new Chart(teamCtx, {
+      type: 'line',
+      data: {
+        labels: ['Q1\'23', 'Q2\'23', 'Q3\'23', 'Q4\'23', 'Q1\'24', 'Q2\'24', 'Q3\'24', 'Q4\'24', 'Q1\'25'],
+        datasets: [{
+          data: [5, 7, 9, 12, 16, 20, 24, 28, 32],
+          borderColor: '#0ea5e9', backgroundColor: 'rgba(14,165,233,0.1)',
+          tension: 0.4, fill: true, borderWidth: 2, pointRadius: 3
+        }]
+      },
+      options: {
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { grid: { color: 'rgba(255,255,255,0.03)' }, ticks: { color: '#9ca3af', font: { size: 10 } } },
+          y: { grid: { color: 'rgba(255,255,255,0.03)' }, ticks: { color: '#9ca3af', font: { size: 10 } } }
+        }
+      }
+    });
+  }
+}
+
+function updateCharts() {
+  // Stub — in production would fetch real data per startup
+  showToast('Switched to ' + startupData[currentStartup]?.name, 'info', 2000);
+}
+
+function setPeriod(btn, chartId, period) {
+  btn.parentElement.querySelectorAll('.period-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  showToast(`Showing ${period} data`, 'info', 1500);
+}
+
+function exportData() {
+  showToast('Exporting growth report as PDF... 📊', 'info');
+}
+
+// Milestone Modal
+function openAddMilestoneModal() {
+  document.getElementById('addMilestoneModal').classList.add('active');
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('milestoneDate').value = today;
+}
+function closeAddMilestone() { document.getElementById('addMilestoneModal').classList.remove('active'); }
+
+function addMilestone(e) {
+  e.preventDefault();
+  const type = document.getElementById('milestoneType').value;
+  const title = document.getElementById('milestoneTitle').value;
+  const date = document.getElementById('milestoneDate').value;
+  const description = document.getElementById('milestoneDesc').value;
+  const metrics = document.getElementById('milestoneMetrics').value;
+  
+  const newMilestone = {
+    id: 'custom-' + Date.now(), type, title, description,
+    date: new Date(date).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }),
+    metrics: metrics ? metrics.split(',').map(m => m.trim()) : []
+  };
+  
+  if (!allMilestones[currentStartup]) allMilestones[currentStartup] = [];
+  allMilestones[currentStartup].unshift(newMilestone);
+  
+  // Save to API
+  fetch('tables/milestones', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ startup_name: currentStartup, milestone_type: type, title, date, description, metrics })
+  }).catch(() => {});
+  
+  renderTimeline();
+  closeAddMilestone();
+  e.target.reset();
+  showToast('Milestone logged! 🎯', 'success');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  initCharts();
+  renderTimeline();
+  initTeamVisual(32);
+});
+</script>
+</body>
+</html>
