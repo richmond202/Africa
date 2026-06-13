@@ -228,6 +228,11 @@ To make this website live, go to the **Publish tab** and click publish. All file
 - [ ] Sponsored/premium listings payment
 - [ ] Video pitch embedding
 
+### Admin Console
+- `admin.html` — client-side admin dashboard for backend moderation of startups, events, and investors
+- Demo admin login with local browser session support
+- Backend PATCH updates to `tables/startups`, `tables/events`, and `tables/investors`
+
 ---
 
 ## 🛠️ Tech Stack

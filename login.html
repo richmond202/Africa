@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login — AfricaLaunch</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    body { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; }
+    .login-shell { width: 100%; max-width: 520px; background: rgba(22, 24, 39, 0.95); border: 1px solid rgba(255,255,255,0.08); border-radius: 24px; box-shadow: var(--shadow-lg); padding: 40px; }
+    .login-shell h1 { font-family: var(--font-display); font-size: 2.4rem; margin-bottom: 14px; }
+    .login-shell p { color: var(--text-muted); margin-bottom: 28px; }
+    .login-shell form { display: grid; gap: 18px; }
+    .login-shell label { color: var(--text-muted); font-size: 13px; font-weight: 600; }
+    .login-shell input { width: 100%; padding: 16px 18px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.1); background: #0f0f18; color: var(--text); }
+    .login-shell .hint { color: var(--text-muted); font-size: 13px; }
+    .login-shell .alert { padding: 12px 16px; border-radius: 14px; background: rgba(239,68,68,0.12); color: #fecaca; border: 1px solid rgba(239,68,68,0.2); }
+    .login-actions { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .login-actions a { color: var(--text-muted); font-size: 13px; }
+  </style>
+</head>
+<body>
+  <div class="login-shell">
+    <div>
+      <span class="section-label">Admin Access</span>
+      <h1>Secure Login</h1>
+      <p>Enter admin credentials to manage the AfricaLaunch ecosystem from the backend console.</p>
+    </div>
+    <form action="/login" method="post">
+      <label for="email">Email</label>
+      <input id="email" name="email" type="email" placeholder="admin@africalaunch.com" required>
+      <label for="password">Password</label>
+      <input id="password" name="password" type="password" placeholder="Your admin password" required>
+      <div class="hint">This page uses server-side authentication and a secure session cookie.</div>
+      <button class="btn btn-primary" type="submit"><i class="fas fa-sign-in-alt"></i> Sign in</button>
+      <div class="login-actions">
+        <div class="hint">Demo credentials: admin@africalaunch.com / LaunchAdmin2026!</div>
+        <a href="index.html">Back to home</a>
+      </div>
+      <div class="alert" style="display:${(new URLSearchParams(window.location.search).get('error') === '1') ? 'block' : 'none'}"></div>
+    </form>
+  </div>
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('error') === '1') {
+      document.write('<div class="alert">Invalid credentials. Please try again.</div>');
+    }
+  </script>
+</body>
+</html>

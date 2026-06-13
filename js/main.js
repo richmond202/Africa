@@ -479,6 +479,7 @@ document.addEventListener('DOMContentLoaded', () => {
   loadHomePageData().then(() => {
     setTimeout(initAnimations, 200);
   });
+  injectAdminNavLink();
   // Active nav link
   const currentPage = window.location.pathname.split('/').pop() || 'index.html';
   $$('.nav-link').forEach(link => {
@@ -493,3 +494,16 @@ document.addEventListener('DOMContentLoaded', () => {
     $$('.lang-flag').forEach(b => b.classList.toggle('active', b.getAttribute('onclick')?.includes(`'${savedLang}'`)));
   }
 });
+
+function injectAdminNavLink() {
+  const dropdownMenu = document.querySelector('.nav-dropdown .dropdown-menu');
+  if (!dropdownMenu || dropdownMenu.querySelector('a[href="admin.html"]')) return;
+  const item = document.createElement('li');
+  item.innerHTML = '<a href="admin.html"><i class="fas fa-user-shield"></i> Admin</a>';
+  dropdownMenu.appendChild(item);
+}
+
+function updateAdminNavLinkVisibility() {
+  injectAdminNavLink();
+}
+
