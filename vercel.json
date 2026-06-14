@@ -1,0 +1,16 @@
+{
+  "version": 2,
+  "builds": [
+    { "src": "api/**/*.js", "use": "@vercel/node" }
+  ],
+  "rewrites": [
+    { "source": "/admin", "destination": "/api/admin-page" },
+    { "source": "/admin.html", "destination": "/api/admin-page" },
+    { "source": "/api/admin-data", "destination": "/api/admin_data.js" },
+    { "source": "/api/admin-meta", "destination": "/api/admin_meta.js" },
+    { "source": "/api/admin-patch", "destination": "/api/admin_patch.js" },
+    { "source": "/api/auth-status", "destination": "/api/auth_status.js" },
+    { "source": "/api/login", "destination": "/api/login.js" },
+    { "source": "/api/logout", "destination": "/api/logout.js" }
+  ]
+}

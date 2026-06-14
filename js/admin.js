@@ -25,6 +25,10 @@ async function loadAdminMeta() {
   document.getElementById('adminRole')?.textContent = meta.role || 'Administrator';
   document.getElementById('adminAccessMethod')?.textContent = capitalize(meta.accessMethod || 'session');
   document.getElementById('adminSessionTimeout')?.textContent = `${Math.round((meta.sessionTimeout || 0) / 60000)} min`;
+  const info = document.getElementById('adminInfo');
+  if (info) {
+    info.textContent = `${meta.name || 'Admin'} — ${meta.role || 'Administrator'}`;
+  }
 }
 
 function capitalize(value) {
@@ -146,8 +150,18 @@ async function adminPatch(table, id, payload) {
 
 function initAdminConsole() {
   if (!document.body.classList.contains('admin-page')) return;
-  loadAdminMeta();
-  loadAdminData();
+  // ensure auth + meta before loading large datasets
+  fetch('/auth/status').then(r => {
+    if (!r.ok) {
+      window.location.href = '/login';
+      return;
+    }
+    return r.json();
+  }).then(status => {
+    if (!status) return;
+    loadAdminMeta();
+    loadAdminData();
+  }).catch(() => window.location.href = '/login');
   document.getElementById('adminRefreshBtn')?.addEventListener('click', loadAdminData);
 }
 
