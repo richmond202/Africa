@@ -1,0 +1,19 @@
+name = "africalaunch-admin"
+main = "./workers/handler.js"
+compatibility_date = "2026-06-13"
+
+# Set your account_id and other env values in wrangler or via Secrets
+# account_id = "YOUR_ACCOUNT_ID"
+
+[vars]
+TABLE_API_BASE = "https://your-table-api.com"
+
+[build]
+command = "npm run build"
+
+[dev]
+ip = "127.0.0.1"
+
+[env.production]
+# production overrides
+# TABLE_API_BASE = "https://api.production.com"

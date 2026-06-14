@@ -18,6 +18,19 @@ async function loadAdminData() {
   if (loading) loading.classList.add('hidden');
 }
 
+async function loadAdminMeta() {
+  const meta = await fetchAdminMeta();
+  if (!meta) return;
+  document.getElementById('adminName')?.textContent = meta.name || 'Admin';
+  document.getElementById('adminRole')?.textContent = meta.role || 'Administrator';
+  document.getElementById('adminAccessMethod')?.textContent = capitalize(meta.accessMethod || 'session');
+  document.getElementById('adminSessionTimeout')?.textContent = `${Math.round((meta.sessionTimeout || 0) / 60000)} min`;
+}
+
+function capitalize(value) {
+  return String(value).replace(/\b\w/g, c => c.toUpperCase());
+}
+
 async function fetchAdminData(name, limit = 100) {
   const response = await fetch(`/admin-data/${encodeURIComponent(name)}?limit=${encodeURIComponent(limit)}`);
   if (!response.ok) throw new Error('Failed to fetch admin data');
@@ -133,6 +146,7 @@ async function adminPatch(table, id, payload) {
 
 function initAdminConsole() {
   if (!document.body.classList.contains('admin-page')) return;
+  loadAdminMeta();
   loadAdminData();
   document.getElementById('adminRefreshBtn')?.addEventListener('click', loadAdminData);
 }

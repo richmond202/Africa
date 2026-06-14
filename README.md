@@ -208,6 +208,62 @@ Fields: id, user_name, avatar_url, points, badges, rank, startups_submitted, vot
 
 To make this website live, go to the **Publish tab** and click publish. All files are ready for production.
 
+## 🔐 Admin Backend (Local)
+
+This repo includes a small Node/Express admin backend (`server.js`) that provides server-side authentication and a protected proxy for the Table API used by the admin console.
+
+Quick start:
+
+1. Copy `.env.example` to `.env` and set `TABLE_API_BASE`, `ADMIN_EMAIL`, `ADMIN_PASSWORD`, and `SESSION_SECRET`.
+   Add optional values for `ADMIN_NAME`, `ADMIN_ROLE`, `ADMIN_ACCESS_METHOD`, and `SESSION_TIMEOUT` if you want custom metadata and session lifetime.
+2. Install dependencies and start the server:
+
+```powershell
+cd path\to\africa
+npm install
+npm start
+```
+
+3. Visit `http://localhost:3000/login` to sign in and access the Admin Console at `/admin`.
+
+Notes:
+- The admin console (`admin.html`) is protected by a server-side session cookie.
+- Admin metadata is now exposed to the dashboard and includes name, role, access method, and timeout.
+- Admin actions (approve/reject/feature/verify) are forwarded by the server to the configured `TABLE_API_BASE`.
+- For production, secure `SESSION_SECRET`, and run the server behind HTTPS.
+- Optional: instead of storing a plaintext password in `.env`, you can store a bcrypt hash in `ADMIN_PASSWORD_HASH`.
+  To generate a hash locally (Node.js):
+
+```powershell
+node -e "console.log(require('bcrypt').hashSync(process.env.ADMIN_PASSWORD || 'LaunchAdmin2026!', 10))"
+```
+Paste the resulting string into `.env` as `ADMIN_PASSWORD_HASH` and remove `ADMIN_PASSWORD` for better security.
+
+## ☁️ Deploying the API proxy with Wrangler (optional)
+
+You can deploy a lightweight proxy to your Table API using Cloudflare Workers and `wrangler`.
+
+1. Install wrangler (globally or dev):
+
+```powershell
+npm install -g wrangler
+# or as devDependency
+npm install --save-dev @cloudflare/wrangler
+```
+
+2. Configure `wrangler.toml` (already included) with your `account_id` and set `TABLE_API_BASE` in the worker variables or secrets.
+
+3. Publish:
+
+```powershell
+npm run deploy:wrangler
+# or: wrangler publish
+```
+
+Notes:
+- The repository includes `workers/handler.js` as a minimal proxy for `/tables/*` endpoints.
+- Using Wrangler and Workers keeps serverless traffic at the edge; choose whether to keep the Node server for session-backed admin flows or implement auth inside Workers (requires different session strategy).
+
 ---
 
 ## 📋 Features Not Yet Implemented (Future Roadmap)

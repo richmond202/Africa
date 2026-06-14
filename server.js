@@ -11,7 +11,12 @@ const app = express();
 const port = process.env.PORT || 3000;
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'admin@africalaunch.com';
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'LaunchAdmin2026!';
+const ADMIN_PASSWORD_HASH = process.env.ADMIN_PASSWORD_HASH || '';
+const ADMIN_NAME = process.env.ADMIN_NAME || 'AfricaLaunch Admin';
+const ADMIN_ROLE = process.env.ADMIN_ROLE || 'superadmin';
+const ADMIN_ACCESS_METHOD = process.env.ADMIN_ACCESS_METHOD || 'session';
 const SESSION_SECRET = process.env.SESSION_SECRET || 'africalaunch-secret';
+const SESSION_TIMEOUT = parseInt(process.env.SESSION_TIMEOUT || '3600000', 10);
 const TABLE_API_BASE = process.env.TABLE_API_BASE || '';
 const TABLE_API_KEY = process.env.TABLE_API_KEY || '';
 
@@ -21,7 +26,7 @@ app.use(session({
   secret: SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
-  cookie: { httpOnly: true, secure: false }
+  cookie: { httpOnly: true, secure: false, maxAge: SESSION_TIMEOUT }
 }));
 
 function isAuthenticated(req) {
@@ -42,9 +47,20 @@ app.get('/login', (req, res) => {
   return res.sendFile(path.join(__dirname, 'login.html'));
 });
 
-app.post('/login', (req, res) => {
+app.post('/login', async (req, res) => {
   const { email, password } = req.body;
-  if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
+  let ok = false;
+  if (email === ADMIN_EMAIL) {
+    if (ADMIN_PASSWORD_HASH) {
+      try {
+        const bcrypt = require('bcrypt');
+        ok = await bcrypt.compare(password, ADMIN_PASSWORD_HASH);
+      } catch (e) { console.error('bcrypt compare error', e); }
+    } else {
+      ok = password === ADMIN_PASSWORD;
+    }
+  }
+  if (ok) {
     req.session.admin = true;
     return res.redirect('/admin');
   }
@@ -78,6 +94,16 @@ app.get('/admin-data/:table', requireAuth, async (req, res) => {
     console.error('Admin data fetch error:', error);
     return res.status(500).json({ error: 'Failed to fetch admin data' });
   }
+});
+
+app.get('/admin/meta', requireAuth, (req, res) => {
+  return res.json({
+    name: ADMIN_NAME,
+    role: ADMIN_ROLE,
+    accessMethod: ADMIN_ACCESS_METHOD,
+    sessionTimeout: SESSION_TIMEOUT,
+    email: ADMIN_EMAIL
+  });
 });
 
 app.get('/auth/status', (req, res) => {

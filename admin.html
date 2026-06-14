@@ -83,6 +83,19 @@
       </div>
     </div>
 
+    <div class="admin-card" style="display:flex;flex-wrap:wrap;gap:20px;align-items:center;justify-content:space-between;">
+      <div>
+        <h2>Admin Info</h2>
+        <p class="hint">Session metadata and role details for the current admin session.</p>
+      </div>
+      <div style="display:grid;gap:8px;min-width:220px;text-align:right;">
+        <div><strong>Name:</strong> <span id="adminName">—</span></div>
+        <div><strong>Role:</strong> <span id="adminRole">—</span></div>
+        <div><strong>Access:</strong> <span id="adminAccessMethod">—</span></div>
+        <div><strong>Timeout:</strong> <span id="adminSessionTimeout">—</span></div>
+      </div>
+    </div>
+
     <div class="admin-card admin-section">
       <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:18px">
         <div>
@@ -159,6 +172,7 @@
 
 <div class="toast-container" id="toastContainer"></div>
 <script src="js/main.js"></script>
+<script src="js/admin-meta.js"></script>
 <script src="js/admin.js"></script>
 </body>
 </html>
