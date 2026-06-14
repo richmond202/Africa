@@ -12,11 +12,13 @@ const port = process.env.PORT || 3000;
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'admin@africalaunch.com';
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'LaunchAdmin2026!';
 const ADMIN_PASSWORD_HASH = process.env.ADMIN_PASSWORD_HASH || '';
+const ADMIN_API_KEY = process.env.ADMIN_API_KEY || '';
 const ADMIN_NAME = process.env.ADMIN_NAME || 'AfricaLaunch Admin';
 const ADMIN_ROLE = process.env.ADMIN_ROLE || 'superadmin';
-const ADMIN_ACCESS_METHOD = process.env.ADMIN_ACCESS_METHOD || 'session';
+const ADMIN_ACCESS_METHOD = (process.env.ADMIN_ACCESS_METHOD || 'session').toLowerCase();
 const SESSION_SECRET = process.env.SESSION_SECRET || 'africalaunch-secret';
 const SESSION_TIMEOUT = parseInt(process.env.SESSION_TIMEOUT || '3600000', 10);
+const COOKIE_SECURE = process.env.COOKIE_SECURE === 'true';
 const TABLE_API_BASE = process.env.TABLE_API_BASE || '';
 const TABLE_API_KEY = process.env.TABLE_API_KEY || '';
 
@@ -26,16 +28,51 @@ app.use(session({
   secret: SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
-  cookie: { httpOnly: true, secure: false, maxAge: SESSION_TIMEOUT }
+  cookie: {
+    httpOnly: true,
+    secure: COOKIE_SECURE,
+    sameSite: 'lax',
+    maxAge: SESSION_TIMEOUT
+  }
 }));
 
-function isAuthenticated(req) {
-  return req.session && req.session.admin === true;
+function authenticateRequest(req) {
+  if (req.session?.admin === true) {
+    return { authenticated: true, via: 'session' };
+  }
+  if (ADMIN_ACCESS_METHOD === 'token' && ADMIN_API_KEY) {
+    const authorization = String(req.headers.authorization || '').trim();
+    if (authorization === `Bearer ${ADMIN_API_KEY}`) {
+      return { authenticated: true, via: 'token' };
+    }
+  }
+  return { authenticated: false };
+}
+
+function isApiRequest(req) {
+  return req.path.startsWith('/admin-data')
+    || req.path.startsWith('/admin/patch')
+    || req.path === '/admin/meta'
+    || req.path === '/auth/status';
 }
 
 function requireAuth(req, res, next) {
-  if (isAuthenticated(req)) {
+  const auth = authenticateRequest(req);
+  if (auth.authenticated) {
+    if (req.session?.admin === true) {
+      req.session.cookie.maxAge = SESSION_TIMEOUT;
+    }
+    req.admin = {
+      name: ADMIN_NAME,
+      role: ADMIN_ROLE,
+      method: auth.via || ADMIN_ACCESS_METHOD,
+      email: ADMIN_EMAIL
+    };
     return next();
+  }
+
+  if (isApiRequest(req)) {
+    return res.status(401).json({ error: 'Unauthorized' });
   }
   return res.redirect('/login');
 }
@@ -62,6 +99,9 @@ app.post('/login', async (req, res) => {
   }
   if (ok) {
     req.session.admin = true;
+    req.session.name = ADMIN_NAME;
+    req.session.role = ADMIN_ROLE;
+    req.session.email = ADMIN_EMAIL;
     return res.redirect('/admin');
   }
   return res.redirect('/login?error=1');
@@ -100,14 +140,20 @@ app.get('/admin/meta', requireAuth, (req, res) => {
   return res.json({
     name: ADMIN_NAME,
     role: ADMIN_ROLE,
-    accessMethod: ADMIN_ACCESS_METHOD,
+    accessMethod: req.admin?.method || ADMIN_ACCESS_METHOD,
     sessionTimeout: SESSION_TIMEOUT,
     email: ADMIN_EMAIL
   });
 });
 
-app.get('/auth/status', (req, res) => {
-  return res.json({ authenticated: !!req.session?.admin });
+app.get('/auth/status', requireAuth, (req, res) => {
+  return res.json({
+    authenticated: true,
+    name: ADMIN_NAME,
+    role: ADMIN_ROLE,
+    method: req.admin?.method || ADMIN_ACCESS_METHOD,
+    email: ADMIN_EMAIL
+  });
 });
 
 app.patch('/admin/patch/:table/:id', requireAuth, async (req, res) => {

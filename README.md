@@ -215,7 +215,8 @@ This repo includes a small Node/Express admin backend (`server.js`) that provide
 Quick start:
 
 1. Copy `.env.example` to `.env` and set `TABLE_API_BASE`, `ADMIN_EMAIL`, `ADMIN_PASSWORD`, and `SESSION_SECRET`.
-   Add optional values for `ADMIN_NAME`, `ADMIN_ROLE`, `ADMIN_ACCESS_METHOD`, and `SESSION_TIMEOUT` if you want custom metadata and session lifetime.
+   Add optional values for `ADMIN_NAME`, `ADMIN_ROLE`, `ADMIN_ACCESS_METHOD`, `ADMIN_API_KEY`, and `SESSION_TIMEOUT` if you want custom metadata, session lifetime, or bearer-token access.
+   For production behind HTTPS, set `COOKIE_SECURE=true`.
 2. Install dependencies and start the server:
 
 ```powershell
@@ -251,7 +252,8 @@ npm install -g wrangler
 npm install --save-dev @cloudflare/wrangler
 ```
 
-2. Configure `wrangler.toml` (already included) with your `account_id` and set `TABLE_API_BASE` in the worker variables or secrets.
+2. Configure `wrangler.toml` (already included) with your `account_id`, and set `TABLE_API_BASE` in the worker variables or secrets.
+   Optionally set `ADMIN_API_KEY` or `TABLE_API_KEY` there if you want the Worker to proxy requests with a secret header.
 
 3. Publish:
 

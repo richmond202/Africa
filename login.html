@@ -39,13 +39,15 @@
         <div class="hint">Demo credentials: admin@africalaunch.com / LaunchAdmin2026!</div>
         <a href="index.html">Back to home</a>
       </div>
-      <div class="alert" style="display:${(new URLSearchParams(window.location.search).get('error') === '1') ? 'block' : 'none'}"></div>
+      <div id="loginError" class="alert" style="display:none; margin-top: 0;"></div>
     </form>
   </div>
   <script>
     const params = new URLSearchParams(window.location.search);
-    if (params.get('error') === '1') {
-      document.write('<div class="alert">Invalid credentials. Please try again.</div>');
+    const loginError = document.getElementById('loginError');
+    if (params.get('error') === '1' && loginError) {
+      loginError.textContent = 'Invalid credentials. Please try again.';
+      loginError.style.display = 'block';
     }
   </script>
 </body>
