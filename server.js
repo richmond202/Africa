@@ -78,7 +78,7 @@ function requireAuth(req, res, next) {
 }
 
 app.get('/login', (req, res) => {
-  if (isAuthenticated(req)) {
+  if (authenticateRequest(req).authenticated) {
     return res.redirect('/admin');
   }
   return res.sendFile(path.join(__dirname, 'login.html'));
