@@ -210,9 +210,20 @@ To make this website live, go to the **Publish tab** and click publish. All file
 
 ## 🔐 Admin Backend (Local)
 
-This repo includes a small Node/Express admin backend (`server.js`) that provides server-side authentication and a protected proxy for the Table API used by the admin console.
+This repo includes a comprehensive Node/Express admin backend (`server.js`) that provides server-side authentication, data proxying, analytics, audit logging, and moderation tools.
 
-Quick start:
+**Key Features:**
+- Session-based or token-based authentication
+- Real-time ecosystem analytics (status breakdowns, verification counts)
+- Complete audit trail of all admin actions
+- Bulk operations for updating multiple records
+- Global search across tables
+- Soft-delete support for records
+
+**Documentation:**
+- [ADMIN_SETUP.md](ADMIN_SETUP.md) — Quick start guide with curl examples
+- [BACKEND_API.md](BACKEND_API.md) — Complete API reference
+- [BACKEND_DEV.md](BACKEND_DEV.md) — Development guide & architecture
 
 1. Copy `.env.example` to `.env` and set `TABLE_API_BASE`, `ADMIN_EMAIL`, `ADMIN_PASSWORD`, and `SESSION_SECRET`.
    Add optional values for `ADMIN_NAME`, `ADMIN_ROLE`, `ADMIN_ACCESS_METHOD`, `ADMIN_API_KEY`, and `SESSION_TIMEOUT` if you want custom metadata, session lifetime, or bearer-token access.

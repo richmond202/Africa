@@ -6,6 +6,12 @@
   "rewrites": [
     { "source": "/admin", "destination": "/api/admin-page" },
     { "source": "/admin.html", "destination": "/api/admin-page" },
+    { "source": "/login", "destination": "/api/login" },
+    { "source": "/logout", "destination": "/api/logout" },
+    { "source": "/auth/status", "destination": "/api/auth-status" },
+    { "source": "/admin/meta", "destination": "/api/admin-meta" },
+    { "source": "/admin-data/:table", "destination": "/api/admin_data.js" },
+    { "source": "/admin/patch/:table/:id", "destination": "/api/admin_patch.js" },
     { "source": "/api/admin-data", "destination": "/api/admin_data.js" },
     { "source": "/api/admin-meta", "destination": "/api/admin_meta.js" },
     { "source": "/api/admin-patch", "destination": "/api/admin_patch.js" },
